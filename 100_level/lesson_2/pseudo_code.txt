@@ -1,0 +1,87 @@
+PSEUDO CODE ASSIGNMENT:
+
+1) a method that returns the sum of two integers
+
+#INFORMAL
+
+-define a method that takes 2 int params
+  -add the 2 arguments and implicitly return
+-
+
+#FORMAL
+
+START
+# Given 2 int params; return the sum
+
+SET SUM = The result from adding the first variable and second variable
+
+RETURN SUM
+
+END
+
+-----------------------------------------------
+
+2) a method that takes an array of strings, and returns a string that is all those strings concatenated together
+
+#INFORMAL
+
+-define a method that takes an array of strings
+  - create an empty string to be used to concat. from the string array
+  - iterate through the array of strings
+    - push each string on to the empty string array with a space added after each
+  - return the concatenated string.
+-
+
+#FORMAL
+
+START
+#Given an array of strings; Concatenate all the strings into a single string and return it.
+
+SET return_string = initialized empty string to next push the strings from the PARAM_ARR
+
+WHILE PARAM_ARR is looping over each element
+  PUSH each element with a trailing space to the return_string
+
+RETURN return_string
+
+END
+
+-------------------------------------------------
+
+3) a method that takes an array of integers, and returns a new array with every other element
+
+#INFORMAL
+
+-define a method that takes an array of integers
+ -create an empty array to push every other element from the arguments array.
+ -push first element from argument onto empty arr.  skip next. push next. repeat until argument arr completely iterated over itself.
+ - return the array of every other.
+-
+
+#FORMAL
+
+START
+#Given an array of integers; return new array with every other element.
+
+SET NEWARR = []
+SET COUNT = 0
+
+WHILE the argument array iterates over itself
+  PUSH the ARGUMENT[COUNT] to NEWARR if COUNT % 2 == 0
+  SET COUNT += 1
+
+RETURN NEWARR
+
+END
+
+-----------------------------------------------------
+
+
+
+
+
+
+
+
+
+  
