@@ -1,0 +1,7 @@
+greeting: "Welcome to the car loan calculator!"
+loan duration: "What is length of your loan in months?"
+invalid number: "Whoops.  That isn't a correct entry"
+loan amount: "What was the amount of your loan?"
+apr: "What is your APR percentage?"
+restart?: "Would you like to do another calculation? press 'y' for yes."
+salutation: "Thank you for using the car loan calculator!"
