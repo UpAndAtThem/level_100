@@ -1,20 +1,22 @@
-VALID_CHOICES = ['rock', 'paper', 'scissors']
+VALID_CHOICES = %w(rock paper scissors).freeze
 
 def prompt(message)
   puts "=> #{message}"
 end
 
-def display_winner player, computer
-  if (player == 'rock' && computer == 'scissors') ||
-     (player == 'paper' && computer == 'rock') ||
-     (player == 'scissors' && computer == 'paper')
+def win?(first, second)
+  (first == 'rock' && second == 'scissors') ||
+    (first == 'paper' && second == 'rock') ||
+    (first == 'scissors' && second == 'paper')
+end
+
+def display_winner(player, computer)
+  if win? player, computer
     prompt 'you won!'
-  elsif (player == 'rock' && computer == 'paper') ||
-        (player == 'paper' && computer == 'scissors') ||
-        (player == 'scissors' && computer == 'rock')
-    prompt 'you lost!'
+  elsif win? computer, player
+    prompt 'the computer won!'
   else
-    prompt "It's a tie!"
+    prompt 'It is a tie!'
   end
 end
 
@@ -27,11 +29,14 @@ loop do
     puts "you need to enter one: #{VALID_CHOICES.join(', ')}"
   end
 
-  computer_choice = ['rock', 'paper', 'scissors'].sample  #the sample arr method randomly chooses one of the collection
-  p "you have #{choice}, and the computer has #{computer_choice}"
-  display_winner choice, computer_choice 
+  computer_choice = %w(rock paper scissors).sample
+
+  puts "you have #{choice}, and the computer has #{computer_choice}"
+
+  display_winner choice, computer_choice
+
   prompt 'do you want to play again?'
   answer = gets.chomp
-  break unless answer.downcase.start_with? 'y'
 
+  break unless answer.downcase.start_with? 'y'
 end
