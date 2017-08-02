@@ -88,28 +88,34 @@
 
 # ---------------------------------------------
 
-flintstones = { "Fred" => 0, "Wilma" => 1, "Barney" => 2, "Betty" => 3, "BamBam" => 4, "Pebbles" => 5 }
-
-flintstones = flintstones.select do |k,v|
-  true if k == 'Barney'
-end
-
-flintstones = flintstones.to_a.flatten!
-
-p flintstones
-
-
-
+# flintstones = { "Fred" => 0, "Wilma" => 1, "Barney" => 2, "Betty" => 3, "BamBam" => 4, "Pebbles" => 5 }
 
 # flintstones << ["Barney", "Betty"]
 # flintstones << ["BamBam", "Pebbles"]
 # We will end up with this "nested" array:
 
 # ["Fred", "Wilma", ["Barney", "Betty"], ["BamBam", "Pebbles"]]
+
 # Make this into an un-nested array.
 
 # flintstones.flatten!
 
 # ----------------------------------------------
 
-flintstones = { "Fred" => 0, "Wilma" => 1, "Barney" => 2, "Betty" => 3, "BamBam" => 4, "Pebbles" => 5 }
+# Turn this into an array containing only two elements: Barney's name and Barney's number
+
+# flintstones = { "Fred" => 0, "Wilma" => 1, "Barney" => 2, "Betty" => 3, "BamBam" => 4, "Pebbles" => 5 }
+
+# flintstones = flintstones.select do |k,v|
+#   true if k == 'Barney'
+# end
+
+# flintstones = flintstones.to_a.flatten!
+
+# ALTERNATIVE APPROACH
+
+# flintstones.assoc("Barney")
+# #=> ["Barney", 2]
+
+# ------------------------------------------------
+
