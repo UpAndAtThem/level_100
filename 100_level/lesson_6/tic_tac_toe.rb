@@ -74,6 +74,15 @@ def detect_winner(brd)
   nil
 end
 
+def joinor(arr, symbol = ',', conjunction = 'or')
+  result = ''
+  arr.each_with_index do |square, index|
+    result << "#{square}#{symbol} " if index + 1 != arr.length
+    result << "#{conjunction} #{square}" if index + 1 == arr.length
+  end
+  p result
+end
+
 def play_again?
   play_again = ''
   loop do
@@ -89,6 +98,7 @@ loop do
   board = initalize_board
   loop do
     display_board(board)
+    joinor(empty_squares(board))
     player_places_piece(board)
     break if someone_won?(board) || board_full?(board)
     display_board(board)
