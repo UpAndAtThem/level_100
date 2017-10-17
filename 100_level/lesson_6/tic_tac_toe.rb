@@ -102,6 +102,7 @@ loop do
   winner = ''
   loop do
     display_board(board)
+    prompt "player: #{player_score} | computer: #{computer_score}"
     joinor(empty_squares(board))
     player_places_piece(board)
     break if someone_won?(board) || board_full?(board)
@@ -113,16 +114,15 @@ loop do
   winner = detect_winner(board)
   player_score += 1 if winner == 'Player'
   computer_score += 1 if winner == 'Computer'
-  prompt "player: #{player_score} | computer: #{computer_score}"
-
+  
   if player_score == 5 || computer_score == 5
     prompt "#{detect_winner(board)} won 5 times, and is the overall winner!"
     player_score = 0
     computer_score = 0 
+    break if play_again? == false
   elsif someone_won?(board)
     prompt "#{detect_winner(board)} won!"
   else
     prompt 'It\'s a tie!'
   end
-  break if play_again? == false
 end
