@@ -157,7 +157,6 @@ def choose_first
     return first_player if ['computer', 'player'].include? first_player
     prompt "That is not a valid choice"
   end
-  
 end
 
 computer_score = 0
@@ -169,7 +168,7 @@ current_player = first_player
 loop do
   board = initalize_board
   winner = ''
-  current_player = first_player if board.all? { |square, contents| contents == ' '}
+  current_player = first_player
 
   loop do
     display_board(board)
@@ -193,4 +192,6 @@ loop do
   else
     prompt 'It\'s a tie!'
   end
+  sleep 0.85
+
 end
