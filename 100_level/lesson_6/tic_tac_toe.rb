@@ -54,7 +54,10 @@ end
 
 def computer_places_piece(brd)
   prompt "Choose a position to place a piece: #{joinor(empty_squares(brd))}"
-  if defensive_move? brd
+  if offensive_move? brd
+    square = offensive_move(brd)
+    brd[square] = 'O'
+  elsif defensive_move? brd
     square = defensive_move(brd)
     brd[square] = 'O'
   else
@@ -110,6 +113,22 @@ end
 def defensive_move(brd)
   WINNING_LINES.each do |line|
     if brd.values_at(*line).count('X') == 2 && brd.values_at(*line).count(' ') == 1
+      line.select{ |square| return square if empty_squares(brd).include? square }
+    end
+  end
+  nil
+end
+
+def offensive_move?(brd)
+  WINNING_LINES.each do |line|
+    return true if brd.values_at(*line).count('O') == 2 && brd.values_at(*line).count(' ') == 1
+  end
+  false
+end
+
+def offensive_move(brd)
+  WINNING_LINES.each do |line|
+    if brd.values_at(*line).count('O') == 2 && brd.values_at(*line).count(' ') == 1
       line.select{ |square| return square if empty_squares(brd).include? square }
     end
   end
