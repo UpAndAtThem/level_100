@@ -3,6 +3,7 @@ require 'pry'
 INITIAL_MARKER = ' '.freeze
 PLAYER_MARKER = 'X'.freeze
 COMPUTER_MARKER = 'O'.freeze
+GOES_FIRST = 'choose'
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
                 [[1, 5, 9], [3, 5, 7]] # diagnals
@@ -53,7 +54,7 @@ def player_places_piece(brd)
 end
 
 def computer_places_piece(brd)
-  prompt "Choose a position to place a piece: #{joinor(empty_squares(brd))}"
+  sleep 0.5
   if offensive_move? brd
     square = offensive_move(brd)
     brd[square] = 'O'
@@ -137,19 +138,44 @@ def offensive_move(brd)
   nil
 end
 
+def place_piece!(brd, current_player)
+  player_places_piece brd if current_player == 'player'
+  computer_places_piece brd if current_player == 'computer'
+  return
+end
+
+def alternate_player(current_player)
+  return 'computer' if current_player == 'player'
+  return 'player' if current_player == 'computer'
+end
+
+def choose_first
+  first_player = ''
+  loop do
+    prompt"Who goes first? Choose player or computer"
+    first_player = gets.chomp
+    return first_player if ['computer', 'player'].include? first_player
+    prompt "That is not a valid choice"
+  end
+  
+end
+
 computer_score = 0
 player_score = 0
+first_player = GOES_FIRST
+first_player = choose_first if GOES_FIRST == 'choose'
+current_player = first_player
 
 loop do
   board = initalize_board
   winner = ''
+  current_player = first_player if board.all? { |square, contents| contents == ' '}
+
   loop do
     display_board(board)
     prompt "player: #{player_score} | computer: #{computer_score}"
-    player_places_piece(board)
-    break if someone_won?(board) || board_full?(board)
-    display_board(board)
-    computer_places_piece(board)
+    place_piece!(board, current_player)
+    current_player = alternate_player(current_player)
     break if someone_won?(board) || board_full?(board)
   end
 
