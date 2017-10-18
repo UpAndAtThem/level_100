@@ -60,6 +60,8 @@ def computer_places_piece(brd)
   elsif defensive_move? brd
     square = defensive_move(brd)
     brd[square] = 'O'
+  elsif brd[5] == ' '
+    brd[5] = 'O'
   else
     square = empty_squares(brd).sample
     brd[square] = COMPUTER_MARKER
