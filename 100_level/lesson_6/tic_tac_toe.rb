@@ -43,7 +43,7 @@ end
 def player_places_piece(brd)
   square = ''
   loop do
-    prompt 'Choose a square (1-9)'
+    prompt "Choose a position to place a piece: #{joinor(empty_squares(brd))}"
     square = gets.chomp.to_i
     break if empty_squares(brd).include?(square)
     prompt 'Sorry, thats not a valid choice'
@@ -53,8 +53,14 @@ def player_places_piece(brd)
 end
 
 def computer_places_piece(brd)
-  square = empty_squares(brd).sample
-  brd[square] = COMPUTER_MARKER
+  prompt "Choose a position to place a piece: #{joinor(empty_squares(brd))}"
+  if defensive_move? brd
+    square = defensive_move(brd)
+    brd[square] = 'O'
+  else
+    square = empty_squares(brd).sample
+    brd[square] = COMPUTER_MARKER
+  end
   display_board brd
 end
 
@@ -80,7 +86,7 @@ def joinor(arr, symbol = ',', conjunction = 'or')
     result << "#{square}#{symbol} " if index + 1 != arr.length
     result << "#{conjunction} #{square}" if index + 1 == arr.length
   end
-  p result
+  result
 end
 
 def play_again?
@@ -94,6 +100,22 @@ def play_again?
   play_again
 end
 
+def defensive_move?(brd)
+  WINNING_LINES.each do |line|
+    return true if brd.values_at(*line).count('X') == 2 && brd.values_at(*line).count(' ') == 1
+  end
+  false
+end
+
+def defensive_move(brd)
+  WINNING_LINES.each do |line|
+    if brd.values_at(*line).count('X') == 2 && brd.values_at(*line).count(' ') == 1
+      line.select{ |square| return square if empty_squares(brd).include? square }
+    end
+  end
+  nil
+end
+
 computer_score = 0
 player_score = 0
 
@@ -103,7 +125,6 @@ loop do
   loop do
     display_board(board)
     prompt "player: #{player_score} | computer: #{computer_score}"
-    joinor(empty_squares(board))
     player_places_piece(board)
     break if someone_won?(board) || board_full?(board)
     display_board(board)
