@@ -9,6 +9,26 @@ def initialize_deck
           ]
 end
 
+def greeting
+  system "clear"
+  puts "   Welcome to 21"
+  puts "-------------------"
+  puts "| A               |"
+  puts "|                 |"
+  puts "|                 |"
+  puts "|        _        |"
+  puts "|       ( )       |"
+  puts "|       /_\\       |"
+  puts "|                 |"
+  puts "|                 |"
+  puts "|                 |"
+  puts "|                 |"
+  puts "|               A |"
+  puts "------------------"
+ 
+  sleep 1.5
+end
+
 def deal_cards deck
   player_cards = []
   computer_cards = []
@@ -64,15 +84,30 @@ def count_cards cards
   count
 end
 
+
+def display_cards computer_cards, player_cards
+    (computer_cards.length + 2).times do |index|
+      system 'clear'
+      puts "player count: #{count_cards player_cards}"
+      print "player_cards"
+      p player_cards
+      puts "\ncomputer count: #{(count_cards computer_cards[0..index])}"
+      p computer_cards[0..index]
+      sleep 1.25
+    end
+end
+
 def display_winner(player_cards, computer_cards, player_count, computer_count)
   win_lose_tie =  player_count > computer_count && player_count <= 21 || computer_count > 21 && player_count <= 21 ? "win!" : "lose!"
   win_lose_tie = 'tie' if player_count == computer_count
   system 'clear'
-  puts "You have #{player_count}, and the dealer has #{computer_count} you #{win_lose_tie}\n\n"
+  
   print "player cards: "
   p player_cards
-  print "computer_cards:"
+  print "\ncomputer_cards:"
   p computer_cards
+  puts "\n\nYou have #{player_count}, and the dealer has #{computer_count} you #{win_lose_tie}\n\n"
+
 end
 
 computer_cards = []
@@ -81,6 +116,8 @@ player_count = 0
 computer_count = 0
 
 loop do
+  greeting
+  sleep 2
   deck = initialize_deck
   player_cards, computer_cards = deal_cards deck
   loop do
@@ -91,7 +128,7 @@ loop do
       player_count = count_cards player_cards
       break if player_count > 21
       p player_cards
-      puts "You have #{player_count}, and the dealer is showing a #{computer_cards[0]}. Hit or stay?"
+      puts "\nYou have #{player_count}, and the dealer is showing a #{computer_cards[0]}. Hit or stay?"
       answer = gets.chomp
       break if answer == 'stay'
       hit deck, player_cards, player_count
@@ -108,6 +145,7 @@ loop do
       break if computer_count >= 17
     end
     
+    display_cards computer_cards, player_cards
     display_winner player_cards, computer_cards, player_count, computer_count
     
     break if computer_count >= 17 || player_count > 21
