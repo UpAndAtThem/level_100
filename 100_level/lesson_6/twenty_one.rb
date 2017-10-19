@@ -1,6 +1,5 @@
 FACE_CARD_VALUE = {"j" => 10, 'q' => 10, 'k' => 10}
 
-
 def initialize_deck
   deck = [
            %w(2 c), %w(3 c), %w(4 c), %w(5 c), %w(6 c), %w(7 c), %w(8 c), %w(9 c), %w(10 c), %w(j c), %w(q c), %w(k c), %w(a c),
@@ -33,8 +32,10 @@ def adding_aces count
   count + 11 > 21 ? 1 : 11
 end
 
-def hit_or_stay cards
-
+def hit deck, cards, count 
+  new_card = deck.sample
+  cards << new_card
+  deck.delete(new_card)
 end
 
 def count_cards cards
@@ -60,10 +61,21 @@ computer_count = 0
   player_cards, computer_cards = deal_cards deck 
   loop do
     player_count = count_cards player_cards
-    hit_or_stay player_cards
-    p player_count
-    p player_cards
-
+    computer_count = count_cards computer_cards
+    loop do
+      system 'clear'
+      if player_count > 21
+        p player_cards
+        puts "you have #{player_count}. You lose!"
+        break
+      end
+      p player_cards
+      puts "You have #{player_count}, and the dealer is showing a #{computer_cards[0]}. Hit or stay?"
+      answer = gets.chomp
+      break if answer == 'stay'
+      hit deck, player_cards, player_count
+      player_count = count_cards player_cards
+    end
     break
   end
 #end
