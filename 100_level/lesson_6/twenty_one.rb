@@ -29,7 +29,6 @@ def remove_cards deck, player_cards, computer_cards
 end
 
 def adding_aces cards
-
   sorted_aces, rest = cards.partition{|card| card[0] == 'a'}
   count = 0
   rest.each do |card| 
@@ -65,14 +64,25 @@ def count_cards cards
   count
 end
 
+def display_winner(player_cards, computer_cards, player_count, computer_count)
+  win_lose_tie =  player_count > computer_count && player_count <= 21 || computer_count > 21 && player_count <= 21 ? "win!" : "lose!"
+  win_lose_tie = 'tie' if player_count == computer_count
+  system 'clear'
+  puts "You have #{player_count}, and the dealer has #{computer_count} you #{win_lose_tie}\n\n"
+  print "player cards: "
+  p player_cards
+  print "computer_cards:"
+  p computer_cards
+end
+
 computer_cards = []
 player_cards = []
 player_count = 0
 computer_count = 0
+
 loop do
   deck = initialize_deck
   player_cards, computer_cards = deal_cards deck
-  player_cards = [['a', 'h'],['a','d']] 
   loop do
     player_count = count_cards player_cards
     computer_count = count_cards computer_cards
@@ -89,15 +99,18 @@ loop do
     end
 
     loop do
+      computer_count = count_cards computer_cards
+      break if player_count > 21
       if computer_count < 17 
         hit(deck, computer_cards, computer_count) 
       end
       computer_count = count_cards computer_cards
-      break
+      break if computer_count >= 17
     end
-    p player_cards
-    p "You have #{player_count}, and the dealer has #{computer_count}"
+    
+    display_winner player_cards, computer_cards, player_count, computer_count
+    
     break if computer_count >= 17 || player_count > 21
   end
-  sleep 6
+  break
 end
