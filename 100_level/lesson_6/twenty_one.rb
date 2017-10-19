@@ -1,3 +1,5 @@
+FACE_CARD_VALUE = {"j" => 10, 'q' => 10, 'k' => 10}
+
 
 def initialize_deck
   deck = [
@@ -27,6 +29,28 @@ def remove_cards deck, player_cards, computer_cards
   end
 end
 
+def adding_aces count
+  count + 11 > 21 ? 1 : 11
+end
+
+def hit_or_stay cards
+
+end
+
+def count_cards cards
+  count = 0
+  cards.each do |card|
+    if card[0].to_i != 0
+      count += card[0].to_i
+    elsif card[0] == 'a'
+      count += adding_aces count
+    else
+      count += FACE_CARD_VALUE[card[0]]
+    end
+  end
+  count
+end
+
 computer_cards = []
 player_cards = []
 player_count = 0
@@ -34,7 +58,12 @@ computer_count = 0
 #loop do
   deck = initialize_deck
   player_cards, computer_cards = deal_cards deck 
-  player_cards.each { |card| card[1]}
+  loop do
+    player_count = count_cards player_cards
+    hit_or_stay player_cards
+    p player_count
+    p player_cards
+
+    break
+  end
 #end
-p deck
-p player_cards, computer_cards
