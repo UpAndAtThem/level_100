@@ -28,8 +28,20 @@ def remove_cards deck, player_cards, computer_cards
   end
 end
 
-def adding_aces count
-  count + 11 > 21 ? 1 : 11
+def adding_aces cards
+
+  sorted_aces, rest = cards.partition{|card| card[0] == 'a'}
+  count = 0
+  rest.each do |card| 
+    if card[0].to_i == 0
+      count += FACE_CARD_VALUE[card[0]]
+    else
+      count += card[0].to_i
+    end
+  end
+  num_aces = sorted_aces.size
+  (num_aces - 1).times{|_| count += 1}
+  count + 11 < 22 ? count += 11 : count += 1
 end
 
 def hit deck, cards, count 
@@ -44,7 +56,8 @@ def count_cards cards
     if card[0].to_i != 0
       count += card[0].to_i
     elsif card[0] == 'a'
-      count += adding_aces count
+      count = adding_aces cards
+      return count
     else
       count += FACE_CARD_VALUE[card[0]]
     end
@@ -56,19 +69,17 @@ computer_cards = []
 player_cards = []
 player_count = 0
 computer_count = 0
-#loop do
+loop do
   deck = initialize_deck
-  player_cards, computer_cards = deal_cards deck 
+  player_cards, computer_cards = deal_cards deck
+  player_cards = [['a', 'h'],['a','d']] 
   loop do
     player_count = count_cards player_cards
     computer_count = count_cards computer_cards
     loop do
       system 'clear'
-      if player_count > 21
-        p player_cards
-        puts "you have #{player_count}. You lose!"
-        break
-      end
+      player_count = count_cards player_cards
+      break if player_count > 21
       p player_cards
       puts "You have #{player_count}, and the dealer is showing a #{computer_cards[0]}. Hit or stay?"
       answer = gets.chomp
@@ -76,6 +87,17 @@ computer_count = 0
       hit deck, player_cards, player_count
       player_count = count_cards player_cards
     end
-    break
+
+    loop do
+      if computer_count < 17 
+        hit(deck, computer_cards, computer_count) 
+      end
+      computer_count = count_cards computer_cards
+      break
+    end
+    p player_cards
+    p "You have #{player_count}, and the dealer has #{computer_count}"
+    break if computer_count >= 17 || player_count > 21
   end
-#end
+  sleep 6
+end
