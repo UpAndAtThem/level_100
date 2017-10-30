@@ -1,32 +1,33 @@
-FACE_CARD_VALUE = { 'j' => 10, 'q' => 10, 'k' => 10 }.freeze
+FACE_CARD_VALUE = { 'J' => 10, 'Q' => 10, 'K' => 10 }.freeze
 
 def initialize_deck
-  [
-     %w(2 c), %w(3 c), %w(4 c), %w(5 c), %w(6 c), %w(7 c), %w(8 c), %w(9 c), %w(10 c), %w(j c), %w(q c), %w(k c), %w(a c),
-     %w(2 d), %w(3 d), %w(4 d), %w(5 d), %w(6 d), %w(7 d), %w(8 d), %w(9 d), %w(10 d), %w(j d), %w(q d), %w(k d), %w(a d),
-     %w(2 h), %w(3 h), %w(4 h), %w(5 h), %w(6 h), %w(7 h), %w(8 h), %w(9 h), %w(10 h), %w(j h), %w(q h), %w(k h), %w(a h),
-     %w(2 s), %w(3 s), %w(4 s), %w(5 s), %w(6 s), %w(7 s), %w(8 s), %w(9 s), %w(10 s), %w(j s), %w(q s), %w(k s), %w(a s)
-  ]
+  deck = []
+  suits = %w(c d h s)
+  value = %w(2 3 4 5 6 7 8 9 10 J Q K A)
+  suits.map do |suit|
+    value.map { |val| deck << [val, suit] }
+  end
+  deck
 end
 
 def greeting
   system 'clear'
-  puts '   Welcome to 21'
-  puts '-------------------'
-  puts '| A               |'
-  puts '|                 |'
-  puts '|                 |'
-  puts '|        _        |'
-  puts '|       ( )       |'
-  puts '|       /_\\       |'
-  puts '|                 |'
-  puts '|                 |'
-  puts '|                 |'
-  puts '|                 |'
-  puts '|               A |'
-  puts '------------------'
+  puts '             Welcome to 21'
+  puts '------------------- --------------------'
+  puts '| A               | | K                |'
+  puts '|                 | |                  |'
+  puts '|                 | |        WWW  |    |'
+  puts '|        _        | |        ( )  |    |'
+  puts '|       ( )       | |       --|-- t    |'
+  puts '|       /_\\       | |         |        |'
+  puts '|                 | |        / \       |'
+  puts '|                 | |                  |'
+  puts '|                 | |                  |'
+  puts '|                 | |                  |'
+  puts '|               A | |                K |'
+  puts '------------------- --------------------'
 
-  sleep 1.5
+  sleep 0.5
 end
 
 def deal_cards(deck)
@@ -48,35 +49,25 @@ def remove_cards(deck, player_cards, computer_cards)
   end
 end
 
-def adding_aces(cards)
-  sorted_aces, rest = cards.partition{|card| card[0] == 'a'}
-  count = 0
-  rest.each do |card| 
-    if card[0].to_i == 0
-      count += FACE_CARD_VALUE[card[0]]
-    else
-      count += card[0].to_i
-    end
-  end
-  num_aces = sorted_aces.size
-  (num_aces - 1).times{|_| count += 1}
-  count + 11 < 22 ? count += 11 : count += 1
-end
-
-def hit deck, cards, count 
+def hit(deck, cards)
   new_card = deck.sample
   cards << new_card
   deck.delete(new_card)
 end
 
-def count_cards cards
+def count_cards(cards)
   count = 0
+  count = add_cards cards, count
+  cards.each { |card| count -= 10 if card[0] == 'A' && count > 21 }
+  count
+end
+
+def add_cards(cards, count)
   cards.each do |card|
     if card[0].to_i != 0
       count += card[0].to_i
-    elsif card[0] == 'a'
-      count = adding_aces cards
-      return count
+    elsif card[0] == 'A'
+      count += 11
     else
       count += FACE_CARD_VALUE[card[0]]
     end
@@ -84,32 +75,38 @@ def count_cards cards
   count
 end
 
-
-def display_cards computer_cards, player_cards
-    (computer_cards.length + 2).times do |index|
-      system 'clear'
-      puts "player count: #{count_cards player_cards}"
-      print "player_cards"
-      p player_cards
-      
-      print "computer_cards"
-      p computer_cards[0..index]
-
-      puts "\ncomputer count: #{(count_cards computer_cards[0..index])}"
-      sleep 1.9
-    end
+def display_result(computer_cards, player_cards)
+  player_count = count_cards player_cards
+  computer_count = count_cards computer_cards
+  display_cards computer_cards, player_cards
+  result = win_lose_tie player_count, computer_count
+  puts "\nYou have #{player_count}, and the dealer has #{computer_count} you #{result}\n\n\n"
 end
 
-def display_winner(player_cards, computer_cards, player_count, computer_count)
-  win_lose_tie =  player_count > computer_count && player_count <= 21 || computer_count > 21 && player_count <= 21 ? "win!" : "lose!"
-  win_lose_tie = 'tie' if player_count == computer_count
-  system 'clear'
+def display_cards(computer_cards, player_cards)
+  computer_cards.length.times do |index|
+    system 'clear'
+    puts "Your count: #{count_cards player_cards}\n\n"
+    print 'Players cards: '
+    p player_cards
+    print 'Dealers cards: '
+    p computer_cards[0..index]
+    puts "\ndealer count: #{(count_cards computer_cards[0..index])}"
+    sleep 1.3
+  end
+end
 
-  print 'player cards: '
+def win_lose_tie(player_count, computer_count)
+  win_lose_tie = player_count > computer_count && player_count <= 21 || computer_count > 21 && player_count <= 21 ? 'win!' : 'lose!'
+  win_lose_tie = 'tie' if player_count == computer_count
+  win_lose_tie
+end
+
+def hit_stay_prompt(player_cards, computer_cards)
   p player_cards
-  print "\ncomputer_cards:"
-  p computer_cards
-  puts "\n\nYou have #{player_count}, and the dealer has #{computer_count} you #{win_lose_tie}\n\n"
+  player_count = count_cards player_cards
+  approp_article = computer_cards[0][0] == 'A' ? 'an' : 'a'
+  puts "\nYou have #{player_count}. The dealer's showing #{approp_article} #{computer_cards[0][0]}. Hit or stay?"
 end
 
 computer_cards = []
@@ -120,32 +117,25 @@ computer_count = 0
 loop do
   greeting
   sleep 2
-  deck = initialize_deck
+  p deck = initialize_deck
   player_cards, computer_cards = deal_cards deck
   loop do
     player_count = count_cards player_cards
     computer_count = count_cards computer_cards
-    loop do
+    while player_count < 21
       system 'clear'
-      player_count = count_cards player_cards
-      break if player_count > 21
-      p player_cards
-      puts "\nYou have #{player_count}, the dealer's showing a #{computer_cards[0]}. Hit or stay?"
+      hit_stay_prompt player_cards, computer_cards
       answer = gets.chomp
       break if answer == 'stay'
-      hit deck, player_cards, player_count
+      hit deck, player_cards
       player_count = count_cards player_cards
     end
-
-    loop do
-      computer_count = count_cards computer_cards
-      break if player_count > 21
-      hit(deck, computer_cards, computer_count) if computer_count < 17
+    while player_count < 22
+      hit(deck, computer_cards) if computer_count < 17
       computer_count = count_cards computer_cards
       break if computer_count >= 17
     end
-    display_cards computer_cards, player_cards
-    display_winner player_cards, computer_cards, player_count, computer_count
+    display_result computer_cards, player_cards
     break if computer_count >= 17 || player_count > 21
   end
   break
