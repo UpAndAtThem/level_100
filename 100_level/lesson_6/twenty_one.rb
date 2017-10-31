@@ -115,6 +115,7 @@ def win_lose_tie(player_count, computer_count)
 end
 
 def hit_stay_prompt(player_cards, computer_cards, player_count)
+  system 'clear'
   p player_cards
   approp_article = %w(A 8).include?(computer_cards[0][0]) ? 'an' : 'a'
   print "\nYou have #{player_count}. The dealer's showing #{approp_article}"
@@ -134,22 +135,14 @@ def salutation(player_count, computer_count, player_win_total, comp_win_total)
   print 'Thank you for playing 21. The final score is'
   print "\n\nPlayer: #{player_win_total}\n"
   print "Computer: #{comp_win_total}\n"
-  print "\nyou #{win_lose_tie(player_count, computer_count)}\n"
+  print "\nYou #{win_lose_tie(player_count, computer_count)}\n"
 end
 
-# def win?(player_count, computer_count)
-#   player_greater = player_count > computer_count
-#   player_safe = !busted?(player_count)
-#   cmptr_bust = busted? computer_count
-#   win = if player_greater && player_safe || cmptr_bust && player_safe
-#                    true
-#                  else
-#                    false
-#                  end
-
-#   win = false if player_count == computer_count
-#   win
-# end
+def print_score(plyr_tot, cmp_tot)
+  puts "Player score: #{plyr_tot}"
+  puts "Dealer score: #{cmp_tot}"
+  sleep 2.5
+end
 
 computer_cards = []
 player_cards = []
@@ -166,7 +159,6 @@ loop do
     player_count = count_cards player_cards
     computer_count = count_cards computer_cards
     until busted? player_count
-      system 'clear'
       hit_stay_prompt player_cards, computer_cards, player_count
       answer = gets.chomp
       break if answer == 'stay'
@@ -184,7 +176,8 @@ loop do
     comp_win_total += 1 if player_win == 'lose!'
     break if !dealer_hit?(computer_count) || busted?(player_count)
   end
-  break if comp_win_total == 3 || player_win_total == 3
+  break if comp_win_total == 5 || player_win_total == 5
+  print_score(player_win_total, comp_win_total)
 end
 
 salutation player_count, computer_count, player_win_total, comp_win_total
