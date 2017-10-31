@@ -1,4 +1,6 @@
 FACE_CARD_VALUE = { 'J' => 10, 'Q' => 10, 'K' => 10 }.freeze
+DEALER_STAY_VAL = 17
+BUST_VAL = 21
 
 def initialize_deck
   deck = []
@@ -60,7 +62,7 @@ end
 def count_cards(cards)
   count = 0
   count = add_cards cards, count
-  cards.each { |card| count -= 10 if card[0] == 'A' && count > 21 }
+  cards.each { |card| count -= 10 if card[0] == 'A' && count > BUST_VAL }
   count
 end
 
@@ -99,8 +101,8 @@ end
 
 def win_lose_tie(player_count, computer_count)
   player_greater = player_count > computer_count
-  player_safe = player_count <= 21
-  cmptr_bust = computer_count > 21
+  player_safe = !busted?(player_count)
+  cmptr_bust = busted? computer_count
 
   win_lose_tie = if player_greater && player_safe || cmptr_bust && player_safe
                    'win!'
@@ -118,6 +120,15 @@ def hit_stay_prompt(player_cards, computer_cards, player_count)
   print "\nYou have #{player_count}. The dealer's showing #{approp_article}"
   print " #{computer_cards[0][0]}. Hit or stay?: "
 end
+
+def busted?(count)
+  count > BUST_VAL
+end
+
+def dealer_hit?(count)
+  count < DEALER_STAY_VAL
+end
+
 computer_cards = []
 player_cards = []
 player_count = 0
@@ -131,7 +142,7 @@ loop do
   loop do
     player_count = count_cards player_cards
     computer_count = count_cards computer_cards
-    while player_count < 21
+    until busted? player_count
       system 'clear'
       hit_stay_prompt player_cards, computer_cards, player_count
       answer = gets.chomp
@@ -139,13 +150,13 @@ loop do
       hit deck, player_cards
       player_count = count_cards player_cards
     end
-    while player_count < 22
-      hit(deck, computer_cards) if computer_count < 17
+    while !busted?(player_count) && dealer_hit?(computer_count)
+      hit(deck, computer_cards)
       computer_count = count_cards computer_cards
-      break if computer_count >= 17
+      break unless dealer_hit?(computer_count)
     end
     display_result computer_cards, player_cards, computer_count, player_count
-    break if computer_count >= 17 || player_count > 21
+    break if !dealer_hit?(computer_count) || busted?(player_count)
   end
   break
 end
