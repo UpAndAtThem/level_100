@@ -10,6 +10,7 @@ def initialize_deck
   deck
 end
 
+# rubocop:disable Metrics/MethodLength, Metrics/AbcSize
 def greeting
   system 'clear'
   puts '             Welcome to 21'
@@ -29,6 +30,7 @@ def greeting
 
   sleep 0.5
 end
+# rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
 def deal_cards(deck)
   player_cards = []
@@ -76,20 +78,20 @@ def add_cards(cards, count)
 end
 
 def display_result(computer_cards, player_cards, computer_count, player_count)
-  display_cards computer_cards, player_cards
+  display_cards computer_cards, player_cards, player_count
   result = win_lose_tie player_count, computer_count
   puts "\nYou have #{player_count}, and the dealer has #{computer_count} you #{result}\n\n\n"
 end
 
-def display_cards(computer_cards, player_cards)
+def display_cards(computer_cards, player_cards, player_count)
   computer_cards.length.times do |index|
     system 'clear'
-    puts "Your count: #{player_cards}\n\n"
+    puts "Your count: #{player_count}\n\n"
     print 'Players cards: '
     p player_cards
     print 'Dealers cards: '
     p computer_cards[0..index]
-    puts "\ndealer count: #{count_cards (computer_cards[0..index])}"
+    puts "\ndealer count: #{count_cards(computer_cards[0..index])}"
     sleep 1.3
   end
 end
