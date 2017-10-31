@@ -80,7 +80,8 @@ end
 def display_result(computer_cards, player_cards, computer_count, player_count)
   display_cards computer_cards, player_cards, player_count
   result = win_lose_tie player_count, computer_count
-  puts "\nYou have #{player_count}, and the dealer has #{computer_count} you #{result}\n\n\n"
+  print "\nYou have #{player_count}, and the dealer has"
+  print " #{computer_count} you #{result}\n\n\n"
 end
 
 def display_cards(computer_cards, player_cards, player_count)
@@ -97,14 +98,23 @@ def display_cards(computer_cards, player_cards, player_count)
 end
 
 def win_lose_tie(player_count, computer_count)
-  win_lose_tie = (player_count > computer_count && player_count <= 21) || (computer_count > 21 && player_count <= 21) ? 'win!' : 'lose!'
-  win_lose_tie = 'tie' if player_count == computer_count
+  player_greater = player_count > computer_count
+  player_safe = player_count <= 21
+  cmptr_bust = computer_count > 21
+
+  win_lose_tie = if player_greater && player_safe || cmptr_bust && player_safe
+                   'win!'
+                 else
+                   'lose!'
+                 end
+
+  win_lose_tie = 'tie!' if player_count == computer_count
   win_lose_tie
 end
 
 def hit_stay_prompt(player_cards, computer_cards, player_count)
   p player_cards
-  approp_article = computer_cards[0][0] == 'A' ? 'an' : 'a'
+  approp_article = %w(A 8).include?(computer_cards[0][0]) ? 'an' : 'a'
   print "\nYou have #{player_count}. The dealer's showing #{approp_article}"
   print " #{computer_cards[0][0]}. Hit or stay?: "
 end
