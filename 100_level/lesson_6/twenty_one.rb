@@ -15,7 +15,7 @@ end
 # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
 def greeting
   system 'clear'
-  puts '             Welcome to 21'
+  puts "             Welcome to #{BUST_VAL}"
   puts '------------------- --------------------'
   puts '| A               | | K                |'
   puts '|                 | |                  |'
