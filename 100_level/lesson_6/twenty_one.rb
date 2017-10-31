@@ -75,9 +75,7 @@ def add_cards(cards, count)
   count
 end
 
-def display_result(computer_cards, player_cards)
-  player_count = count_cards player_cards
-  computer_count = count_cards computer_cards
+def display_result(computer_cards, player_cards, computer_count, player_count)
   display_cards computer_cards, player_cards
   result = win_lose_tie player_count, computer_count
   puts "\nYou have #{player_count}, and the dealer has #{computer_count} you #{result}\n\n\n"
@@ -134,7 +132,7 @@ loop do
       computer_count = count_cards computer_cards
       break if computer_count >= 17
     end
-    display_result computer_cards, player_cards
+    display_result computer_cards, player_cards, computer_count, player_count
     break if computer_count >= 17 || player_count > 21
   end
   break
