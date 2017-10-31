@@ -77,6 +77,18 @@ def add_cards(cards, count)
   count
 end
 
+def add_hit_card(card, count)
+  if card[0].to_i != 0
+    count += card[0].to_i
+  elsif card[0] == 'A'
+    count += 11
+  else
+    count += FACE_CARD_VALUE[card[0]]
+  end
+  card.each { |crd| count -= 10 if crd[0] == 'A' && count > 21 }
+  count
+end
+
 def display_result(computer_cards, player_cards, computer_count, player_count)
   display_cards computer_cards, player_cards, player_count
   result = win_lose_tie player_count, computer_count
@@ -127,11 +139,11 @@ loop do
       answer = gets.chomp
       break if answer == 'stay'
       hit deck, player_cards
-      player_count = count_cards player_cards
+      player_count = add_hit_card player_cards[-1], player_count
     end
-    while player_count < 22
-      hit(deck, computer_cards) if computer_count < 17
-      computer_count = count_cards computer_cards
+    while player_count < 22 && computer_count < 17
+      hit(deck, computer_cards)
+      computer_count = add_hit_card computer_cards[-1], computer_count
       break if computer_count >= 17
     end
     display_result computer_cards, player_cards, computer_count, player_count
