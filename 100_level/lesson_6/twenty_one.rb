@@ -84,12 +84,12 @@ end
 def display_cards(computer_cards, player_cards)
   computer_cards.length.times do |index|
     system 'clear'
-    puts "Your count: #{count_cards player_cards}\n\n"
+    puts "Your count: #{player_cards}\n\n"
     print 'Players cards: '
     p player_cards
     print 'Dealers cards: '
     p computer_cards[0..index]
-    puts "\ndealer count: #{(count_cards computer_cards[0..index])}"
+    puts "\ndealer count: #{count_cards (computer_cards[0..index])}"
     sleep 1.3
   end
 end
