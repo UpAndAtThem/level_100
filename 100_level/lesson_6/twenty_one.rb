@@ -30,7 +30,7 @@ def greeting
   puts '|               A | |                K |'
   puts '------------------- --------------------'
 
-  sleep 0.5
+  sleep 2.5
 end
 # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
@@ -129,14 +129,37 @@ def dealer_hit?(count)
   count < DEALER_STAY_VAL
 end
 
+def salutation(player_count, computer_count, player_win_total, comp_win_total)
+  system 'clear'
+  print 'Thank you for playing 21. The final score is'
+  print "\n\nPlayer: #{player_win_total}\n"
+  print "Computer: #{comp_win_total}\n"
+  print "\nyou #{win_lose_tie(player_count, computer_count)}\n"
+end
+
+# def win?(player_count, computer_count)
+#   player_greater = player_count > computer_count
+#   player_safe = !busted?(player_count)
+#   cmptr_bust = busted? computer_count
+#   win = if player_greater && player_safe || cmptr_bust && player_safe
+#                    true
+#                  else
+#                    false
+#                  end
+
+#   win = false if player_count == computer_count
+#   win
+# end
+
 computer_cards = []
 player_cards = []
 player_count = 0
 computer_count = 0
+player_win_total = 0
+comp_win_total = 0
 
+greeting
 loop do
-  greeting
-  sleep 2
   deck = initialize_deck
   player_cards, computer_cards = deal_cards deck
   loop do
@@ -156,7 +179,12 @@ loop do
       break unless dealer_hit?(computer_count)
     end
     display_result computer_cards, player_cards, computer_count, player_count
+    player_win = win_lose_tie(player_count, computer_count)
+    player_win_total += 1 if player_win == 'win!'
+    comp_win_total += 1 if player_win == 'lose!'
     break if !dealer_hit?(computer_count) || busted?(player_count)
   end
-  break
+  break if comp_win_total == 3 || player_win_total == 3
 end
+
+salutation player_count, computer_count, player_win_total, comp_win_total
