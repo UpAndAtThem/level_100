@@ -102,9 +102,8 @@ def win_lose_tie(player_count, computer_count)
   win_lose_tie
 end
 
-def hit_stay_prompt(player_cards, computer_cards)
+def hit_stay_prompt(player_cards, computer_cards, player_count)
   p player_cards
-  player_count = count_cards player_cards
   approp_article = computer_cards[0][0] == 'A' ? 'an' : 'a'
   puts "\nYou have #{player_count}. The dealer's showing #{approp_article} #{computer_cards[0][0]}. Hit or stay?"
 end
@@ -117,14 +116,14 @@ computer_count = 0
 loop do
   greeting
   sleep 2
-  p deck = initialize_deck
+  deck = initialize_deck
   player_cards, computer_cards = deal_cards deck
   loop do
     player_count = count_cards player_cards
     computer_count = count_cards computer_cards
     while player_count < 21
       system 'clear'
-      hit_stay_prompt player_cards, computer_cards
+      hit_stay_prompt player_cards, computer_cards, player_count
       answer = gets.chomp
       break if answer == 'stay'
       hit deck, player_cards
