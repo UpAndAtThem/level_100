@@ -2,6 +2,11 @@ FACE_CARD_VALUE = { 'J' => 10, 'Q' => 10, 'K' => 10 }.freeze
 DEALER_STAY_VAL = 17
 BUST_VAL = 21
 
+def prompt(message)
+  p "=> #{message}"
+  sleep 1
+end
+
 def initialize_deck
   deck = []
   suits = %w(c d h s)
@@ -35,22 +40,16 @@ end
 # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
 def deal_cards(deck)
-  player_cards = []
-  computer_cards = []
-  1.upto(2) do |_|
-    player_cards << deck.sample
-    computer_cards << deck.sample
+  cards = []
+  2.times do |index|
+    cards << deck.sample
+    remove_card deck, cards[index]
   end
-  remove_cards deck, player_cards, computer_cards
-  return player_cards, computer_cards
+  cards
 end
 
-def remove_cards(deck, player_cards, computer_cards)
-  [player_cards, computer_cards].each do |set_cards|
-    set_cards.each do |card|
-      deck.delete(card)
-    end
-  end
+def remove_card(deck, card)
+  deck.delete(card)
 end
 
 def hit(deck, cards)
@@ -68,13 +67,13 @@ end
 
 def add_cards(cards, count)
   cards.each do |card|
-    if card[0].to_i != 0
-      count += card[0].to_i
-    elsif card[0] == 'A'
-      count += 11
-    else
-      count += FACE_CARD_VALUE[card[0]]
-    end
+    count += if card[0].to_i != 0
+               card[0].to_i
+             elsif card[0] == 'A'
+               11
+             else
+               FACE_CARD_VALUE[card[0]]
+             end
   end
   count
 end
@@ -150,17 +149,23 @@ player_count = 0
 computer_count = 0
 player_win_total = 0
 comp_win_total = 0
+answer = ''
 
 greeting
 loop do
   deck = initialize_deck
-  player_cards, computer_cards = deal_cards deck
+  player_cards = deal_cards deck
+  computer_cards = deal_cards deck
   loop do
     player_count = count_cards player_cards
     computer_count = count_cards computer_cards
     until busted? player_count
-      hit_stay_prompt player_cards, computer_cards, player_count
-      answer = gets.chomp
+      loop do
+        hit_stay_prompt player_cards, computer_cards, player_count
+        answer = gets.chomp.downcase
+        break if %w(hit stay).include? answer
+        prompt 'that is not a correct option!'
+      end
       break if answer == 'stay'
       hit deck, player_cards
       player_count = count_cards player_cards
