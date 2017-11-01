@@ -4,7 +4,7 @@ BUST_VAL = 21
 BEST_TO = 5
 
 def prompt(message)
-  p "=> #{message}"
+  puts "=> #{message}"
   sleep 1.5
 end
 
