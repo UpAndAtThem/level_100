@@ -1,10 +1,11 @@
 FACE_CARD_VALUE = { 'J' => 10, 'Q' => 10, 'K' => 10 }.freeze
 DEALER_STAY_VAL = 17
 BUST_VAL = 21
+BEST_TO = 5
 
 def prompt(message)
   p "=> #{message}"
-  sleep 1
+  sleep 1.5
 end
 
 def initialize_deck
@@ -55,7 +56,7 @@ end
 def hit(deck, cards)
   new_card = deck.sample
   cards << new_card
-  deck.delete(new_card)
+  remove_card deck, new_card
 end
 
 def count_cards(cards)
@@ -118,7 +119,9 @@ def hit_stay_prompt(player_cards, computer_cards, player_count)
   p player_cards
   approp_article = %w(A 8).include?(computer_cards[0][0]) ? 'an' : 'a'
   print "\nYou have #{player_count}. The dealer's showing #{approp_article}"
-  print " #{computer_cards[0][0]}. Hit or stay?: "
+  print " #{computer_cards[0][0]}."
+  print "\n" if busted? player_count
+  print ' Hit or stay?: ' unless busted? player_count
 end
 
 def busted?(count)
@@ -169,6 +172,8 @@ loop do
       break if answer == 'stay'
       hit deck, player_cards
       player_count = count_cards player_cards
+      hit_stay_prompt player_cards, computer_cards, player_count
+      prompt 'YOU BUSTED!' if busted? player_count
     end
     while !busted?(player_count) && dealer_hit?(computer_count)
       hit(deck, computer_cards)
@@ -181,7 +186,7 @@ loop do
     comp_win_total += 1 if player_win == 'lose!'
     break if !dealer_hit?(computer_count) || busted?(player_count)
   end
-  break if comp_win_total == 5 || player_win_total == 5
+  break if comp_win_total == BEST_TO || player_win_total == BEST_TO
   print_score(player_win_total, comp_win_total)
 end
 
