@@ -4,7 +4,7 @@ BUST_VAL = 21
 BEST_TO = 5
 
 def prompt(message)
-  puts "=> #{message}"
+  p "=> #{message}"
   sleep 1.5
 end
 
@@ -77,6 +77,32 @@ def add_cards(cards, count)
              end
   end
   count
+end
+
+def create_card(card)
+  #[val,suit]
+  single__char_card =
+  ["@==========@",
+    "| #{card[0]}        |",
+    "|          |",
+    "|          |",
+    "|          |",
+    "|          |",
+    "|        #{card[0]} |",
+    "@==========@"
+  ]
+
+  double_char_card =
+  ["@==========@ ",
+    "| #{card[0]}       | ",
+    "|          | ",
+    "|          | ",
+    "|          | ",
+    "|          | ",
+    "|       #{card[0]} | ",
+    "@==========@ "
+  ]
+  card[0].to_s.size == 2 ? double_char_card : single__char_card
 end
 
 def display_result(computer_cards, player_cards, computer_count, player_count)
@@ -156,6 +182,7 @@ answer = ''
 
 greeting
 loop do
+  gets
   deck = initialize_deck
   player_cards = deal_cards deck
   computer_cards = deal_cards deck
@@ -187,7 +214,7 @@ loop do
     break if !dealer_hit?(computer_count) || busted?(player_count)
   end
   break if comp_win_total == BEST_TO || player_win_total == BEST_TO
-  print_score(player_win_total, comp_win_total)
+  print_score player_win_total, comp_win_total
 end
 
 salutation player_count, computer_count, player_win_total, comp_win_total
