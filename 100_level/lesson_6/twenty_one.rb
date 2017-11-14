@@ -115,12 +115,25 @@ def create_display_cards(cards)
     card = create_card crd
     display_cards << card
   end
-  display_cards
+  manipulate_display_cards display_cards, display_cards.size
 end
 
 def manipulate_display_cards(cards, num_desired)
-  puts create_display_cards cards
-  gets
+  crds = cards[0..num_desired]
+  return_arr = []
+  1.times do |index|
+    count = 0
+    loop do
+      result = ''
+      crds.each do |card|
+        result += card[count]
+      end
+      return_arr << result
+      count += 1
+      break if count == 8
+    end
+  end
+  return_arr
 end
 
 def display_result(computer_cards, player_cards, computer_count, player_count)
@@ -160,11 +173,12 @@ end
 
 def hit_stay_prompt(player_cards, computer_cards, player_count)
   system 'clear'
-  p player_cards
+  puts "      YOUR CARDS"
+  puts create_display_cards player_cards
   cards = []
-  displaycards = manipulate_display_cards player_cards, player_cards.length
+  #displaycards = create_display_cards player_cards
   approp_article = %w(A 8).include?(computer_cards[0][0]) ? 'an' : 'a'
-  print "\nYou have #{player_count}. The dealer's showing #{approp_article}"
+  print "\nYou have #{player_count}.\nThe dealer's showing #{approp_article}"
   print " #{computer_cards[0][0]}."
   print "\n" if busted? player_count
   print ' Hit or stay?: ' unless busted? player_count
@@ -200,7 +214,7 @@ player_win_total = 0
 comp_win_total = 0
 answer = ''
 
-#greeting
+greeting
 loop do
   deck = initialize_deck
   player_cards = deal_cards deck
