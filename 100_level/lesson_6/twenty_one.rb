@@ -83,7 +83,7 @@ end
 
 def create_card(card)
   #[val,suit]
-  single_char_card =
+  return single_char_card =
   ["@==========@",
     "| #{card[0]}        |",
     "|          |",
@@ -92,7 +92,7 @@ def create_card(card)
     "|          |",
     "|        #{card[0]} |",
     "@==========@"
-  ]
+  ] if card[0].to_s.size == 1
 
   double_char_card =
   ["@==========@ ",
@@ -104,7 +104,7 @@ def create_card(card)
     "|       #{card[0]} | ",
     "@==========@ "
   ]
-  card[0].to_s.size == 2 ? double_char_card : single_char_card
+  #card[0].to_s.size == 2 ? double_char_card : single_char_card
 end
 
 def create_display_cards(cards)
@@ -112,10 +112,15 @@ def create_display_cards(cards)
   the_cards = []
   display_cards = []
   cards.each do |crd|
-    card = create_card crd[0]
+    card = create_card crd
     display_cards << card
   end
   display_cards
+end
+
+def manipulate_display_cards(cards, num_desired)
+  puts create_display_cards cards
+  gets
 end
 
 def display_result(computer_cards, player_cards, computer_count, player_count)
@@ -157,7 +162,7 @@ def hit_stay_prompt(player_cards, computer_cards, player_count)
   system 'clear'
   p player_cards
   cards = []
-  #displaycards = create_display_cards player_cards
+  displaycards = manipulate_display_cards player_cards, player_cards.length
   approp_article = %w(A 8).include?(computer_cards[0][0]) ? 'an' : 'a'
   print "\nYou have #{player_count}. The dealer's showing #{approp_article}"
   print " #{computer_cards[0][0]}."
