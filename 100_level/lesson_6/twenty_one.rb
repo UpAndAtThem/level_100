@@ -3,6 +3,8 @@ DEALER_STAY_VAL = 17
 BUST_VAL = 21
 BEST_TO = 5
 
+require "pry"
+
 def prompt(message)
   p "=> #{message}"
   sleep 1.5
@@ -81,7 +83,7 @@ end
 
 def create_card(card)
   #[val,suit]
-  single__char_card =
+  single_char_card =
   ["@==========@",
     "| #{card[0]}        |",
     "|          |",
@@ -102,7 +104,18 @@ def create_card(card)
     "|       #{card[0]} | ",
     "@==========@ "
   ]
-  card[0].to_s.size == 2 ? double_char_card : single__char_card
+  card[0].to_s.size == 2 ? double_char_card : single_char_card
+end
+
+def create_display_cards(cards)
+  result = ""
+  the_cards = []
+  display_cards = []
+  cards.each do |crd|
+    card = create_card crd[0]
+    display_cards << card
+  end
+  display_cards
 end
 
 def display_result(computer_cards, player_cards, computer_count, player_count)
@@ -131,18 +144,20 @@ def win_lose_tie(player_count, computer_count)
   cmptr_bust = busted? computer_count
 
   win_lose_tie = if player_greater && player_safe || cmptr_bust && player_safe
-                   'win!'
+                   'win'
                  else
-                   'lose!'
+                   'lose'
                  end
 
-  win_lose_tie = 'tie!' if player_count == computer_count
+  win_lose_tie = 'tie' if player_count == computer_count
   win_lose_tie
 end
 
 def hit_stay_prompt(player_cards, computer_cards, player_count)
   system 'clear'
   p player_cards
+  cards = []
+  #displaycards = create_display_cards player_cards
   approp_article = %w(A 8).include?(computer_cards[0][0]) ? 'an' : 'a'
   print "\nYou have #{player_count}. The dealer's showing #{approp_article}"
   print " #{computer_cards[0][0]}."
@@ -180,9 +195,8 @@ player_win_total = 0
 comp_win_total = 0
 answer = ''
 
-greeting
+#greeting
 loop do
-  gets
   deck = initialize_deck
   player_cards = deal_cards deck
   computer_cards = deal_cards deck
@@ -209,8 +223,8 @@ loop do
     end
     display_result computer_cards, player_cards, computer_count, player_count
     player_win = win_lose_tie(player_count, computer_count)
-    player_win_total += 1 if player_win == 'win!'
-    comp_win_total += 1 if player_win == 'lose!'
+    player_win_total += 1 if player_win == 'win'
+    comp_win_total += 1 if player_win == 'lose'
     break if !dealer_hit?(computer_count) || busted?(player_count)
   end
   break if comp_win_total == BEST_TO || player_win_total == BEST_TO
