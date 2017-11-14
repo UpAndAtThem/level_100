@@ -82,7 +82,6 @@ def add_cards(cards, count)
 end
 
 def create_card(card)
-  #[val,suit]
   return single_char_card =
   ["@==========@",
     "| #{card[0]}        |",
@@ -104,7 +103,6 @@ def create_card(card)
     "|       #{card[0]} | ",
     "@==========@ "
   ]
-  #card[0].to_s.size == 2 ? double_char_card : single_char_card
 end
 
 def create_display_cards(cards)
@@ -146,10 +144,10 @@ end
 def display_cards(computer_cards, player_cards, player_count)
   computer_cards.length.times do |index|
     system 'clear'
+    puts 'YOUR CARDS'
+    puts create_display_cards player_cards
     puts "Your count: #{player_count}\n\n"
-    print 'Players cards: '
-    p player_cards
-    print 'Dealers cards: '
+    puts 'Dealers cards: '
     p computer_cards[0..index]
     puts "\ndealer count: #{count_cards(computer_cards[0..index])}"
     sleep 1.3
@@ -173,15 +171,13 @@ end
 
 def hit_stay_prompt(player_cards, computer_cards, player_count)
   system 'clear'
-  puts "      YOUR CARDS"
+  puts "YOUR CARDS"
   puts create_display_cards player_cards
-  cards = []
-  #displaycards = create_display_cards player_cards
   approp_article = %w(A 8).include?(computer_cards[0][0]) ? 'an' : 'a'
-  print "\nYou have #{player_count}.\nThe dealer's showing #{approp_article}"
-  print " #{computer_cards[0][0]}."
+  puts "You have #{player_count}.\n\nThe dealer's showing #{approp_article}"
+  puts create_card computer_cards[0]
   print "\n" if busted? player_count
-  print ' Hit or stay?: ' unless busted? player_count
+  print 'Hit or stay?: ' unless busted? player_count
 end
 
 def busted?(count)
