@@ -146,7 +146,7 @@ def display_cards(computer_cards, player_cards, player_count)
     system 'clear'
     puts 'Dealers cards: '
     puts create_display_cards computer_cards[0..index]
-    puts "dealer count: #{count_cards(computer_cards[0..index])}\n\n"
+    puts "Dealer count: #{count_cards(computer_cards[0..index])}\n\n"
     puts 'YOUR CARDS'
     puts create_display_cards player_cards
     puts "Your count: #{player_count}\n\n"
@@ -175,10 +175,10 @@ def hit_stay_prompt(player_cards, computer_cards, player_count)
   
   #puts "\n" if busted? player_count
   
-  puts "The dealer's showing #{approp_article}"
+  puts "Dealer's showing #{approp_article}"
   puts create_display_cards [computer_cards[0], [" ", " "]]
   #binding.pry
-  puts "dealer count: #{(count_cards computer_cards) - computer_cards[1][0].to_i}\n\n"
+  puts "Dealer count: #{count_cards(computer_cards) - count_cards([computer_cards[1]])}\n\n" #bug
   print "\n" if busted? player_count
   puts "YOUR CARDS"
   puts create_display_cards player_cards
