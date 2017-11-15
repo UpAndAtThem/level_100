@@ -3,7 +3,7 @@ DEALER_STAY_VAL = 17
 BUST_VAL = 21
 BEST_TO = 5
 
-require "pry"
+require 'pry'
 
 def prompt(message)
   p "=> #{message}"
@@ -83,31 +83,27 @@ end
 
 def create_card(card)
   return single_char_card =
-  ["@==========@",
-    "| #{card[0]}        |",
-    "|          |",
-    "|          |",
-    "|          |",
-    "|          |",
-    "|        #{card[0]} |",
-    "@==========@"
-  ] if card[0].to_s.size == 1
+    ['@==========@',
+     "| #{card[0]}        |",
+     '|          |',
+     '|          |',
+     '|          |',
+     '|          |',
+     "|        #{card[0]} |",
+     '@==========@'] if card[0].to_s.size == 1
 
-  double_char_card =
-  ["@==========@ ",
-    "| #{card[0]}       | ",
-    "|          | ",
-    "|          | ",
-    "|          | ",
-    "|          | ",
-    "|       #{card[0]} | ",
-    "@==========@ "
-  ]
+    # double char card
+    ['@==========@ ',
+     "| #{card[0]}       | ",
+     '|          | ',
+     '|          | ',
+     '|          | ',
+     '|          | ',
+     "|       #{card[0]} | ",
+     '@==========@ ']
 end
 
 def create_display_cards(cards)
-  result = ""
-  the_cards = []
   display_cards = []
   cards.each do |crd|
     card = create_card crd
@@ -119,17 +115,15 @@ end
 def manipulate_display_cards(cards, num_desired)
   crds = cards[0..num_desired]
   return_arr = []
-  1.times do |index|
-    count = 0
-    loop do
-      result = ''
-      crds.each do |card|
-        result += card[count]
-      end
-      return_arr << result
-      count += 1
-      break if count == 8
+  count = 0
+  loop do
+    result = ''
+    crds.each do |card|
+      result += card[count]
     end
+    return_arr << result
+    count += 1
+    break if count == 8
   end
   return_arr
 end
@@ -171,18 +165,14 @@ end
 
 def hit_stay_prompt(player_cards, computer_cards, player_count)
   approp_article = %w(A 8).include?(computer_cards[0][0]) ? 'an' : 'a'
+  dealer_count = count_cards(computer_cards) - count_cards([computer_cards[1]])
   system 'clear'
-  
-  #puts "\n" if busted? player_count
-  
   puts "Dealer's showing #{approp_article}"
-  puts create_display_cards [computer_cards[0], [" ", " "]]
-  #binding.pry
-  puts "Dealer count: #{count_cards(computer_cards) - count_cards([computer_cards[1]])}\n\n" #bug
+  puts create_display_cards [computer_cards[0], [' ', ' ']]
+  puts "Dealer count: #{dealer_count}\n\n"
   print "\n" if busted? player_count
-  puts "YOUR CARDS"
+  puts 'YOUR CARDS'
   puts create_display_cards player_cards
-  
   puts "You have #{player_count}.\n\n"
   puts 'YOU BUSTED!' if busted? player_count
   print 'Hit or stay?: ' unless busted? player_count
