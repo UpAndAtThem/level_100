@@ -196,8 +196,9 @@ end
 
 def print_score(plyr_tot, cmp_tot)
   puts "Player score: #{plyr_tot}"
-  puts "Dealer score: #{cmp_tot}"
-  sleep 2.5
+  puts "Dealer score: #{cmp_tot}\n\n"
+  print 'HIT ENTER TO CONTINUE:'
+  gets
 end
 
 computer_cards = []
