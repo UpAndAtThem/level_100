@@ -144,12 +144,12 @@ end
 def display_cards(computer_cards, player_cards, player_count)
   computer_cards.length.times do |index|
     system 'clear'
+    puts 'Dealers cards: '
+    puts create_display_cards computer_cards[0..index]
+    puts "dealer count: #{count_cards(computer_cards[0..index])}\n\n"
     puts 'YOUR CARDS'
     puts create_display_cards player_cards
     puts "Your count: #{player_count}\n\n"
-    puts 'Dealers cards: '
-    p computer_cards[0..index]
-    puts "\ndealer count: #{count_cards(computer_cards[0..index])}"
     sleep 1.3
   end
 end
@@ -170,13 +170,21 @@ def win_lose_tie(player_count, computer_count)
 end
 
 def hit_stay_prompt(player_cards, computer_cards, player_count)
+  approp_article = %w(A 8).include?(computer_cards[0][0]) ? 'an' : 'a'
   system 'clear'
+  
+  #puts "\n" if busted? player_count
+  
+  puts "The dealer's showing #{approp_article}"
+  puts create_display_cards [computer_cards[0], [" ", " "]]
+  #binding.pry
+  puts "dealer count: #{(count_cards computer_cards) - computer_cards[1][0].to_i}\n\n"
+  print "\n" if busted? player_count
   puts "YOUR CARDS"
   puts create_display_cards player_cards
-  approp_article = %w(A 8).include?(computer_cards[0][0]) ? 'an' : 'a'
-  puts "You have #{player_count}.\n\nThe dealer's showing #{approp_article}"
-  puts create_card computer_cards[0]
-  print "\n" if busted? player_count
+  
+  puts "You have #{player_count}.\n\n"
+  puts 'YOU BUSTED!' if busted? player_count
   print 'Hit or stay?: ' unless busted? player_count
 end
 
@@ -229,7 +237,6 @@ loop do
       hit deck, player_cards
       player_count = count_cards player_cards
       hit_stay_prompt player_cards, computer_cards, player_count
-      prompt 'YOU BUSTED!' if busted? player_count
     end
     while !busted?(player_count) && dealer_hit?(computer_count)
       hit(deck, computer_cards)
