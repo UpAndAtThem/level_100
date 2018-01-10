@@ -1,29 +1,27 @@
 FACE_CARD_VALUE = { 'J' => 10, 'Q' => 10, 'K' => 10 }.freeze
 DEALER_STAY_VAL = 17
-BUST_VAL = 21
+MAX_VAL = 21
 BEST_TO = 5
 
 require 'pry'
 
 def prompt(message)
-  p "=> #{message}"
+  puts "=> #{message}"
   sleep 1.5
 end
 
 def initialize_deck
-  deck = []
   suits = %w(c d h s)
   value = %w(2 3 4 5 6 7 8 9 10 J Q K A)
-  suits.map do |suit|
+  suits.each_with_object([]) do |suit, deck|
     value.map { |val| deck << [val, suit] }
   end
-  deck
 end
 
 # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
 def greeting
   system 'clear'
-  puts "             Welcome to #{BUST_VAL}"
+  puts "             Welcome to #{MAX_VAL}"
   puts '------------------- --------------------'
   puts '| A               | | K                |'
   puts '|                 | |                  |'
@@ -64,7 +62,7 @@ end
 def count_cards(cards)
   count = 0
   count = add_cards cards, count
-  cards.each { |card| count -= 10 if card[0] == 'A' && count > BUST_VAL }
+  cards.each { |card| count -= 10 if card[0] == 'A' && count > MAX_VAL }
   count
 end
 
@@ -93,14 +91,14 @@ def create_card(card)
      '@==========@'] if card[0].to_s.size == 1
 
     # double char card
-    ['@==========@ ',
-     "| #{card[0]}       | ",
-     '|          | ',
-     '|          | ',
-     '|          | ',
-     '|          | ',
-     "|       #{card[0]} | ",
-     '@==========@ ']
+    ['@==========@',
+     "| #{card[0]}       |",
+     '|          |',
+     '|          |',
+     '|          |',
+     '|          |',
+     "|       #{card[0]} |",
+     '@==========@']
 end
 
 def create_display_cards(cards)
@@ -179,7 +177,7 @@ def hit_stay_prompt(player_cards, computer_cards, player_count)
 end
 
 def busted?(count)
-  count > BUST_VAL
+  count > MAX_VAL
 end
 
 def dealer_hit?(count)
@@ -215,6 +213,7 @@ loop do
   player_cards = deal_cards deck
   computer_cards = deal_cards deck
   loop do
+
     player_count = count_cards player_cards
     computer_count = count_cards computer_cards
     until busted? player_count
