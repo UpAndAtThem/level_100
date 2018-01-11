@@ -14,7 +14,7 @@ def initialize_deck
   suits = %w(c d h s)
   value = %w(2 3 4 5 6 7 8 9 10 J Q K A)
   suits.each_with_object([]) do |suit, deck|
-    value.map { |val| deck << [val, suit] }
+    value.each { |val| deck << [val, suit] }
   end
 end
 
@@ -95,10 +95,7 @@ end
 
 def create_display_cards(cards)
   display_cards = []
-  cards.each do |crd|
-    card = create_card crd
-    display_cards << card
-  end
+  cards.each { |card| display_cards << create_card(card)}
   display_cards_one_at_a_time display_cards, display_cards.size
 end
 
