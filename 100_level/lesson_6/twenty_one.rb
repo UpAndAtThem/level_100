@@ -42,21 +42,13 @@ end
 
 def deal_cards(deck)
   cards = []
-  2.times do |index|
-    cards << deck.sample
-    remove_card deck, cards[index]
-  end
+  2.times { |index| cards << deck.shuffle!.pop}
   cards
-end
-
-def remove_card(deck, card)
-  deck.delete(card)
 end
 
 def hit(deck, cards)
   new_card = deck.sample
-  cards << new_card
-  remove_card deck, new_card
+  cards << deck.pop
 end
 
 def count_cards(cards)
@@ -107,10 +99,10 @@ def create_display_cards(cards)
     card = create_card crd
     display_cards << card
   end
-  manipulate_display_cards display_cards, display_cards.size
+  display_cards_one_at_a_time display_cards, display_cards.size
 end
 
-def manipulate_display_cards(cards, num_desired)
+def display_cards_one_at_a_time(cards, num_desired)
   crds = cards[0..num_desired]
   return_arr = []
   count = 0
