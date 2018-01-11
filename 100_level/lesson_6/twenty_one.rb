@@ -42,12 +42,11 @@ end
 
 def deal_cards(deck)
   cards = []
-  2.times { |index| cards << deck.shuffle!.pop}
+  2.times { |_| cards << deck.shuffle!.pop }
   cards
 end
 
 def hit(deck, cards)
-  new_card = deck.sample
   cards << deck.pop
 end
 
@@ -72,7 +71,7 @@ def add_cards(cards, count)
 end
 
 def create_card(card)
-  return single_char_card =
+  if card[0].length == 1
     ['@==========@',
      "| #{card[0]}        |",
      '|          |',
@@ -80,8 +79,8 @@ def create_card(card)
      '|          |',
      '|          |',
      "|        #{card[0]} |",
-     '@==========@'] if card[0].to_s.size == 1
-
+     '@==========@']
+  else
     # double char card
     ['@==========@',
      "| #{card[0]}       |",
@@ -91,26 +90,26 @@ def create_card(card)
      '|          |',
      "|       #{card[0]} |",
      '@==========@']
+  end
 end
 
 def create_display_cards(cards)
   display_cards = []
-  cards.each { |card| display_cards << create_card(card)}
+  cards.each { |card| display_cards << create_card(card) }
   display_cards_one_at_a_time display_cards
 end
 
 def display_cards_one_at_a_time(cards)
-  crds = cards[0..cards.length]
   return_arr = []
   count = 0
   loop do
     result = ''
-    crds.each do |card|
+    cards.each do |card|
       result += card[count]
     end
     return_arr << result
     count += 1
-    break if count == 8
+    break if count == 8 # 8 is the height of the individual card
   end
   return_arr
 end
@@ -155,7 +154,7 @@ def hit_stay_prompt(player_cards, computer_cards, player_count)
   dealer_count = count_cards(computer_cards) - count_cards([computer_cards[1]])
   system 'clear'
   puts "Dealer's showing #{approp_article}"
-  puts create_display_cards [computer_cards[0], [' ', ' ']]
+  puts create_display_cards [computer_cards[0], [' ', ' ']] # the second argument is the blank card
   puts "Dealer count: #{dealer_count}\n\n"
   print "\n" if busted? player_count
   puts 'YOUR CARDS'
@@ -202,7 +201,6 @@ loop do
   player_cards = deal_cards deck
   computer_cards = deal_cards deck
   loop do
-
     player_count = count_cards player_cards
     computer_count = count_cards computer_cards
     until busted? player_count
