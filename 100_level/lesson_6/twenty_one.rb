@@ -96,11 +96,11 @@ end
 def create_display_cards(cards)
   display_cards = []
   cards.each { |card| display_cards << create_card(card)}
-  display_cards_one_at_a_time display_cards, display_cards.size
+  display_cards_one_at_a_time display_cards
 end
 
-def display_cards_one_at_a_time(cards, num_desired)
-  crds = cards[0..num_desired]
+def display_cards_one_at_a_time(cards)
+  crds = cards[0..cards.length]
   return_arr = []
   count = 0
   loop do
@@ -228,7 +228,7 @@ loop do
     comp_win_total += 1 if player_win == 'lose'
     break if !dealer_hit?(computer_count) || busted?(player_count)
   end
-  break if comp_win_total == BEST_TO || player_win_total == BEST_TO
+  break if [comp_win_total, player_win_total].include? BEST_TO
   print_score player_win_total, comp_win_total
 end
 
