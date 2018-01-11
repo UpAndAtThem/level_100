@@ -200,32 +200,38 @@ loop do
   deck = initialize_deck
   player_cards = deal_cards deck
   computer_cards = deal_cards deck
+
   loop do
     player_count = count_cards player_cards
     computer_count = count_cards computer_cards
     until busted? player_count
+
       loop do
         hit_stay_prompt player_cards, computer_cards, player_count
         answer = gets.chomp.downcase
         break if %w(hit stay).include? answer
         prompt 'that is not a correct option!'
       end
+
       break if answer == 'stay'
       hit deck, player_cards
       player_count = count_cards player_cards
       hit_stay_prompt player_cards, computer_cards, player_count
     end
+
     while !busted?(player_count) && dealer_hit?(computer_count)
       hit(deck, computer_cards)
       computer_count = count_cards computer_cards
       break unless dealer_hit?(computer_count)
     end
+
     display_result computer_cards, player_cards, computer_count, player_count
     player_win = win_lose_tie(player_count, computer_count)
     player_win_total += 1 if player_win == 'win'
     comp_win_total += 1 if player_win == 'lose'
     break if !dealer_hit?(computer_count) || busted?(player_count)
   end
+
   break if [comp_win_total, player_win_total].include? BEST_TO
   print_score player_win_total, comp_win_total
 end
