@@ -204,8 +204,8 @@ loop do
   loop do
     player_count = count_cards player_cards
     computer_count = count_cards computer_cards
-    until busted? player_count
 
+    until busted? player_count
       loop do
         hit_stay_prompt player_cards, computer_cards, player_count
         answer = gets.chomp.downcase
