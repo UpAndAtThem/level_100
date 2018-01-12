@@ -96,10 +96,10 @@ end
 def create_display_cards(cards)
   display_cards = []
   cards.each { |card| display_cards << create_card(card) }
-  display_cards_one_at_a_time display_cards
+  create_row_cards display_cards
 end
 
-def display_cards_one_at_a_time(cards)
+def create_row_cards(cards)
   return_arr = []
   count = 0
   loop do
@@ -154,7 +154,8 @@ def hit_stay_prompt(player_cards, computer_cards, player_count)
   dealer_count = count_cards(computer_cards) - count_cards([computer_cards[1]])
   system 'clear'
   puts "Dealer's showing #{approp_article}"
-  puts create_display_cards [computer_cards[0], [' ', ' ']] # the second argument is the blank card
+  # the second argument in create_display_cards is the blank card
+  puts create_display_cards [computer_cards[0], [' ', ' ']]
   puts "Dealer count: #{dealer_count}\n\n"
   print "\n" if busted? player_count
   puts 'YOUR CARDS'
@@ -180,9 +181,9 @@ def salutation(player_count, computer_count, player_win_total, comp_win_total)
   print "\nYou #{win_lose_tie(player_count, computer_count)}\n"
 end
 
-def print_score(plyr_tot, cmp_tot)
-  puts "Player score: #{plyr_tot}"
-  puts "Dealer score: #{cmp_tot}\n\n"
+def print_score(player_total, computer_total)
+  puts "Player score: #{player_total}"
+  puts "Dealer score: #{computer_total}\n\n"
   print 'HIT ENTER TO CONTINUE:'
   gets
 end
