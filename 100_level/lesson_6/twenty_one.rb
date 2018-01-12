@@ -50,7 +50,7 @@ def hit(deck, cards)
   cards << deck.pop
 end
 
-def count_cards(cards)
+def sum_of_cards(cards)
   count = 0
   count = add_cards cards, count
   cards.each { |card| count -= 10 if card[0] == 'A' && count > MAX_VAL }
@@ -126,7 +126,7 @@ def display_cards(computer_cards, player_cards, player_count)
     system 'clear'
     puts 'Dealers cards: '
     puts create_display_cards computer_cards[0..index]
-    puts "Dealer count: #{count_cards(computer_cards[0..index])}\n\n"
+    puts "Dealer count: #{sum_of_cards(computer_cards[0..index])}\n\n"
     puts 'YOUR CARDS'
     puts create_display_cards player_cards
     puts "Your count: #{player_count}\n\n"
@@ -151,7 +151,7 @@ end
 
 def hit_stay_prompt(player_cards, computer_cards, player_count)
   approp_article = %w(A 8).include?(computer_cards[0][0]) ? 'an' : 'a'
-  dealer_count = count_cards(computer_cards) - count_cards([computer_cards[1]])
+  dealer_count = sum_of_cards(computer_cards) - sum_of_cards([computer_cards[1]])
   system 'clear'
   puts "Dealer's showing #{approp_article}"
   # the second argument in create_display_cards is the blank card
@@ -203,8 +203,8 @@ loop do
   computer_cards = deal_cards deck
 
   loop do
-    player_count = count_cards player_cards
-    computer_count = count_cards computer_cards
+    player_count = sum_of_cards player_cards
+    computer_count = sum_of_cards computer_cards
 
     until busted? player_count
       loop do
@@ -216,13 +216,13 @@ loop do
 
       break if answer == 'stay'
       hit deck, player_cards
-      player_count = count_cards player_cards
+      player_count = sum_of_cards player_cards
       hit_stay_prompt player_cards, computer_cards, player_count
     end
 
     while !busted?(player_count) && dealer_hit?(computer_count)
       hit(deck, computer_cards)
-      computer_count = count_cards computer_cards
+      computer_count = sum_of_cards computer_cards
       break unless dealer_hit?(computer_count)
     end
 
