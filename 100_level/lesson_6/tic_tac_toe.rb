@@ -79,8 +79,8 @@ end
 
 def detect_winner(brd)
   WINNING_LINES.each do |line|
-    return 'Player' if brd.values_at(*line).count('X') == 3
-    return 'Computer' if brd.values_at(*line).count('O') == 3
+    return 'Player' if brd.values_at(*line).count(PLAYER_MARKER) == 3
+    return 'Computer' if brd.values_at(*line).count(COMPUTER_MARKER) == 3
   end
   nil
 end
@@ -103,7 +103,7 @@ end
 
 def defensive_move?(brd)
   WINNING_LINES.each do |line|
-    return true if brd.values_at(*line).count('X') == 2 &&
+    return true if brd.values_at(*line).count(PLAYER_MARKER) == 2 &&
                    brd.values_at(*line).count(' ') == 1
   end
 
@@ -112,7 +112,7 @@ end
 
 def defensive_move(brd)
   WINNING_LINES.each do |line|
-    if brd.values_at(*line).count('X') == 2 &&
+    if brd.values_at(*line).count(PLAYER_MARKER) == 2 &&
        brd.values_at(*line).count(' ') == 1
 
       line.select do |square|
@@ -127,7 +127,7 @@ end
 
 def offensive_move?(brd)
   WINNING_LINES.each do |line|
-    return true if brd.values_at(*line).count('O') == 2 &&
+    return true if brd.values_at(*line).count(COMPUTER_MARKER) == 2 &&
                    brd.values_at(*line).count(' ') == 1
   end
   nil
@@ -135,7 +135,7 @@ end
 
 def offensive_move(brd)
   WINNING_LINES.each do |line|
-    if brd.values_at(*line).count('O') == 2 &&
+    if brd.values_at(*line).count(COMPUTER_MARKER) == 2 &&
        brd.values_at(*line).count(' ') == 1
       line.select do |square|
         return square if empty_squares(brd).include? square
