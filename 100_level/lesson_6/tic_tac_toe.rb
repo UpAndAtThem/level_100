@@ -5,7 +5,7 @@ GOES_FIRST = 'choose'.freeze
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
                 [[1, 5, 9], [3, 5, 7]] # diagnals
-
+require 'pry'
 # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
 def display_board(brd)
   system 'clear'
@@ -42,6 +42,7 @@ def player_places_piece!(brd)
 
   loop do
     remaining = joinor(empty_squares(brd), ',', 'or')
+
     prompt "Choose a position to place a piece: #{remaining}"
     square = gets.chomp.to_i
 
@@ -53,7 +54,6 @@ def player_places_piece!(brd)
   display_board brd
 end
 
-# rubocop:disable Metrics/MethodLength
 def computer_places_piece!(brd)
   sleep 0.5
 
@@ -66,10 +66,7 @@ def computer_places_piece!(brd)
   else
     brd[empty_squares(brd).sample] = COMPUTER_MARKER
   end
-
-  display_board brd
 end
-# rubocop:enable Metrics/MethodLength
 
 def board_full?(brd)
   empty_squares(brd) == []
@@ -109,7 +106,7 @@ def defensive_move?(brd)
                    brd.values_at(*line).count(' ') == 1
   end
 
-  false
+  nil
 end
 
 def defensive_move(brd)
@@ -132,7 +129,7 @@ def offensive_move?(brd)
     return true if brd.values_at(*line).count('O') == 2 &&
                    brd.values_at(*line).count(' ') == 1
   end
-  false
+  nil
 end
 
 def offensive_move(brd)
@@ -184,6 +181,7 @@ loop do
     prompt "player: #{player_score} | computer: #{computer_score}"
 
     place_piece!(board, current_player)
+    display_board board
     current_player = alternate_player(current_player)
 
     break if someone_won?(board) || board_full?(board)
