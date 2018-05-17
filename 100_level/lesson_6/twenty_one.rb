@@ -1,3 +1,4 @@
+require 'pry'
 FACE_CARD_VALUE = { 'J' => 10, 'Q' => 10, 'K' => 10 }.freeze
 DEALER_STAY_VAL = 17
 MAX_VAL = 21
@@ -13,6 +14,7 @@ end
 def initialize_deck
   suits = %w(c d h s)
   value = %w(2 3 4 5 6 7 8 9 10 J Q K A)
+
   suits.each_with_object([]) do |suit, deck|
     value.each { |val| deck << [val, suit] }
   end
@@ -71,7 +73,17 @@ def add_cards(cards, count)
 end
 
 def create_card(card)
-  if card[0].length == 1
+  if card[0] == ' '
+    [  '@==========@',
+     "|//////////|",
+     '|//////////|',
+     '|//////////|',
+     '|//////////|',
+     '|//////////|',
+     "|//////////|",
+     '@==========@']
+
+  elsif card[0].length == 1
     ['@==========@',
      "| #{card[0]}        |",
      '|          |',
@@ -80,6 +92,7 @@ def create_card(card)
      '|          |',
      "|        #{card[0]} |",
      '@==========@']
+
   else
     # double char card
     ['@==========@',
@@ -130,7 +143,7 @@ def display_cards(computer_cards, player_cards, player_count)
     puts 'YOUR CARDS'
     puts create_display_cards player_cards
     puts "Your count: #{player_count}\n\n"
-    sleep 1.3
+    index == 0 ? sleep(0.5) : sleep(1.0)
   end
 end
 
@@ -151,7 +164,8 @@ end
 
 def hit_stay_prompt(player_cards, computer_cards, player_count)
   approp_article = %w(A 8).include?(computer_cards[0][0]) ? 'an' : 'a'
-  dealer_count = sum_of_cards(computer_cards) - sum_of_cards([computer_cards[1]])
+  dealer_count = sum_of_cards(computer_cards) -
+                 sum_of_cards([computer_cards[1]])
   system 'clear'
   puts "Dealer's showing #{approp_article}"
   # the second argument in create_display_cards is the blank card
@@ -195,6 +209,7 @@ computer_count = 0
 player_win_total = 0
 comp_win_total = 0
 answer = ''
+
 
 greeting
 loop do
