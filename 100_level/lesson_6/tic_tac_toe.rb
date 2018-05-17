@@ -2,6 +2,7 @@ INITIAL_MARKER = ' '.freeze
 PLAYER_MARKER = 'X'.freeze
 COMPUTER_MARKER = 'O'.freeze
 GOES_FIRST = 'choose'.freeze
+WINNING_SCORE = 5
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
                 [[1, 5, 9], [3, 5, 7]] # diagnals
@@ -58,11 +59,11 @@ def computer_places_piece!(brd)
   sleep 0.5
 
   if offensive_move? brd
-    brd[offensive_move(brd)] = 'O'
+    brd[offensive_move(brd)] = COMPUTER_MARKER
   elsif defensive_move? brd
-    brd[defensive_move(brd)] = 'O'
+    brd[defensive_move(brd)] = COMPUTER_MARKER
   elsif brd[5] == ' '
-    brd[5] = 'O'
+    brd[5] = COMPUTER_MARKER
   else
     brd[empty_squares(brd).sample] = COMPUTER_MARKER
   end
@@ -73,7 +74,7 @@ def board_full?(brd)
 end
 
 def someone_won?(brd)
-  detect_winner(brd).nil? ? false : true
+  detect_winner(brd)
 end
 
 def detect_winner(brd)
@@ -96,7 +97,7 @@ def play_again?
     prompt 'Would you like to play again? (Y/N)'
     play_again = gets.chomp.downcase
 
-    return play_again if %w(y Y yes Yes YES n N no No NO).include? play_again
+    return play_again if %w(y yes n no).include? play_again
   end
 end
 
@@ -166,15 +167,18 @@ def choose_who_goes_first
   end
 end
 
+system 'clear'
 computer_score = 0
 player_score = 0
 first_player = GOES_FIRST
 first_player = choose_who_goes_first if GOES_FIRST == 'choose'
-current_player = first_player
 
 loop do
   board = initalize_board
   current_player = first_player
+
+  prompt "First to win #{WINNING_SCORE} times is the victor!"
+  sleep 2.5
 
   loop do
     display_board(board)
@@ -191,13 +195,13 @@ loop do
   player_score += 1 if winner == 'Player'
   computer_score += 1 if winner == 'Computer'
 
-  if player_score == 5 || computer_score == 5
+  if player_score == WINNING_SCORE || computer_score == WINNING_SCORE
     prompt "#{detect_winner(board)} won 5 times, and is the overall winner!"
 
     player_score = 0
     computer_score = 0
 
-    break if %w(n N no No NO).include? play_again?
+    break if %w(n no).include? play_again?
   elsif someone_won?(board)
     prompt "#{detect_winner(board)} won!"
   else
