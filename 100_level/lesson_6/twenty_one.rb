@@ -4,15 +4,14 @@ DEALER_STAY_VAL = 17
 MAX_VAL = 21
 BEST_TO = 5
 
-require 'pry'
-
 def prompt(message)
   puts "=> #{message}"
   sleep 1.5
 end
 
 def initialize_deck
-  suits = %w(c d h s)
+  suits = ["\u2662", "\u2661", "\u2664", "\u2667"]
+  #suits = %w(♣ ♦ ♥ ♠)
   value = %w(2 3 4 5 6 7 8 9 10 J Q K A)
 
   suits.each_with_object([]) do |suit, deck|
@@ -72,10 +71,11 @@ def add_cards(cards, count)
   count
 end
 
-def create_card(card)
+def create_card(card)  
   if card[0] == ' '
-    [  '@==========@',
+    ['@==========@',
      "|//////////|",
+     '|//////////|',
      '|//////////|',
      '|//////////|',
      '|//////////|',
@@ -88,6 +88,7 @@ def create_card(card)
      "| #{card[0]}        |",
      '|          |',
      '|          |',
+     "|    #{card[1]}     |",
      '|          |',
      '|          |',
      "|        #{card[0]} |",
@@ -99,12 +100,15 @@ def create_card(card)
      "| #{card[0]}       |",
      '|          |',
      '|          |',
+     "|    #{card[1]}     |",
      '|          |',
      '|          |',
      "|       #{card[0]} |",
      '@==========@']
   end
 end
+
+
 
 def create_display_cards(cards)
   display_cards = []
@@ -122,7 +126,7 @@ def create_row_cards(cards)
     end
     return_arr << result
     count += 1
-    break if count == 8 # 8 is the height of the individual card
+    break if count == 9 # 9 is the height of the individual card
   end
   return_arr
 end
@@ -143,7 +147,7 @@ def display_cards(computer_cards, player_cards, player_count)
     puts 'YOUR CARDS'
     puts create_display_cards player_cards
     puts "Your count: #{player_count}\n\n"
-    index == 0 ? sleep(0.5) : sleep(1.0)
+    index == 0 ? sleep(0.66) : sleep(1.0)
   end
 end
 
@@ -209,7 +213,6 @@ computer_count = 0
 player_win_total = 0
 comp_win_total = 0
 answer = ''
-
 
 greeting
 loop do
