@@ -6,17 +6,20 @@ def another_calculation
   loop do
     prompt(MESSAGES['another_calc'])
     response = gets.chomp
+
     return response if MESSAGES['yes_no'].values.include? response
   end
 end
 
 def calculate(num1, num2, operation)
-  case operation
-  when MESSAGES['operations']['add']      then num1 + num2
-  when MESSAGES['operations']['subtract'] then num1 - num2
-  when MESSAGES['operations']['multiply'] then num1 * num2
-  when MESSAGES['operations']['divide']   then num1 / num2
-  end
+  result = case operation
+           when MESSAGES['operations']['add']      then num1 + num2
+           when MESSAGES['operations']['subtract'] then num1 - num2
+           when MESSAGES['operations']['multiply'] then num1 * num2
+           when MESSAGES['operations']['divide']   then num1 / num2
+           end
+
+  result
 end
 
 def get_number(mess)
@@ -40,6 +43,7 @@ end
 
 def prompt(*str)
   string, num = str
+
   puts ">> #{string}#{' ' + num.to_s + "\n\n" if num}"
 end
 
@@ -57,6 +61,7 @@ def pick_language
   loop do
     prompt MESSAGES['language_select']
     lang = gets.chomp.capitalize
+    
     if %w(English Spanish).include? lang
       lang = lang == 'English' ? 'en' : 'es'
       return MESSAGES[lang]
