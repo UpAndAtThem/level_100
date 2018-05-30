@@ -17,7 +17,7 @@
 
 require 'yaml'
 MESSAGES = YAML.load_file('car_loan_calculator.yml')
-
+p MESSAGES
 def prompt(str)
   puts "==> #{str}"
 end
