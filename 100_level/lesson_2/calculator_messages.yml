@@ -1,9 +1,27 @@
-welcome: "Welcome to Calculator!  Enter your name:"
-invalid_name: "Make sure to enter a valid name."
-invalid_num: "That was an invalid choice."
-first_num: "Please enter the first number"
-second_num: "Please enter the second number"
-invalid_operator: "That was an invalid choice. Choose 1, 2, 3 or 4"
-result: "your result is"
-another_calc: "Do you want perform another calculation 'y' if yes"
-salutation: "Thank you for using our calculator! Good Bye,"
+language_select : "what language would you like? 'English' or 'Spanish'?"
+
+en:
+  greeting : "Welcome to Calculator"
+  exit : "Thank you for using Calculator"
+  num1 : "Input first number please"
+  num2 : "Now input second number"
+  input_operation : "type operation: 'multiply', 'divide', 'add', or 'subtract'"
+  invalid_num : "That is an invalid response"
+  valid_operation : "Please enter a valid operation"
+  another_calc : "would you like to do another calculation? type: 'yes' or 'no'"
+  solution: "The solution is"
+  operations: { add: add, subtract: subtract, multiply: multiply, divide: divide }
+  yes_no: { 'yes' : 'yes', 'no' : 'no'}
+
+es:
+  greeting : "Bienvenido a la Calculadora"
+  exit : "Gracias por usar Calculator"
+  num1 : "Ingrese el primer número por favor"
+  num2 : "Ahora introduce un segundo número"
+  input_operation : "operación tipo: 'multiplicar', 'dividir', 'agregar' o 'restar'"
+  invalid_num : "Esa es una respuesta inválida"
+  valid_operation : "Por favor ingrese una operación válida"
+  another_calc : "te gustaría hacer otro cálculo? tipo: 'sí' o 'no'"
+  solution: "La solucion es"
+  operations : { add: agregar, subtract: restar, multiply: multiplicar, divide: dividir }
+  yes_no: { 'yes': 'si', 'no': 'no' }
