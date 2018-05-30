@@ -1,81 +1,84 @@
-def prompt(message)
-  puts "=> #{message}"
-end
+require 'yaml'
 
-def valid_number?(num)
-  num.to_i != 0
-end
+MESSAGES = YAML.load_file('calculator_messages.yml')
 
-def operation_to_message(num)
-  case num
-  when 1
-    'Adding'
-  when 2
-    'Subtracting'
-  when 3
-    'Multiplying'
-  when 4
-    'Dividing'
+def another_calculation
+  loop do
+    prompt(MESSAGES['another_calc'])
+    response = gets.chomp
+    return response if MESSAGES['yes_no'].values.include? response
   end
 end
 
-num1 = 0
-num2 = 0
-operator = 0
-name = ''
+def calculate(num1, num2, operation)
+  case operation
+  when MESSAGES['operations']['add']      then num1 + num2
+  when MESSAGES['operations']['subtract'] then num1 - num2
+  when MESSAGES['operations']['multiply'] then num1 * num2
+  when MESSAGES['operations']['divide']   then num1 / num2
+  end
+end
 
-prompt 'welcome to Calculator! Enter your name: '
-name = ''
+def get_number(mess)
+  loop do
+    prompt mess
+    num = gets.chomp
+
+    return num.to_f if num.match(/[+-]?\d*\.*\d+/).to_s == num && num != ''
+    prompt MESSAGES['invalid_num']
+  end
+end
+
+def get_operation(mess)
+  loop do
+    prompt mess
+    operation = gets.chomp
+
+    return operation if MESSAGES['operations'].values.include?(operation)
+  end
+end
+
+def prompt(*str)
+  string, num = str
+  puts ">> #{string}#{' ' + num.to_s + "\n\n" if num}"
+end
+
+def greeting
+  system('clear')
+  prompt MESSAGES['greeting']
+  sleep(1.5)
+end
+
+def farewell
+  prompt MESSAGES['exit']
+end
+
+def pick_language
+  loop do
+    prompt MESSAGES['language_select']
+    lang = gets.chomp.capitalize
+    if %w(English Spanish).include? lang
+      lang = lang == 'English' ? 'en' : 'es'
+      return MESSAGES[lang]
+    end
+  end
+end
+
+MESSAGES = pick_language
+
+greeting
+
 loop do
-  name = gets.chomp!
-  break unless name.empty?
+  system('clear')
+
+  num1 = get_number(MESSAGES['num1'])
+  num2 = get_number(MESSAGES['num2'])
+  operation = get_operation(MESSAGES['input_operation'])
+
+  solution = calculate(num1, num2, operation)
+  prompt(MESSAGES['solution'], solution)
+
+  break unless [MESSAGES['yes_no']['yes']].include?(another_calculation)
 end
 
-loop do # main loop
-  loop do
-    prompt 'What\'s the first number?'
-    num1 = gets.chomp.to_i
-    break if valid_number? num1
-    prompt 'Thats not a valid number'
-  end
-
-  loop do
-    prompt 'What\'s the second number?'
-    num2 = gets.chomp.to_i
-    break if valid_number? num2
-    prompt 'Thats not a valid number'
-  end
-
-  operator_prompt = <<-MSG
-    What operation would you like to perform?
-        1) add
-        2) subtract
-        3) multiply
-        4) divide
-  MSG
-
-  prompt operator_prompt
-
-  loop do
-    operator = gets.chomp.to_i
-    break if [1, 2, 3, 4].include? operator
-    prompt 'That was an invalid choice. Choose 1, 2, 3 or 4'
-  end
-
-  prompt "#{operation_to_message(operator)} the two numbers"
-  result = case operator
-           when 1
-             num1.to_i + num2.to_i
-           when 2
-             num1.to_i - num2.to_i
-           when 3
-             num1.to_i * num2.to_i
-           when 4
-             num1.to_f / num2.to_f
-           end
-  prompt "your result is #{result}"
-  prompt "Do you want perform another calculation 'y' if yes"
-  break unless gets.chomp!.downcase.start_with? 'y'
-end
-
-prompt "Thank you for using our calculator! Good Bye, #{name}!"
+farewell
