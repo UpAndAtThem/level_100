@@ -1,5 +1,4 @@
 require 'yaml'
-require 'pry'
 
 def another_calculation?
   loop do
