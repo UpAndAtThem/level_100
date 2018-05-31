@@ -5,12 +5,12 @@ en:
   exit : "Thank you for using Calculator"
   num1 : "Input first number please"
   num2 : "Now input second number"
-  input_operation : "type operation: 'multiply', 'divide', 'add', or 'subtract'"
+  input_operation : "select 1-4: 1. multiply, 2. divide, 3. add, or 4. subtract"
   invalid_num : "That is an invalid response"
   valid_operation : "Please enter a valid operation"
   another_calc : "would you like to do another calculation? type: 'yes' or 'no'"
   solution: "The solution is"
-  operations: { add: add, subtract: subtract, multiply: multiply, divide: divide }
+  operations: { add: '3', subtract: '4', multiply: '1', divide: '2' }
   yes_no: { 'yes' : 'yes', 'no' : 'no'}
 
 es:
@@ -18,10 +18,10 @@ es:
   exit : "Gracias por usar Calculator"
   num1 : "Ingrese el primer número por favor"
   num2 : "Ahora introduce un segundo número"
-  input_operation : "operación tipo: 'multiplicar', 'dividir', 'agregar' o 'restar'"
+  input_operation : "operación tipo 1-4: 1. multiplicar, 2. dividir, 3. agregar, o 4. restar"
   invalid_num : "Esa es una respuesta inválida"
   valid_operation : "Por favor ingrese una operación válida"
   another_calc : "te gustaría hacer otro cálculo? tipo: 'sí' o 'no'"
   solution: "La solucion es"
-  operations : { add: agregar, subtract: restar, multiply: multiplicar, divide: dividir }
+  operations : { add: '3', subtract: '4', multiply: '1', divide: '2' }
   yes_no: { 'yes': 'si', 'no': 'no' }
