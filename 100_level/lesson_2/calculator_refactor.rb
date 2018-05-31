@@ -1,13 +1,14 @@
 require 'yaml'
+require 'pry'
 
-MESSAGES = YAML.load_file('calculator_messages.yml')
-
-def another_calculation
+def another_calculation?
   loop do
     prompt(MESSAGES['another_calc'])
     response = gets.chomp
 
-    return response if MESSAGES['yes_no'].values.include? response
+    if MESSAGES['yes_no'].values.include? response
+      return response == 'yes' ? true : false
+    end
   end
 end
 
@@ -22,29 +23,35 @@ def calculate(num1, num2, operation)
   result
 end
 
-def get_number(mess)
+def get_number(message)
   loop do
-    prompt mess
+    prompt message
     num = gets.chomp
 
-    return num.to_f if num.match(/[+-]?\d*\.*\d+/).to_s == num && num != ''
+    return num.to_f if valid_number? num
     prompt MESSAGES['invalid_num']
   end
 end
 
-def get_operation(mess)
+def valid_number?(num)
+  num.match(/[+-]?\d*\.*\d+/).to_s == num && num != ''
+end
+
+def get_operation(message)
   loop do
-    prompt mess
+    prompt message
     operation = gets.chomp
 
-    return operation if MESSAGES['operations'].values.include?(operation)
+    return operation if valid_operation? operation
   end
 end
 
-def prompt(*str)
-  string, num = str
+def valid_operation?(operation)
+  MESSAGES['operations'].values.include?(operation)
+end
 
-  puts ">> #{string}#{' ' + num.to_s + "\n\n" if num}"
+def prompt(string, number = nil)
+  puts ">> #{string}#{' ' + number.to_s + "\n\n" if number}"
 end
 
 def greeting
@@ -59,12 +66,12 @@ end
 
 def pick_language
   loop do
-    prompt MESSAGES['language_select']
+    prompt 'what language would you like? \'English\' or \'Spanish\'?'
     lang = gets.chomp.capitalize
-    
+
     if %w(English Spanish).include? lang
       lang = lang == 'English' ? 'en' : 'es'
-      return MESSAGES[lang]
+      return YAML.load_file('calculator_messages.yml')[lang]
     end
   end
 end
@@ -83,7 +90,7 @@ loop do
   solution = calculate(num1, num2, operation)
   prompt(MESSAGES['solution'], solution)
 
-  break unless [MESSAGES['yes_no']['yes']].include?(another_calculation)
+  break unless another_calculation?
 end
 
 farewell
