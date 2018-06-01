@@ -1,7 +1,7 @@
 require 'yaml'
 
-VALID_CHOICES = {rock: '1', paper: '2', scissors: '3',
-                 lizard: '4', spock: '5'}.freeze
+VALID_CHOICES = { rock: '1', paper: '2', scissors: '3',
+                 lizard: '4', spock: '5' }.freeze
 
 
 WINNING_HAND = { rock: ['lizard', 'scissors'], paper: ['rock', 'spock'],
@@ -10,17 +10,23 @@ WINNING_HAND = { rock: ['lizard', 'scissors'], paper: ['rock', 'spock'],
 
 MESSAGES = YAML.load_file('rpsls_messages.yml')
 
+TOTAL_WINS_NEEDED = 5
+
 def prompt(message)
   puts "=> #{message}"
 end
 
+def clear_screen
+  system('clear') || system('cls')
+end
+
 def win_lose_tie(player, computer)
-  if WINNING_HAND[player].include? computer.to_s
-    'you win!'
+  if winner?(player, computer)
+    'You win!'
   elsif player == computer
     'It is a tie!'
   else
-    'you lose!'
+    'You lose!'
   end
 end
 
@@ -47,40 +53,49 @@ def winner?(player_choice, computer_choice)
   WINNING_HAND[player_choice].include? computer_choice.to_s
 end
 
-def display_result_and_score(p_score, p_choice, c_score, c_choice)
-  system"clear"
-  prompt "you have #{p_choice.upcase}, the computer has #{c_choice.upcase}. " + 
-         win_lose_tie(p_choice, c_choice) + "\n\n"
-  prompt "player score: #{p_score}"
-  prompt "computer_score: #{c_score}\n\n"
+def display_result(player_choice, computer_choice)
+  clear_screen
+  prompt "You have #{player_choice.upcase}"
+  prompt "The computer has #{computer_choice.upcase}. "
+  prompt win_lose_tie(player_choice, computer_choice) + "\n\n"
+end
 
+def display_score(player_score, computer_score)
+  prompt "player score: #{player_score}"
+  prompt "computer_score: #{computer_score}\n\n"
+end
+
+def continue_prompt
+  prompt MESSAGES['press_enter']
+  gets
+end
+
+def reached_wins?(player_score, computer_score)
+  player_score == TOTAL_WINS_NEEDED || computer_score == TOTAL_WINS_NEEDED
 end
 
 player_score = 0
 computer_score = 0
-player_choice = ''
-computer_choice = ''
 
 loop do
-  system "clear"
+  clear_screen
 
   player_choice = choose_rpsls
   computer_choice = VALID_CHOICES.keys.sample
 
   if winner?(player_choice, computer_choice)
     player_score = increment_score player_score
-  elsif winner?(computer_choice, player_choice) 
+  elsif winner?(computer_choice, player_choice)
     computer_score = increment_score computer_score
   end
 
-  display_result_and_score(player_score, player_choice, computer_score, computer_choice)
+  display_result(player_choice, computer_choice)
+  display_score(player_score, computer_score)
 
-  prompt MESSAGES['press_enter'] 
-  gets
-
-  if player_score == 5 || computer_score == 5
-    prompt "GAME OVER! You won #{player_score} #{player_score == 1 ? 'time' : 'times'}" +
-            ", and the computer won #{computer_score} #{computer_score == 1 ? 'time' : 'times'}"
+  if reached_wins? player_score, computer_score
+    prompt player_score == TOTAL_WINS_NEEDED ? "You Won!" : "The Computer Won!"
     break
+  else
+    continue_prompt
   end
 end
