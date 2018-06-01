@@ -1,0 +1,3 @@
+choose_prompt : " Choose one 1-5:\n    1. Rock | 2. Paper | 3. Scissors | 4. Lizzard | 5. Spock"
+press_enter : "Press enter to continue:"
+error_choice : "You need to enter a number 1-5"
