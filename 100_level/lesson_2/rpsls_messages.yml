@@ -1,3 +1,26 @@
 choose_prompt : " Choose one 1-5:\n    1. Rock | 2. Paper | 3. Scissors | 4. Lizzard | 5. Spock"
 press_enter : "Press enter to continue:"
 error_choice : "You need to enter a number 1-5"
+understand: "YOU GET IT!\n\n"
+
+rules:
+  greeting: "Welcome to R.P.S.L.S, below are the rules\n\n"
+  rock: "ROCK crushes LIZARD and SCISSORS"
+  paper: "PAPER disproves SPOCK and covers ROCK"
+  scissors: "SCISSORS decapitates LIZARD, and cuts PAPER"
+  lizard: "LIZARD poisons SPOCK and eats PAPER"
+  spock: "SPOCK smashes SCISSORS and vaporizes ROCK\n\n"
+
+player_win_comment:
+  1 : "You won by a nose!"
+  2 : "That was a close one!"
+  3 : "You made quick work of them"
+  4 : "Well that was embarassing to watch, You really rocked their circuit board!"
+  5 : "It's like they weren't even trying. Congratulations!"
+
+computer_win_comment:
+  1 : "Heeeeeey now.. Wipe your tears, it was like.. a super close game!"
+  2 : "You'll get em' next time tiger!"
+  3 : "I have a small suggestion.. don't choose the losing ones"
+  4 : "You lost so many times... maybe the computer is cheating"
+  5 : "That seems statistically impossible"
