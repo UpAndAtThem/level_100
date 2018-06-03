@@ -1,7 +1,12 @@
-choose_prompt : " Choose one 1-5:\n    1. Rock | 2. Paper | 3. Scissors | 4. Lizzard | 5. Spock"
+choose_prompt : "1. Rock | 2. Paper | 3. Scissors | 4. Lizzard | 5. Spock"
 press_enter : "Press enter to continue:"
 error_choice : "You need to enter a number 1-5"
-understand: "YOU GET IT!\n\n"
+understand : "YOU GET IT! LETS PLAY!\n\n"
+another_game : "Would you like to play another game? yes or no?"
+goodbye : "Thank you for playing!  Have a nice day."
+you_win : "YOU WIN!"
+you_lose : "YOU LOSE!"
+tie : "IT'S A TIE"
 
 rules:
   greeting: "Welcome to R.P.S.L.S, below are the rules\n\n"
@@ -12,7 +17,7 @@ rules:
   spock: "SPOCK smashes SCISSORS and vaporizes ROCK\n\n"
 
 player_win_comment:
-  1 : "You won by a nose!"
+  1 : "You almost lost to a hundred and some lines of code"
   2 : "That was a close one!"
   3 : "You made quick work of them"
   4 : "Well that was embarassing to watch, You really rocked their circuit board!"
@@ -21,6 +26,6 @@ player_win_comment:
 computer_win_comment:
   1 : "Heeeeeey now.. Wipe your tears, it was like.. a super close game!"
   2 : "You'll get em' next time tiger!"
-  3 : "I have a small suggestion.. don't choose the losing ones"
+  3 : "I have a small suggestion.. don't keep choosing the losing ones"
   4 : "You lost so many times... maybe the computer is cheating"
   5 : "That seems statistically impossible"
