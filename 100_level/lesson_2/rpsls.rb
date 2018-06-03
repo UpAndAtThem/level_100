@@ -1,5 +1,4 @@
 require 'yaml'
-require 'pry'
 
 VALID_CHOICES = { rock: '1', paper: '2', scissors: '3',
                   lizard: '4', spock: '5' }.freeze
@@ -174,3 +173,5 @@ loop do
 end
 
 farewell
+
+
