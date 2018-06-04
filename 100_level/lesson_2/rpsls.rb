@@ -71,8 +71,8 @@ def display_winning_sprite(players_choice, computers_choice)
 end
 
 def pow_animation
-  %w(pow clouds pow).each do |sprite|
-    display_sprite_center sprite
+  %w(pow clouds pow).each do |current_sprite|
+    display_sprite_center current_sprite
     sleep 0.195
   end
   clear_screen
@@ -92,7 +92,7 @@ def display_sprite_right(computers_choice, width_of_opponent)
   sprite(computers_choice)[0..-2].each do |row|
     puts(' ' * (width_of_opponent + 10) + row)
   end
-  sleep 1.65
+  sleep 1.25
   clear_screen
 end
 
