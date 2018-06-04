@@ -1,31 +1,51 @@
-choose_prompt : "1. Rock | 2. Paper | 3. Scissors | 4. Lizzard | 5. Spock"
-press_enter : "Press enter to continue:"
-error_choice : "You need to enter a number 1-5"
+choose_prompt : 1. Rock | 2. Paper | 3. Scissors | 4. Lizzard | 5. Spock
+press_enter : 'Press enter to continue:'
+error_choice : You need to enter a number 1-5
 understand : "YOU GET IT! LETS PLAY!\n\n"
-another_game : "Would you like to play another game? yes or no?"
-goodbye : "Thank you for playing!  Have a nice day."
-you_win : "YOU WIN!"
-you_lose : "YOU LOSE!"
-tie : "IT'S A TIE"
+another_game : Would you like to play another game? yes or no?
+goodbye : Thank you for playing!  Have a nice day.
+you_win : YOU WIN!
+you_lose : YOU LOSE!
+tie : IT'S A TIE
 
 rules:
   greeting: "Welcome to R.P.S.L.S, below are the rules\n\n"
-  rock: "ROCK crushes LIZARD and SCISSORS"
-  paper: "PAPER disproves SPOCK and covers ROCK"
-  scissors: "SCISSORS decapitates LIZARD, and cuts PAPER"
-  lizard: "LIZARD poisons SPOCK and eats PAPER"
-  spock: "SPOCK smashes SCISSORS and vaporizes ROCK\n\n"
+  rock_rules: ROCK crushes LIZARD and SCISSORS
+  paper_rules: PAPER disproves SPOCK and covers ROCK
+  scissor_rules: SCISSORS decapitates LIZARD, and cuts PAPER
+  lizard_rules: LIZARD poisons SPOCK and eats PAPER
+  spock_rules: "SPOCK smashes SCISSORS and vaporizes ROCK\n\n"
 
 player_win_comment:
-  1 : "You almost lost to a hundred and some lines of code"
-  2 : "That was a close one!"
-  3 : "You made quick work of them"
-  4 : "Well that was embarassing to watch, You really rocked their circuit board!"
-  5 : "It's like they weren't even trying. Congratulations!"
+  1 : You almost lost to a couple hundred lines of code
+  2 : That was a close one!
+  3 : You made quick work of them
+  4 : Well that was embarassing to watch, You really rocked their circuit board!
+  5 : It's like they weren't even trying. Congratulations!
 
 computer_win_comment:
-  1 : "Heeeeeey now.. Wipe your tears, it was like.. a super close game!"
-  2 : "You'll get em' next time tiger!"
-  3 : "I have a small suggestion.. don't keep choosing the losing ones"
-  4 : "You lost so many times... maybe the computer is cheating"
-  5 : "That seems statistically impossible"
+  1 : Heeeeeey now.. Wipe your tears, it was like.. a super close game!
+  2 : You'll get em' next time tiger!
+  3 : I have a small suggestion.. don't keep choosing the losing ones
+  4 : You lost so many times... maybe the computer is cheating
+  5 : That seems statistically impossible
+
+rock:
+  lizard: ROCK crushes LIZARD
+  scissors: ROCK smashes SCISSORS
+
+paper:
+  spock: PAPER disproves SPOCK
+  rock: PAPER covers ROCK
+
+scissors:
+  lizard: SCISSORS decapitates LIZARD
+  paper: SCISSORS cuts PAPER
+
+lizard:
+  spock:  LIZARD poisons SPOCK
+  paper: LIZARD eats PAPER
+
+spock:
+  rock: SPOCK vaporizes ROCK
+  scissors: SPOCK smashes SCISSORS
