@@ -1,5 +1,4 @@
 require 'yaml'
-require 'pry'
 
 VALID_CHOICES = { 'rock' => '1', 'paper' => '2', 'scissors' => '3',
                   'lizard' => '4', 'spock' => '5' }.freeze
@@ -51,7 +50,7 @@ def display_opponents(player_sprite, computer_sprite)
   width_of_opponent = sprite(player_sprite).max_by(&:length).length
 
   display_sprite_left(player_sprite)
-  puts(' ' * (width_of_opponent + 5) + 'vs').to_s
+  puts(' ' * (width_of_opponent + 5) + 'vs')
   display_sprite_right(computer_sprite, width_of_opponent)
 end
 
@@ -65,10 +64,10 @@ def display_winning_sprite(players_choice, computers_choice)
   winning_choice = winning_hand players_choice, computers_choice
 
   # This makes the 'WINS!' output line-up with sprite name in terminal output
-  num_spaces = sprite(winning_choice)[-1].length - winning_choice.to_s.length
+  num_spaces = sprite(winning_choice)[-1].length - winning_choice.length
 
   display_sprite_left winning_choice
-  puts(' ' * num_spaces + "WINS!\n\n\n").to_s
+  puts(' ' * num_spaces + "WINS!\n\n\n")
 end
 
 def pow_animation
@@ -85,13 +84,13 @@ def display_sprite_left(players_choice)
 end
 
 def display_sprite_center(sprite_choice)
-  sprite(sprite_choice).each { |row| puts((' ' * 20) + row).to_s }
+  sprite(sprite_choice).each { |row| puts((' ' * 20) + row) }
 end
 
 def display_sprite_right(computers_choice, width_of_opponent)
   # slices off text line at bottom of sprite array
   sprite(computers_choice)[0..-2].each do |row|
-    puts(' ' * (width_of_opponent + 10) + row).to_s
+    puts(' ' * (width_of_opponent + 10) + row)
   end
   sleep 1.65
   clear_screen
