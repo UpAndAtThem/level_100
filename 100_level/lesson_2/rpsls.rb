@@ -1,4 +1,5 @@
 require 'yaml'
+require 'pry'
 
 VALID_CHOICES = { rock: '1', paper: '2', scissors: '3',
                   lizard: '4', spock: '5' }.freeze
@@ -9,13 +10,60 @@ WINNING_HAND = { rock: %w(lizard scissors), paper: %w(rock spock),
 
 MESSAGES = YAML.load_file('rpsls_messages.yml')
 
+SPRITES = YAML.load_file('sprites.yml')
+
 HANDS = VALID_CHOICES.keys
 
 TOTAL_WINS_NEEDED = 5
 
+def display_vs(player_sprite, computer_sprite)
+  clear_screen
+  display_sprite_left(player_sprite.to_s)
+  puts "#{" " * 40}" + "vs"
+  display_sprite_right(computer_sprite.to_s)
+end
+
+def display_tie
+  display_sprite_center('tie')
+  sleep 1.33
+end
+
+def display_winning_sprite(player_choice, computer_choice)
+  #binding.pry
+  winner = winning_hand player_choice, computer_choice
+  num_spaces = SPRITES[winner.to_s][-1].length - winner.to_s.length # this makes 'WINS!' output line up with sprite in the terminal on line 40
+
+  display_sprite_left(winner.to_s)
+  puts "#{" " * num_spaces}" + "WINS!\n\n\n"
+end
+
+def display_sprite_left(player_sprite)
+  SPRITES[player_sprite][1..-1].each { |row| puts row} # word at bottom of sprite if left aligned
+end
+
+def display_sprite_center(sprite)
+  SPRITES[sprite].each { |row| puts "#{" " * 20}" + row}
+end
+
+def display_sprite_right(computer_sprite, width = 100)
+  SPRITES[computer_sprite.to_s][0..-2].each { |row| puts "#{" " * 45} " + row} # word at top of sprite if right aligned
+  sleep 1.25
+  clear_screen
+end
+
+def display_pow(num)
+  num.times do |_| 
+    %w(pow clouds pow).each do |sprite|
+      display_sprite_center sprite
+      sleep 0.222
+    end
+    clear_screen
+  end
+end
+
 def player_choose_rpsls
   loop do
-    prompt "Choose 1-#{TOTAL_WINS_NEEDED}\n"
+    prompt "Choose 1-#{TOTAL_WINS_NEEDED}".center(MESSAGES['choose_prompt'].length) + "\n"
     prompt MESSAGES['choose_prompt']
     print "\n=> "
 
@@ -63,7 +111,6 @@ def player_winner?(player_choice, computer_choice)
 end
 
 def display_result(player_choice, computer_choice)
-  clear_screen
   prompt "You have #{player_choice.upcase}"
   prompt "The computer has #{computer_choice.upcase}.\n\n"
   prompt win_lose_tie(player_choice, computer_choice) + "\n\n"
@@ -93,6 +140,10 @@ end
 
 def valid_choice?(choice)
   VALID_CHOICES.values.include? choice
+end
+
+def winning_hand(player_choice, computer_choice)
+  player_winner?(player_choice, computer_choice) ? player_choice : computer_choice
 end
 
 def increment(winner_score)
@@ -150,6 +201,16 @@ loop do
 
     player_choice = player_choose_rpsls
     computer_choice = computer_choose_rpsls
+
+    display_vs(player_choice, computer_choice)
+    display_pow(2)
+
+    if player_choice == computer_choice
+      display_tie
+      next
+    end
+
+    display_winning_sprite(player_choice, computer_choice)
 
     if player_winner?(player_choice, computer_choice)
       player_score = increment player_score
