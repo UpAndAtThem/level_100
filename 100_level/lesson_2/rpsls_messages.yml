@@ -1,3 +1,9 @@
+first_to : "First to %{wins_needed} wins!\n\n"
+players_score : "player score: %{score}"
+computers_score : "computers_score: %{score}\n\n"
+players_choice : "You have %{choice}"
+computers_choice : "The computer has %{choice}.\n\n"
+one_through : "Choose 1-%{wins_needed}"
 choose_prompt : 1. Rock | 2. Paper | 3. Scissors | 4. Lizzard | 5. Spock
 press_enter : 'Press enter to continue:'
 error_choice : You need to enter a number 1-5
