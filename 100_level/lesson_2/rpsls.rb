@@ -1,4 +1,5 @@
 require 'yaml'
+require 'pry'
 
 VALID_CHOICES = { 'rock' => '1', 'paper' => '2', 'scissors' => '3',
                   'lizard' => '4', 'spock' => '5' }.freeze
@@ -22,7 +23,7 @@ end
 def greeting
   clear_screen
   display_rules
-  prompt "First to #{TOTAL_WINS_NEEDED} wins!\n\n"
+  prompt format(MESSAGES['first_to'], wins_needed: TOTAL_WINS_NEEDED)
   prompt MESSAGES['understand']
   hit_enter
 end
@@ -38,8 +39,9 @@ end
 
 def display_options_menu
   following_line_length = MESSAGES['choose_prompt'].length
+  one_through = format(MESSAGES['one_through'], wins_needed: HANDS.size)
 
-  prompt "Choose 1-#{TOTAL_WINS_NEEDED}".center(following_line_length)
+  prompt(one_through.center(following_line_length))
   prompt MESSAGES['choose_prompt']
   print "\n=> "
 end
@@ -97,13 +99,13 @@ def display_sprite_right(computers_choice, width_of_opponent)
 end
 
 def display_score(players_score, computers_score)
-  prompt "player score: #{players_score}"
-  prompt "computers_score: #{computers_score}\n\n"
+  prompt format(MESSAGES['players_score'], score: players_score)
+  prompt format(MESSAGES['computers_score'], score: computers_score)
 end
 
 def display_result(players_choice, computers_choice)
-  prompt "You have #{players_choice.upcase}"
-  prompt "The computer has #{computers_choice.upcase}.\n\n"
+  prompt format(MESSAGES['players_choice'], choice: players_choice.upcase)
+  prompt format(MESSAGES['computers_choice'], choice: computers_choice.upcase)
   prompt victors_method players_choice, computers_choice
   prompt win_lose_tie(players_choice, computers_choice) + "\n\n"
 end
