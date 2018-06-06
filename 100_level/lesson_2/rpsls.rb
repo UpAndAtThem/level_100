@@ -75,7 +75,7 @@ end
 def pow_animation
   %w(pow clouds pow).each do |current_sprite|
     display_sprite_center current_sprite
-    sleep 0.195
+    sleep 0.333
   end
   clear_screen
 end
