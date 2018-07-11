@@ -64,7 +64,11 @@ class Person
   def has_same_name?(other_bob)
     name == other_bob.name
   end
+
+  def to_s
+    "#{name}"
+  end
 end
 
-bob = Person.new('Smith')
-other_bob = Person.new('Smithyboy')
+# bob = Person.new('Smith')
+# other_bob = Person.new('Smithyboy')
