@@ -67,31 +67,15 @@ class Move
   end
 
   def >(other_move)
-    case @value
-    when 'rock'
-      return true if other_move.scissors?
-      false
-    when 'paper'
-      return true if other_move.rock?
-      false
-    when 'scissors'
-      return true if other_move.paper?
-      false
-    end
+    (rock? && other_move.scissors?) ||
+      (paper? && other_move.rock?) ||
+      (scissors? && other_move.paper?)
   end
 
   def <(other_move)
-    case @value
-    when 'rock'
-      return true if other_move.paper?
-      false
-    when 'paper'
-      return true if other_move.scissors?
-      false
-    when 'scissors'
-      return true if other_move.rock?
-      false
-    end
+    (rock? && other_move.paper?) ||
+      (paper? && other_move.scissors?) ||
+      (scissors? && other_move.rock?)
   end
 end
 
@@ -99,6 +83,7 @@ class RPSGame
   attr_accessor :human, :computer
 
   def initialize
+    display_welcome_message
     @human = Human.new
     @computer = Computer.new()
   end
@@ -112,9 +97,6 @@ class RPSGame
   end
 
   def display_winner
-    puts "#{human.name} chose #{human.move.value}."
-    puts "#{computer.name} chose #{computer.move.value}"
-
     if human.move > computer.move
       puts "#{human.name} won!"
     elsif human.move < computer.move
@@ -122,6 +104,11 @@ class RPSGame
     else
       puts "It's a tie!"
     end
+  end
+
+  def display_moves
+    puts "#{human.name} chose #{human.move.value}."
+    puts "#{computer.name} chose #{computer.move.value}"
   end
 
   def play_again?
@@ -139,12 +126,11 @@ class RPSGame
   end
 
   def play
-    display_welcome_message
-
     loop do
       human.choose
       computer.choose
 
+      display_moves
       display_winner
 
       break unless play_again?
