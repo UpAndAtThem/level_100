@@ -1,10 +1,11 @@
 require 'pry'
 
 class Player
-  attr_accessor :move, :name
+  attr_accessor :move, :name, :score
 
   def initialize
     set_name
+    @score = 0
   end
 end
 
@@ -111,6 +112,20 @@ class RPSGame
     puts "#{computer.name} chose #{computer.move.value}"
   end
 
+  def adjust_score
+    if human.move > computer.move
+      human.score += 1
+    elsif human.move < computer.move
+      computer.score += 1
+    else
+      return
+    end
+  end
+
+  def display_score
+    puts "You have #{human.score}.  The Computer has #{computer.score}"
+  end
+
   def play_again?
     choice = nil
 
@@ -125,6 +140,11 @@ class RPSGame
     false
   end
 
+  def congrats_message
+    winner = human.score > computer.score ? human : computer
+    puts "Congratulations, #{winner.name}! You were first to score 10 points"
+  end
+
   def play
     loop do
       human.choose
@@ -132,8 +152,14 @@ class RPSGame
 
       display_moves
       display_winner
-
-      break unless play_again?
+      adjust_score
+      display_score
+      sleep 1.5
+      system 'clear'
+      if human.score == 10 || computer.score == 10
+        congrats_message
+        break unless play_again?
+      end
     end
 
     display_goodbye_message
