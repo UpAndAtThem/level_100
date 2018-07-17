@@ -97,20 +97,10 @@ class Move
 
   def >(other_move)
     WINNING_HAND[value].include?(other_move.value)
-    # (rock? && WINNING_HAND['rock'].include?(other_move.value)) ||
-    #   (paper? && WINNING_HAND['paper'].include?(other_move.value)) ||
-    #   (scissors? && WINNING_HAND['scissors'].include?(other_move.value)) ||
-    #   (lizard? && WINNING_HAND['lizard'].include?(other_move.value)) ||
-    #   (spock? && WINNING_HAND['spock'].include?(other_move.value))
   end
 
   def <(other_move)
     LOSING_HAND[value].include?(other_move.value)
-    # (rock? && LOSING_HAND['rock'].include?(other_move.value)) ||
-    #   (paper? && LOSING_HAND['paper'].include?(other_move.value)) ||
-    #   (scissors? && LOSING_HAND['scissors'].include?(other_move.value)) ||
-    #   (lizard? && LOSING_HAND['lizard'].include?(other_move.value)) ||
-    #   (spock? && LOSING_HAND['spock'].include?(other_move.value))
   end
 end
 
@@ -210,6 +200,11 @@ class RPSGame
     puts "Congratulations, #{winner.name}! You were first to score 10 points"
   end
 
+  def reset
+    sleep 2.5
+    system 'clear'
+  end
+
   def play
     loop do
       human.choose
@@ -219,8 +214,8 @@ class RPSGame
       display_winner
       adjust_score
       display_score
-      sleep 2.5
-      system 'clear'
+      reset
+
       if human.score == 10 || computer.score == 10
         congrats_message
         break unless play_again?
