@@ -1,5 +1,3 @@
-require 'pry'
-
 class Player
   attr_accessor :move, :name, :score
   attr_reader :history
@@ -67,12 +65,19 @@ class Move
 
   VALUES = ['rock', 'paper', 'scissors', 'lizard', 'spock'].freeze
 
-  def initialize
-    @history = []
+  def initialize(value)
+    @type = set_type(value)
+    @value = value
   end
 
-  def initialize(value)
-    @value = value
+  def set_type(move_type)
+    case move_type
+    when 'rock' then Rock.new
+    when 'paper' then Paper.new
+    when 'scissors' then Scissors.new
+    when 'lizard' then Lizard.new
+    when 'spock' then Spock.new
+    end
   end
 
   def rock?
@@ -104,32 +109,51 @@ class Move
   end
 end
 
-class Rock < Move
+class Rock
+  def initialize
+    @move = 'rock'
+  end
+
   def sprite
 
   end
 end
 
-class Paper < Move
+class Paper
+  def initialize
+    @move = 'paper'
+  end
 
   def sprite
 
   end
 end
 
-class Scissors < Move
+class Scissors
+  def initialize
+    @move = 'scissors'
+  end
+
   def sprite 
 
   end
 end
 
-class Lizard < Move
+class Lizard
+  def initialize
+    @move = 'lizard'
+  end
+
   def sprite
 
   end
 end
 
-class Spock < Move
+class Spock
+  def initialize
+    @move = 'spock'
+  end
+  
   def sprite
 
   end
@@ -141,7 +165,7 @@ class RPSGame
   def initialize
     display_welcome_message
     @human = Human.new
-    @computer = Computer.new()
+    @computer = Computer.new
   end
 
   def display_welcome_message
@@ -234,6 +258,7 @@ end
 
 # not sure where "compare" goes yet
 def compare(move1, move2); end
+
 
 RPSGame.new.play
 
