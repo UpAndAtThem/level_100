@@ -47,9 +47,18 @@ class Computer < Player
     self.name = ['R2D2', 'Hal', 'Chappie', 'Dolores'].sample
   end
 
+  def smart_move
+    opponents_moves = history.map do |moves|
+      moves[:opponent_move].value
+    end
+
+    most_occurances = opponents_moves.group_by(&:to_s).values.max_by(&:size)[0]
+    (Move::VALUES + Move::LOSING_HAND[most_occurances]).sample
+  end
+
   def choose
-    self.move = Move.new(Move::VALUES.sample)
-    #self.history move
+    return self.move = Move.new(Move::VALUES.sample) if self.history.empty?
+    self.move = Move.new(smart_move)
   end
 end
 
