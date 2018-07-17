@@ -1,3 +1,4 @@
+require 'pry'
 class Player
   attr_accessor :move, :name, :score
   attr_reader :history
@@ -8,8 +9,8 @@ class Player
     @history = []
   end
 
-  def history(move)
-    @history << move
+  def add_to_history(opponent_move)
+    @history << {move: move, opponent_move: opponent_move}
   end
 end
 
@@ -24,7 +25,7 @@ class Human < Player
     end
 
     self.move = Move.new(choice)
-    self.history move
+    #self.history move
   end
 
   def set_name
@@ -48,7 +49,7 @@ class Computer < Player
 
   def choose
     self.move = Move.new(Move::VALUES.sample)
-    self.history move
+    #self.history move
   end
 end
 
@@ -233,11 +234,15 @@ class RPSGame
     loop do
       human.choose
       computer.choose
+      human.add_to_history(computer.move)
+      computer.add_to_history(human.move)
 
       display_moves
       display_winner
+
       adjust_score
       display_score
+
       reset
 
       if human.score == 10 || computer.score == 10
