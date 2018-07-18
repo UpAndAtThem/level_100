@@ -1,16 +1,18 @@
 require 'pry'
 class Player
   attr_accessor :move, :name, :score
-  attr_reader :history
+  attr_reader :opponents_moves, :moves
 
   def initialize
     set_name
     @score = 0
-    @history = []
+    @opponents_moves = []
+    @moves = []
   end
 
   def add_to_history(opponent_move)
-    @history << {move: move, opponent_move: opponent_move}
+    @opponents_moves << opponent_move
+    @moves << move
   end
 end
 
@@ -47,23 +49,33 @@ class Computer < Player
     self.name = ['R2D2', 'Hal', 'Chappie', 'Dolores'].sample
   end
 
+  def opponents_achilles(move_type)
+    Move::LOSING_HAND[move_type]
+  end
+
   def smart_move
-    opponents_moves = history.map do |moves|
-      moves[:opponent_move].value
+    return Move::VALUES.sample if self.opponents_moves.empty?
+    most_occuring = find_most_occuring.value
+
+    (Move::VALUES + opponents_achilles(most_occuring)).sample
+  end
+
+  def find_most_occuring
+    most_occuring = @opponents_moves.each_with_object(Hash.new(0)) do |move, result|
+      result[move.value] += 1
     end
 
-    most_occurances = opponents_moves.group_by(&:to_s).values.max_by(&:size)[0]
-    (Move::VALUES + Move::LOSING_HAND[most_occurances]).sample
+    most_frequent = most_occuring.sort_by { |move, occurance| occurance}[-1][0]
+    Move.new(most_frequent)
   end
 
   def choose
-    return self.move = Move.new(Move::VALUES.sample) if self.history.empty?
     self.move = Move.new(smart_move)
   end
 end
 
 class Move
-  attr_reader :value
+  attr_reader :value, :move
 
   WINNING_HAND = { 'rock' => %w(lizard scissors), 'paper' => %w(rock spock),
                    'scissors' => %w(lizard paper), 'lizard' => %w(spock paper),
@@ -173,7 +185,7 @@ class RPSGame
   attr_accessor :human, :computer
 
   def initialize
-    display_welcome_message
+    #@display_welcome_message
     @human = Human.new
     @computer = Computer.new
   end
@@ -253,7 +265,6 @@ class RPSGame
       display_score
 
       reset
-
       if human.score == 10 || computer.score == 10
         congrats_message
         break unless play_again?
