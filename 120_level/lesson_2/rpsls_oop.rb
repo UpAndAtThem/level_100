@@ -1,6 +1,6 @@
 require 'pry'
 
-module DisplayMove
+module DisplayableSprites
 
   def pow
     ["╔═╗╔═╗╦ ╦┬",
@@ -110,11 +110,10 @@ class Human < Player
   def choose
     choice = nil
     loop do
-      binding.pry
-      puts "Choose rock, paper, scissors, lizard, or spock"
+      puts MESSAGES['choose_move']
       choice = gets.chomp
       break if Move::VALUES.include? choice
-      puts "Sorry, invalid choice."
+      puts MESSAGES['invalid_move']
     end
 
     self.move = Move.new(choice)
@@ -123,10 +122,10 @@ class Human < Player
   def set_name
     n = ""
     loop do
-      puts "What's your name?"
+      puts MESSAGES['prompt_name']
       n = gets.chomp
       break unless n.empty?
-      puts "Sorry, must have input"
+      puts MESSAGES['invalid_name']
     end
     self.name = n
   end
@@ -306,7 +305,7 @@ end
 
 class RPSGame
   attr_accessor :human, :computer
-  include DisplayMove
+  include DisplayableSprites
   
   def initialize
     display_welcome_message
@@ -339,12 +338,7 @@ class RPSGame
     sleep 0.66
   end
 
-  def display_results
-    if tie?
-      display_tie
-      return
-    end
-
+  def display_winner
     winning_player = if @human.move > @computer.move
                        @human
                      else
@@ -354,6 +348,15 @@ class RPSGame
     display_winning_sprite(winning_player)
     puts "#{winning_player.name} wins!"
     display_score
+  end
+
+  def display_results
+    if tie?
+      display_tie
+      return
+    end
+
+    display_winner
   end
 
   def display_moves
@@ -425,4 +428,3 @@ class RPSGame
 end
 
 RPSGame.new.play
-
