@@ -1,5 +1,3 @@
-require 'pry'
-
 module DisplayableSprites
 
   def pow
@@ -40,11 +38,11 @@ module DisplayableSprites
   end
   
   def display_left
-    @human.move.type.sprite[1..-1].each { |row| puts row}
+    @human.move.sprite[1..-1].each { |row| puts row}
   end
   
   def display_center
-    width_of_sprite = @human.move.type.sprite.max_by(&:length).length
+    width_of_sprite = @human.move.sprite.max_by(&:length).length
 
     puts(' ' * (width_of_sprite + 5) + 'vs')
   end
@@ -55,9 +53,9 @@ module DisplayableSprites
   end
   
   def display_right
-    width_of_opponent = @human.move.type.sprite.max_by(&:length).length
+    width_of_opponent = @human.move.sprite.max_by(&:length).length
     
-    @computer.move.type.sprite[0..-2].each do |row|
+    @computer.move.sprite[0..-2].each do |row|
       puts(' ' * (width_of_opponent + 12) + row)
     end
   end
@@ -99,6 +97,16 @@ class Player
     @moves = []
   end
 
+  def set_type(move_type)
+    case move_type
+    when 'rock' then Rock.new('rock')
+    when 'paper' then Paper.new('paper')
+    when 'scissors' then Scissors.new('scissors')
+    when 'lizard' then Lizard.new('lizard')
+    when 'spock' then Spock.new('spock')
+    end
+  end
+
   def add_to_history(opponent_move)
     @opponents_moves << opponent_move
     @moves << move
@@ -106,28 +114,34 @@ class Player
 end
 
 class Human < Player
+  def prompt_name
+    puts format(MESSAGES['one_through'], wins_needed: RPSGame::BEST_TO)
+    puts MESSAGES['choose_move']
+  end
+
   def choose
     choice = nil
     loop do
-      puts MESSAGES['choose_move']
-      choice = gets.chomp
+      prompt_name
+      choice = gets.chomp.to_i
 
-      break if Move::VALUES.include? choice
+      break if Move::VALUES.keys.include? choice
       puts MESSAGES['invalid_move']
     end
-
-    self.move = Move.new(choice)
+    self.move = set_type(Move::VALUES[choice])
   end
 
   def set_name
-    n = ""
+    name = ""
     loop do
       puts MESSAGES['prompt_name']
-      n = gets.chomp
-      break unless n.empty?
+      name = gets.chomp
+
+      break unless name.empty?
       puts MESSAGES['invalid_name']
     end
-    self.name = n
+    self.name = name
+    system('clear') || system('cls')
   end
 end
 
@@ -143,10 +157,10 @@ class Computer < Player
   end
 
   def smart_move
-    return Move::VALUES.sample if self.opponents_moves.empty?
+    return Move::VALUES.values.sample if self.opponents_moves.empty?
 
     most_occuring = find_most_occuring.value
-    (Move::VALUES + opponents_achilles(most_occuring)).sample
+    (Move::VALUES.values + opponents_achilles(most_occuring)).sample
   end
 
   def find_most_occuring
@@ -159,7 +173,7 @@ class Computer < Player
   end
 
   def choose
-    self.move = Move.new(smart_move)
+    self.move = set_type(smart_move)
   end
 end
 
@@ -174,21 +188,10 @@ class Move
                    'scissors' => %w(rock spock), 'lizard' => %w(rock scissors),
                    'spock' => %w(lizard paper) }.freeze
 
-  VALUES = ['rock', 'paper', 'scissors', 'lizard', 'spock'].freeze
+  VALUES = {1 => 'rock', 2 => 'paper', 3 => 'scissors', 4 => 'lizard', 5 => 'spock'}.freeze
 
   def initialize(value)
-    @type = set_type(value)
     @value = value
-  end
-
-  def set_type(move_type)
-    case move_type
-    when 'rock' then Rock.new
-    when 'paper' then Paper.new
-    when 'scissors' then Scissors.new
-    when 'lizard' then Lizard.new
-    when 'spock' then Spock.new
-    end
   end
 
   def rock?
@@ -349,7 +352,7 @@ class RPSGame
     MESSAGES['rules'].each { |_, rule| puts rule}
     puts MESSAGES['understand']
     print MESSAGES['press_enter']
-    gets.chomp
+    gets
     clear_screen
   end
 
@@ -358,14 +361,14 @@ class RPSGame
   end
 
   def display_winning_sprite(winning_player)
-    num_spaces = winning_player.move.type.sprite[-1].length - winning_player.move.value.length
+    num_spaces = winning_player.move.sprite[-1].length - winning_player.move.value.length
 
-    winning_player.move.type.sprite[1..-1].each { |line| puts line}
+    winning_player.move.sprite[1..-1].each { |line| puts line}
     puts(' ' * num_spaces + "WINS!\n\n\n")
   end
 
   def winner_width
-    winner.move.type.sprite.max_by(&:length).length
+    winner.move.sprite.max_by(&:length).length
   end
 
   def display_winner
@@ -385,9 +388,9 @@ class RPSGame
   end
 
   def display_moves
-    display_left(@human.move.type.sprite)
+    display_left(@human.move.sprite)
     display_center("vs")
-    display_right(@computer.move.type.sprite)
+    display_right(@computer.move.sprite)
   end
 
   def adjust_score
@@ -432,12 +435,20 @@ class RPSGame
     clear_screen
   end
 
+  def players_choose
+    human.choose
+    computer.choose
+  end
+
+  def add_players_history
+    human.add_to_history(computer.move)
+    computer.add_to_history(human.move)
+  end
+
   def play
     loop do
-      human.choose
-      computer.choose
-      human.add_to_history(computer.move)
-      computer.add_to_history(human.move)
+      players_choose
+      add_players_history
 
       display_opponents
       pow_animation
