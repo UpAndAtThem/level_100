@@ -52,7 +52,6 @@ module DisplayableSprites
   def display_tie
     puts "\n\n\n\n"
     tie.each { |row| puts((' ' * 20) + row) }
-    sleep 1.33
   end
   
   def display_right
@@ -112,6 +111,7 @@ class Human < Player
     loop do
       puts MESSAGES['choose_move']
       choice = gets.chomp
+
       break if Move::VALUES.include? choice
       puts MESSAGES['invalid_move']
     end
@@ -144,8 +144,8 @@ class Computer < Player
 
   def smart_move
     return Move::VALUES.sample if self.opponents_moves.empty?
+
     most_occuring = find_most_occuring.value
-    binding.pry
     (Move::VALUES + opponents_achilles(most_occuring)).sample
   end
 
@@ -220,7 +220,7 @@ class Move
   end
 end
 
-class Rock
+class Rock < Move
   def sprite
     ["                     ROCK",
      '                          _',
@@ -236,7 +236,7 @@ class Rock
   end
 end
 
-class Paper
+class Paper < Move
   def sprite
     ['      PAPER',
      ' _______________',
@@ -256,7 +256,7 @@ class Paper
   end
 end
 
-class Scissors
+class Scissors < Move
   def sprite
     ['                SCISSORS',
      ' ,--.',
@@ -269,7 +269,7 @@ class Scissors
   end
 end
 
-class Lizard
+class Lizard < Move
   def sprite 
     [ "               LIZARD", 
       "                     )/_",
@@ -283,7 +283,7 @@ class Lizard
   end
 end
 
-class Spock
+class Spock < Move
   def sprite
     ["             SPOCK",
      '               .',
@@ -307,11 +307,34 @@ class RPSGame
   attr_accessor :human, :computer
   include DisplayableSprites
   
+  require 'yaml'
+  MESSAGES = YAML.load_file('rpsls_oop_messages.yml')
+  BEST_TO = 5
+
   def initialize
-    display_welcome_message
     display_rules
     @human = Human.new
     @computer = Computer.new
+  end
+
+  def winner
+    if human.move > computer.move
+      human
+    elsif computer.move > human.move
+      computer
+    else
+      nil
+    end
+  end
+
+  def loser
+    if human.move < computer.move
+      human
+    elsif computer.move < human.move
+      computer
+    else
+      nil
+    end
   end
 
   def tie?
@@ -319,11 +342,15 @@ class RPSGame
   end
 
   def display_welcome_message
-    puts "Welcome to Rock, Paper, Scissors!"
+    puts MESSAGES['greeting']
   end
 
   def display_rules
-
+    MESSAGES['rules'].each { |_, rule| puts rule}
+    puts MESSAGES['understand']
+    print MESSAGES['press_enter']
+    gets.chomp
+    clear_screen
   end
 
   def display_goodbye_message
@@ -335,19 +362,17 @@ class RPSGame
 
     winning_player.move.type.sprite[1..-1].each { |line| puts line}
     puts(' ' * num_spaces + "WINS!\n\n\n")
-    sleep 0.66
+  end
+
+  def winner_width
+    winner.move.type.sprite.max_by(&:length).length
   end
 
   def display_winner
-    winning_player = if @human.move > @computer.move
-                       @human
-                     else
-                       @computer
-                     end
-
-    display_winning_sprite(winning_player)
-    puts "#{winning_player.name} wins!"
+    display_winning_sprite(winner)
+    puts MESSAGES[winner.move.value][loser.move.value]
     display_score
+    sleep 0.66
   end
 
   def display_results
@@ -376,7 +401,11 @@ class RPSGame
   end
 
   def display_score
-    puts "You have #{human.score}.  The Computer has #{computer.score}"
+   if winner.class == Human
+     puts "#{human.name} now has #{human.score}. #{computer.name} has #{computer.score}"
+   else
+     puts "#{human.name} has #{human.score}. #{computer.name} now has #{computer.score}"
+   end
   end
 
   def play_again?
@@ -395,12 +424,12 @@ class RPSGame
 
   def congrats_message
     winner = human.score > computer.score ? human : computer
-    puts "Congratulations, #{winner.name}! You were first to score 10 points"
+    puts "Congratulations, #{winner.name}! You were first to score #{BEST_TO} points"
   end
 
   def reset
-    sleep 3.5
-    system 'clear'
+    sleep 2.5
+    clear_screen
   end
 
   def play
