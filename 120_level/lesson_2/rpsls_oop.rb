@@ -1,7 +1,97 @@
 require 'pry'
+
+module DisplayMove
+
+  def pow
+    ["╔═╗╔═╗╦ ╦┬",
+     "╠═╝║ ║║║║│",
+     "╩  ╚═╝╚╩╝o"]
+  end
+
+  def clouds
+    ["            _                                   ",
+     "         (`  ).                   _             ",
+     "        (     ).              .:(`  )`.         ",
+     "       _(       '`.          :(   .    )        ",
+     "   .=(`(      .   )     .--  `.  (    ) )       ",
+     "  ((    (..__.:'-'   .+(   )   ` _`  ) )        ",       
+     "  `(       ) )       (   .  )     (   )  ._     ",
+     "    ` __.:'   )     (   (   ))     `-'.-(`  )   ",
+     " ( )       --'       `- __.'         :(      )) ",
+     "(_.'          .')                    `(    )  ))",
+     "             (_  )                     ` __.:'  "]
+  end
+
+  def tie
+    [' ╦ ╔╦╗ ╔═╗    ╔═╗    ╔╦╗  ╦  ╔═╗' ,
+     ' ║  ║  ╚═╗    ╠═╣     ║   ║  ║╣ ' ,
+     ' ╩  ╩  ╚═╝    ╩ ╩     ╩   ╩  ╚═╝' ,
+     '                          '       ,
+     '╔═╗   ╦ ╦   ╔═╗   ╔═╗   ╔═╗   ╔═╗ ',
+     '║     ╠═╣   ║ ║   ║ ║   ╚═╗   ║╣  ',
+     '╚═╝   ╩ ╩   ╚═╝   ╚═╝   ╚═╝   ╚═╝ ',
+     '   ╔═╗   ╔═╗   ╔═╗   ╦   ╔╗╔',     
+     '   ╠═╣   ║ ╦   ╠═╣   ║   ║║║' ,    
+     '   ╩ ╩   ╚═╝   ╩ ╩   ╩   ╝╚╝']
+  end
+
+  def clear_screen
+    system('clear') || system('cls')
+  end
+  
+  def display_left
+    @human.move.type.sprite[1..-1].each { |row| puts row}
+  end
+  
+  def display_center
+    width_of_sprite = @human.move.type.sprite.max_by(&:length).length
+
+    puts(' ' * (width_of_sprite + 5) + 'vs')
+  end
+
+  def display_tie
+    puts "\n\n\n\n"
+    tie.each { |row| puts((' ' * 20) + row) }
+    sleep 1.33
+  end
+  
+  def display_right
+    width_of_opponent = @human.move.type.sprite.max_by(&:length).length
+    
+    @computer.move.type.sprite[0..-2].each do |row|
+      puts(' ' * (width_of_opponent + 12) + row)
+    end
+  end
+
+  def display_sprite_center(sprite_choice)
+    sprite_choice.each { |row| puts((' ' * 20) + row) }
+  end
+
+  def pow_animation
+    clear_screen
+
+    [pow, clouds, pow].each do |current_sprite|
+      display_sprite_center current_sprite
+      sleep 0.5
+    end
+    clear_screen
+  end
+
+  def display_opponents
+    clear_screen
+    display_left
+    display_center
+    display_right
+    sleep 1.5
+  end
+end
+
 class Player
   attr_accessor :move, :name, :score
-  attr_reader :opponents_moves, :moves
+  attr_reader :opponents_moves, :moves, :sprite, :MESSAGES
+  
+  require 'yaml'
+  MESSAGES = YAML.load_file('rpsls_oop_messages.yml')
 
   def initialize
     set_name
@@ -20,6 +110,7 @@ class Human < Player
   def choose
     choice = nil
     loop do
+      binding.pry
       puts "Choose rock, paper, scissors, lizard, or spock"
       choice = gets.chomp
       break if Move::VALUES.include? choice
@@ -27,7 +118,6 @@ class Human < Player
     end
 
     self.move = Move.new(choice)
-    #self.history move
   end
 
   def set_name
@@ -56,7 +146,7 @@ class Computer < Player
   def smart_move
     return Move::VALUES.sample if self.opponents_moves.empty?
     most_occuring = find_most_occuring.value
-
+    binding.pry
     (Move::VALUES + opponents_achilles(most_occuring)).sample
   end
 
@@ -75,7 +165,7 @@ class Computer < Player
 end
 
 class Move
-  attr_reader :value, :move
+  attr_reader :value, :type
 
   WINNING_HAND = { 'rock' => %w(lizard scissors), 'paper' => %w(rock spock),
                    'scissors' => %w(lizard paper), 'lizard' => %w(spock paper),
@@ -132,85 +222,144 @@ class Move
 end
 
 class Rock
-  def initialize
-    @move = 'rock'
-  end
-
   def sprite
-
+    ["                     ROCK",
+     '                          _',
+     '                / -` -`\ -_ /.  /^./\__    ',
+     '    _        .--"\\ _ \\__/.      \\ /    \\',  
+     '   / \\_    _/ ^      \\/  __  :"   /\\/\\  /\\ ',
+     '  ;-_    \\  /    ."   _/  /  \\   ^ /    \\/', 
+     ' /\\/\\  /\\/ :" __  ^/  ^/    `--./."  ^  `-.',
+     '/    \\/  \\  _/  \\-" __/." ^ _   \\_   ."\'',
+     '  .-   `. \\/     \\ / -.   _/ \\ -. `_/   \\ /',
+     '`-.__ ^   / .-".--"    . /    `--./ .-"  `-',
+     '                     ROCK']
   end
 end
 
 class Paper
-  def initialize
-    @move = 'paper'
-  end
-
   def sprite
-
+    ['      PAPER',
+     ' _______________',
+     '|  ------------ |',
+     '| ------------- |',
+     '| -- ---------- |',
+     '| ------  ----- |',
+     '| ------------- |',
+     '| ------------- |',
+     '| ----------    |',
+     '|  ------------ |',
+     '| ------------- |',
+     '| ------ -----  |',
+     '| ------------- |',
+     '|_______________|',
+     '      PAPER']
   end
 end
 
 class Scissors
-  def initialize
-    @move = 'scissors'
-  end
-
-  def sprite 
-
+  def sprite
+    ['                SCISSORS',
+     ' ,--.',
+     '(    )____ ___________________________',
+     ' `--"---,-"  ,.   --------------------`-.',
+     ' ,--.---`-.__`"__|_______________________`>',
+     '(    )',
+     ' `--\'',
+     '                SCISSORS']
   end
 end
 
 class Lizard
-  def initialize
-    @move = 'lizard'
-  end
-
-  def sprite
-
+  def sprite 
+    [ "               LIZARD", 
+      "                     )/_",
+      "              _.--..---\"-,--c_",
+      "         \\L..'           ._O__)_",
+      ",-.     _.+  _  \\..--( /",
+      " `\\.-''__.-' \\ (     \\_ ",     
+      "   `'''       `\\__   /\\",
+      "               ')",
+      "               LIZARD"]
   end
 end
 
 class Spock
-  def initialize
-    @move = 'spock'
-  end
-  
   def sprite
-
+    ["             SPOCK",
+     '               .',
+     '              .:.',
+     '             .:::.',
+     '             .:::::.',
+     '        ***.:::::::.***',
+     '    *******.:::::::::.*******',       
+     '  ********.:::::::::::.********',    
+     ' ********.:::::::::::::.********',   
+     ' *******.::::::\'***`::::.*******',    
+     ' ******.::::\'*********`::.******',    
+     ' ****.:::\'*************`:.****',
+     '   *.::\'*****************`.*',
+     '    .:\'  ***************    .',
+     "  .           SPOCK"]
   end
 end
 
 class RPSGame
   attr_accessor :human, :computer
-
+  include DisplayMove
+  
   def initialize
-    #@display_welcome_message
+    display_welcome_message
+    display_rules
     @human = Human.new
     @computer = Computer.new
+  end
+
+  def tie?
+    @human.move.value == @computer.move.value
   end
 
   def display_welcome_message
     puts "Welcome to Rock, Paper, Scissors!"
   end
 
+  def display_rules
+
+  end
+
   def display_goodbye_message
     puts "Thanks for playing Rock, Paper, Scissors!"
   end
 
-  def display_winner
-    if human.move > computer.move
-      puts "#{human.name} won!"
-    elsif human.move < computer.move
-      puts "#{computer.name} won!"
-    else
-      puts "It's a tie!"
+  def display_winning_sprite(winning_player)
+    num_spaces = winning_player.move.type.sprite[-1].length - winning_player.move.value.length
+
+    winning_player.move.type.sprite[1..-1].each { |line| puts line}
+    puts(' ' * num_spaces + "WINS!\n\n\n")
+    sleep 0.66
+  end
+
+  def display_results
+    if tie?
+      display_tie
+      return
     end
+
+    winning_player = if @human.move > @computer.move
+                       @human
+                     else
+                       @computer
+                     end
+
+    display_winning_sprite(winning_player)
+    puts "#{winning_player.name} wins!"
+    display_score
   end
 
   def display_moves
-    puts "#{human.name} chose #{human.move.value}."
-    puts "#{computer.name} chose #{computer.move.value}"
+    display_left(@human.move.type.sprite)
+    display_center("vs")
+    display_right(@computer.move.type.sprite)
   end
 
   def adjust_score
@@ -247,7 +396,7 @@ class RPSGame
   end
 
   def reset
-    sleep 2.5
+    sleep 3.5
     system 'clear'
   end
 
@@ -258,14 +407,14 @@ class RPSGame
       human.add_to_history(computer.move)
       computer.add_to_history(human.move)
 
-      display_moves
-      display_winner
-
+      display_opponents
+      pow_animation
       adjust_score
-      display_score
-
+      display_results
+        
       reset
-      if human.score == 10 || computer.score == 10
+
+      if human.score == 5 || computer.score == 5
         congrats_message
         break unless play_again?
       end
@@ -275,104 +424,5 @@ class RPSGame
   end
 end
 
-class Rule
-  def initialize
-    # not sure what the "state" of a rule object should be
-  end
-end
-
-# not sure where "compare" goes yet
-def compare(move1, move2); end
-
-
 RPSGame.new.play
 
-
-
-
-# module DisplayMove
-#   lizard = [ "               LIZARD\n\n", 
-#            "                     )/_",
-#            "              _.--..---\"-,--c_",
-#            "         \\L..'           ._O__)_",
-#            ",-.     _.+  _  \\..--( /",
-#            " `\\.-''__.-' \\ (     \\_ ",     
-#            "   `'''       `\\__   /\\",
-#            "               ')",
-#            "               \n\nLIZARD"]
-
-#   spock = ["             SPOCK",
-#            '               .',
-#            '              .:.',
-#            '             .:::.',
-#            '             .:::::.',
-#            '        ***.:::::::.***',
-#            '    *******.:::::::::.*******',       
-#            '  ********.:::::::::::.********',    
-#            ' ********.:::::::::::::.********',   
-#            ' *******.::::::\'***`::::.*******',    
-#            ' ******.::::\'*********`::.******',    
-#            ' ****.:::\'*************`:.****',
-#            '   *.::\'*****************`.*',
-#            '    .:\'  ***************    .',
-#            "  .           SPOCK"]
-          
-#   paper =  ['      PAPER',
-#             ' _______________',
-#             '|  ------------ |',
-#             '| ------------- |',
-#             '| -- ---------- |',
-#             '| ------  ----- |',
-#             '| ------------- |',
-#             '| ------------- |',
-#             '| ----------    |',
-#             '|  ------------ |',
-#             '| ------------- |',
-#             '| ------ -----  |',
-#             '| ------------- |',
-#             '|_______________|',
-#             '      PAPER']
-  
-       
-  
-#   scissors =  ['                SCISSORS',
-#                ' ,--.',
-#                '(    )____ ___________________________',
-#                ' `--"---,-"  ,.   --------------------`-.',
-#                ' ,--.---`-.__`"__|_______________________`>',
-#                '(    )',
-#                ' `--\'',
-#                '                SCISSORS']
-  
-  
-#   rock = ["                       ROCK\n",
-#           '                          _',
-#           '                / -` -`\ -_ /.  /^./\__    ',
-#           '    _        .--"\\ _ \\__/.      \\ /    \\',  
-#           '   / \\_    _/ ^      \\/  __  :"   /\\/\\  /\\ ',
-#           '  ;-_    \\  /    ."   _/  /  \\   ^ /    \\/', 
-#           ' /\\/\\  /\\/ :" __  ^/  ^/    `--./."  ^  `-.',
-#           '/    \\/  \\  _/  \\-" __/." ^ _   \\_   ."\'',
-#           '  .-   `. \\/     \\ / -.   _/ \\ -. `_/   \\ /',
-#           '`-.__ ^   / .-".--"    . /    `--./ .-"  `-',
-#           '                      ROCK']
-    
-  
-#   def vs_display(player_sprite, computer_sprite, vs)
-#     display_left(player_sprite)
-#     display_center(vs)
-#     display_right(computer_sprite)
-#   end
-  
-#   def display_left(player_sprite)
-#     player_sprite[1..-1].each { |row| puts row}
-#   end
-  
-#   def display_center(vs, width = 100)
-#     puts(vs.center(width))
-#   end
-  
-#   def display_right(computer_sprite, width = 100)
-#     computer_sprite[0..-2].each { |row| puts "#{" " * 70} " + row}
-#   end
-# end
