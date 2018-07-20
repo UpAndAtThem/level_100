@@ -355,6 +355,7 @@ class RPSGame
 
   def display_rules
     MESSAGES['rules'].each { |_, rule| puts rule}
+    puts format(MESSAGES['first_to'], wins_needed: BEST_TO)
     puts MESSAGES['understand']
     print MESSAGES['press_enter']
     gets
