@@ -1,0 +1,43 @@
+
+one_through : "Choose 1-%{wins_needed}"
+choose_move : 1. Rock | 2. Paper | 3. Scissors | 4. Lizzard | 5. Spock
+invalid_move : "Sorry, invalid choice.\n\n"
+prompt_name : "please enter your name: "
+invalid_name : "Sorry, you must enter at least 1 character."
+greeting : "Welcome to Rock, Paper, Scissors!"
+first_to : "First to %{wins_needed} wins!\n\n"
+understand : "YOU GET IT! LETS PLAY!\n\n"
+press_enter : 'Press enter to continue:'
+farewell : "Thanks for playing Rock, Paper, Scissors! Goodbye."
+another_game : Would you like to play another game? (y/n)
+y_or_n : "Enter 'y' or 'n'"
+winner_congrats : "Congratulations, %{the_winner}! You were first to score %{best_to} points"
+
+rules:
+  greeting: "Welcome to R.P.S.L.S, below are the rules\n\n"
+  rock_rules: ROCK crushes LIZARD and SCISSORS
+  paper_rules: PAPER disproves SPOCK and covers ROCK
+  scissor_rules: SCISSORS decapitates LIZARD and cuts PAPER
+  lizard_rules: LIZARD poisons SPOCK and eats PAPER
+  spock_rules: "SPOCK smashes SCISSORS and vaporizes ROCK\n\n"
+
+
+rock:
+  lizard: ROCK crushes LIZARD
+  scissors: ROCK smashes SCISSORS
+
+paper:
+  spock: PAPER disproves SPOCK
+  rock: PAPER covers ROCK
+
+scissors:
+  lizard: SCISSORS decapitates LIZARD
+  paper: SCISSORS cuts PAPER
+
+lizard:
+  spock:  LIZARD poisons SPOCK
+  paper: LIZARD eats PAPER
+
+spock:
+  rock: SPOCK vaporizes ROCK
+  scissors: SPOCK smashes SCISSORS
