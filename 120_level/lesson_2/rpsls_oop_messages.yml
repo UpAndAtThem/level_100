@@ -1,5 +1,6 @@
 
 one_through : "Choose 1-5"
+first_to : "First to %{wins_needed} points wins!"
 choose_move : 1. Rock | 2. Paper | 3. Scissors | 4. Lizzard | 5. Spock
 invalid_move : "Sorry, invalid choice.\n\n"
 prompt_name : "please enter your name: "
