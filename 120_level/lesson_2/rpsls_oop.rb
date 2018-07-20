@@ -22,7 +22,8 @@ module DisplayableSprites
   end
 
   def tie
-    [' ╦ ╔╦╗ ╔═╗    ╔═╗    ╔╦╗  ╦  ╔═╗' ,
+    ["\n\n\n\n",
+     ' ╦ ╔╦╗ ╔═╗    ╔═╗    ╔╦╗  ╦  ╔═╗' ,
      ' ║  ║  ╚═╗    ╠═╣     ║   ║  ║╣ ' ,
      ' ╩  ╩  ╚═╝    ╩ ╩     ╩   ╩  ╚═╝' ,
      '                          '       ,
@@ -49,7 +50,6 @@ module DisplayableSprites
   end
 
   def display_tie
-    puts "\n\n\n\n"
     tie.each { |row| puts((' ' * 20) + row) }
   end
   
@@ -116,7 +116,7 @@ end
 
 class Human < Player
   def prompt_name
-    puts format(MESSAGES['one_through'], wins_needed: RPSGame::BEST_TO)
+    puts MESSAGES['one_through']
     puts MESSAGES['choose_move']
   end
 
@@ -161,6 +161,7 @@ class Computer < Player
     return Move::VALUES.values.sample if self.opponents_moves.empty?
 
     most_occuring = find_most_occuring.value
+
     (Move::VALUES.values + opponents_achilles(most_occuring)).sample
   end
 
