@@ -1,4 +1,3 @@
-require 'pry'
 module DisplayableSprites
 
   def pow
@@ -243,23 +242,25 @@ end
 
 class Paper < Move
   def sprite
-    ['      PAPER',
-     ' _______________',
-     '|  ------------ |',
-     '| ------------- |',
-     '| -- ---------- |',
-     '| ------  ----- |',
-     '| ------------- |',
-     '| ------------- |',
-     '| ----------    |',
-     '|  ------------ |',
-     '| ------------- |',
-     '| ------ -----  |',
-     '| ------------- |',
-     '|_______________|',
-     '      PAPER']
-  end
-end
+    ["       PAPER",
+     "             _._________",
+     "          _.'           ;..",
+     "      _.-'          _.'`   \\",
+     "    _'______     _.'        |",
+     "  .'        '-.-'           |",
+     " /            \\             |",
+     "|     __      |             |",
+     "|   .x$$x.    |             |",
+     "|   |%$$$|    |             |",
+     "|   |%%$$|    |             |",
+     "|   '%%%?'    ;             |",
+     " \\           ,|         ,.-.\\",
+     "  '.______ ,-  |      .- `",
+     "               \\..- ^`   ",
+     "        PAPER"]
+   end 
+ end
+
 
 class Scissors < Move
   def sprite
@@ -278,8 +279,8 @@ class Lizard < Move
   def sprite 
     [ "               LIZARD", 
       "                     )/_",
-      "              _.--..---\"-,--c_",
-      "         \\L..'           ._O__)_",
+      "              _.--..---\"-,----c_",
+      "         \\L..'           .___O__)====&",
       ",-.     _.+  _  \\..--( /",
       " `\\.-''__.-' \\ (     \\_ ",     
       "   `'''       `\\__   /\\",
@@ -314,9 +315,11 @@ class RPSGame
   
   require 'yaml'
   MESSAGES = YAML.load_file('rpsls_oop_messages.yml')
+
   BEST_TO = 5
 
   def initialize
+    system 'clear'
     display_rules
     @human = Human.new
     @computer = Computer.new
@@ -377,7 +380,6 @@ class RPSGame
     display_winning_sprite(winner)
     puts MESSAGES[winner.move.value][loser.move.value]
     display_score
-    sleep 0.66
   end
 
   def display_results
