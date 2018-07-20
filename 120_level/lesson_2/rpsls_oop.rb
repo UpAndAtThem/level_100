@@ -1,3 +1,4 @@
+require 'pry'
 module DisplayableSprites
 
   def pow
@@ -357,7 +358,7 @@ class RPSGame
   end
 
   def display_goodbye_message
-    puts "Thanks for playing Rock, Paper, Scissors!"
+    puts MESSAGES['farewell']
   end
 
   def display_winning_sprite(winning_player)
@@ -415,10 +416,10 @@ class RPSGame
     choice = nil
 
     loop do
-      puts 'would you like to play again? (y/n)'
+      puts MESSAGES['another_game']
       choice = gets.chomp
       break if ['y', 'n'].include? choice
-      puts "enter 'y' or 'n'"
+      puts MESSAGES['y_or_n']
     end
 
     return true if choice == 'y'
@@ -426,8 +427,7 @@ class RPSGame
   end
 
   def congrats_message
-    winner = human.score > computer.score ? human : computer
-    puts "Congratulations, #{winner.name}! You were first to score #{BEST_TO} points"
+    puts format(MESSAGES['winner_congrats'], the_winner: winner.name, best_to: BEST_TO)
   end
 
   def reset
@@ -457,7 +457,7 @@ class RPSGame
         
       reset
 
-      if human.score == 5 || computer.score == 5
+      if human.score == BEST_TO || computer.score == BEST_TO
         congrats_message
         break unless play_again?
       end
