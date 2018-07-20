@@ -1,5 +1,5 @@
 
-one_through : "Choose 1-%{wins_needed}"
+one_through : "Choose 1-5"
 choose_move : 1. Rock | 2. Paper | 3. Scissors | 4. Lizzard | 5. Spock
 invalid_move : "Sorry, invalid choice.\n\n"
 prompt_name : "please enter your name: "
@@ -20,7 +20,6 @@ rules:
   scissor_rules: SCISSORS decapitates LIZARD and cuts PAPER
   lizard_rules: LIZARD poisons SPOCK and eats PAPER
   spock_rules: "SPOCK smashes SCISSORS and vaporizes ROCK\n\n"
-
 
 rock:
   lizard: ROCK crushes LIZARD
