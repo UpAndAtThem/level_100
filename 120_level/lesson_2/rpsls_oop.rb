@@ -316,7 +316,7 @@ class RPSGame
   require 'yaml'
   MESSAGES = YAML.load_file('rpsls_oop_messages.yml')
 
-  BEST_TO = 5
+  BEST_TO = 2
 
   def initialize
     system 'clear'
@@ -408,6 +408,11 @@ class RPSGame
     end
   end
 
+  def clear_scores
+    human.score = 0
+    computer.score = 0
+  end
+
   def display_score
    if winner.class == Human
      puts "#{human.name} now has #{human.score}. #{computer.name} has #{computer.score}"
@@ -463,6 +468,7 @@ class RPSGame
 
       if human.score == BEST_TO || computer.score == BEST_TO
         congrats_message
+        clear_scores
         break unless play_again?
       end
     end
