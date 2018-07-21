@@ -1,3 +1,4 @@
+require 'pry'
 module DisplayableSprites
 
   def pow
@@ -366,10 +367,11 @@ class RPSGame
     puts MESSAGES['farewell']
   end
 
-  def display_winning_sprite(winning_player)
-    num_spaces = winning_player.move.sprite[-1].length - winning_player.move.value.length
+  def display_winning_sprite
+    binding.pry
+    num_spaces = winner.move.sprite[-1].length - winner.move.value.length
 
-    winning_player.move.sprite[1..-1].each { |line| puts line}
+    winner.move.sprite[1..-1].each { |line| puts line}
     puts(' ' * num_spaces + "WINS!\n\n\n")
   end
 
@@ -378,7 +380,7 @@ class RPSGame
   end
 
   def display_winner
-    display_winning_sprite(winner)
+    display_winning_sprite
     puts MESSAGES[winner.move.value][loser.move.value]
     display_score
   end
