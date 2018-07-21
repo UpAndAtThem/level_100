@@ -368,7 +368,6 @@ class RPSGame
   end
 
   def display_winning_sprite
-    binding.pry
     num_spaces = winner.move.sprite[-1].length - winner.move.value.length
 
     winner.move.sprite[1..-1].each { |line| puts line}
@@ -456,6 +455,10 @@ class RPSGame
     computer.add_to_history(human.move)
   end
 
+  def winner?
+    human.score == BEST_TO || computer.score == BEST_TO
+  end
+
   def play
     loop do
       players_choose
@@ -468,7 +471,7 @@ class RPSGame
         
       reset
 
-      if human.score == BEST_TO || computer.score == BEST_TO
+      if winner?
         congrats_message
         clear_scores
         break unless play_again?
