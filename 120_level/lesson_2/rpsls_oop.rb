@@ -136,7 +136,7 @@ class Human < Player
     name = ""
     loop do
       puts MESSAGES['prompt_name']
-      name = gets.chomp
+      name = gets.chomp.strip
 
       break unless name.empty?
       puts MESSAGES['invalid_name']
@@ -166,11 +166,11 @@ class Computer < Player
   end
 
   def find_most_occuring
-    most_occuring = @opponents_moves.each_with_object(Hash.new(0)) do |move, result|
+    occurances_hash = @opponents_moves.each_with_object(Hash.new(0)) do |move, result|
       result[move.value] += 1
     end
 
-    most_frequent = most_occuring.sort_by { |move, occurance| occurance}[-1][0]
+    most_frequent = occurances_hash.sort_by { |move, occurance| occurance}[-1][0]
     Move.new(most_frequent)
   end
 
@@ -317,7 +317,7 @@ class RPSGame
   require 'yaml'
   MESSAGES = YAML.load_file('rpsls_oop_messages.yml')
 
-  BEST_TO = 2
+  BEST_TO = 5
 
   def initialize
     system 'clear'
@@ -459,6 +459,18 @@ class RPSGame
     human.score == BEST_TO || computer.score == BEST_TO
   end
 
+  def win_by
+    (computer.score - human.score).abs
+  end
+
+  def message_to_player
+    if winner.class == Human
+      puts MESSAGES['player_win_comment'][win_by]
+    else
+      puts MESSAGES['computer_win_comment'][win_by]
+    end
+  end
+
   def play
     loop do
       players_choose
@@ -473,6 +485,7 @@ class RPSGame
 
       if winner?
         congrats_message
+        message_to_player
         clear_scores
         break unless play_again?
       end
