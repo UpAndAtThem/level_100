@@ -12,7 +12,7 @@ press_enter : 'Press enter to continue:'
 farewell : "Thanks for playing Rock, Paper, Scissors! Goodbye."
 another_game : Would you like to play another game? (y/n)
 y_or_n : "Enter 'y' or 'n'"
-winner_congrats : "Congratulations, %{the_winner}! You were first to score %{best_to} points"
+winner_congrats : "%{the_winner} was first to score %{best_to} points, %{the_winner} wins!"
 
 rules:
   greeting: "Welcome to R.P.S.L.S, below are the rules\n\n"
@@ -41,3 +41,17 @@ lizard:
 spock:
   rock: SPOCK vaporizes ROCK
   scissors: SPOCK smashes SCISSORS
+
+player_win_comment:
+  1 : You almost lost to a few hundred lines of code
+  2 : That was a close one!
+  3 : You made quick work of them
+  4 : Well that was embarassing to watch, You really rocked their circuit board!
+  5 : It's like they weren't even trying. Congratulations!
+
+computer_win_comment:
+  1 : Heeeeeey now.. Wipe your tears, it was like.. a super close game!
+  2 : You'll get em' next time tiger!
+  3 : I have a small suggestion.. don't keep choosing the losing ones
+  4 : You lost so many times... maybe the computer is cheating
+  5 : That seems statistically impossible
