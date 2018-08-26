@@ -11,6 +11,7 @@
 # Verbs:
 #   -play
 #   -choose
+
 require 'pry'
 module Displayable
   def display_result
@@ -49,7 +50,7 @@ class Board
   include Displayable
 
   def initialize
-    @board = (1..9).each_with_object({}) { |position, result_arr| result_arr[position] = Square.new}
+    @board = (1..9).each_with_object({}) { |pos, result| result[pos] = Square.new }
   end
 
   def [](index)
@@ -58,6 +59,10 @@ class Board
   
   def free_spaces
     board.select { |_, square| square.marker == ' ' }.keys
+  end
+
+  def board_full?
+    board.free_spaces.empty?
   end
 
   def choices
@@ -70,11 +75,21 @@ class Player
   attr_accessor :choice
 
   def initialize
+    @score = 0
+  end
+
+  def increment_score
+    @score += 1
   end
 end
 
 class Computer
   def initialize
+    @score = 0
+  end
+
+  def increment_score
+    @score += 1
   end
 end
 
@@ -106,10 +121,10 @@ class TTTGame
 
   def first_player_moves
     choice_prompt
-    
+
     loop do
       player.choice = gets.chomp.to_i
-      break if board.free_spaces. include? player.choice
+      break if board.free_spaces.include? player.choice
       choice_prompt
     end
 
@@ -121,11 +136,7 @@ class TTTGame
   end
 
   def someone_won?
-
-  end
-
-  def board_full?
-
+    binding.pry
   end
 
   def play
@@ -134,6 +145,7 @@ class TTTGame
     loop do
       display_board
       first_player_moves
+
       break if someone_won? || board_full?
 
       second_player_moves
