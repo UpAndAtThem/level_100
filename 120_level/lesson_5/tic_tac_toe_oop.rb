@@ -40,9 +40,7 @@ module Displayable
   end
 
   def choice_prompt
-    puts "Choose a square: "
-    binding.pry
-    board.free_spaces
+    puts "Choose a square: #{board.choices}"
   end  
 end
 
@@ -61,10 +59,15 @@ class Board
   def free_spaces
     board.select { |_, square| square.marker == ' ' }.keys
   end
+
+  def choices
+    free_spaces.join " "
+  end
 end
 
 class Player
   include Displayable
+  attr_accessor :choice
 
   def initialize
   end
@@ -103,6 +106,14 @@ class TTTGame
 
   def first_player_moves
     choice_prompt
+    
+    loop do
+      player.choice = gets.chomp.to_i
+      break if board.free_spaces. include? player.choice
+      choice_prompt
+    end
+
+    board[player.choice].marker = "X"
   end
 
   def second_player_moves
@@ -128,6 +139,7 @@ class TTTGame
       second_player_moves
       break if someone_won? || board_full?
     end
+
     display_result
     display_goodbye_message
   end
