@@ -49,8 +49,16 @@ class Board
   attr_reader :board
   include Displayable
 
+  WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
+                  [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
+                  [[1, 5, 9], [3, 5, 7]] # diagnals
+
   def initialize
     @board = (1..9).each_with_object({}) { |pos, result| result[pos] = Square.new }
+  end
+
+  def winning_states
+    WINNING_LINES
   end
 
   def [](index)
