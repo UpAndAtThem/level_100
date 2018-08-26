@@ -1,5 +1,5 @@
 # Description
-
+ add Displayable module.  initialize Board. and Square
 # commandline tic tac toe is a game where 2 players a player and computer take turns choosing a square
 # on a 3 X 3 board until one of them reaches 3 squares in a row, column, or diagonal.
 
@@ -16,6 +16,10 @@ require 'pry'
 module Displayable
   def display_result
 
+  end
+
+  def display_goodbye_message
+    puts "Thanks for playing Tic Tac Toe! Goodbye!"
   end
 
   def display_board
@@ -100,10 +104,6 @@ class TTTGame
   end
 
   def board_full?
-
-  end
-
-  def display_goodbye_message
 
   end
 
