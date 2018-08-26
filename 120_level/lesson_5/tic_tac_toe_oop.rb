@@ -1,5 +1,4 @@
 # Description
- add Displayable module.  initialize Board. and Square
 # commandline tic tac toe is a game where 2 players a player and computer take turns choosing a square
 # on a 3 X 3 board until one of them reaches 3 squares in a row, column, or diagonal.
 
@@ -24,6 +23,7 @@ module Displayable
 
   def display_board
     system 'clear'
+    binding.pry
     puts ''
     puts '     |     |'
     puts "  #{board[1]}  |  #{board[2]}  |  #{board[3]} "
@@ -37,6 +37,11 @@ module Displayable
     puts "  #{board[7]}  |  #{board[8]}  |  #{board[9]}"
     puts '     |     |'
     puts ''
+  end
+
+  def choice_prompt
+    puts "hello"
+    board.free_spaces
   end  
 end
 
@@ -45,16 +50,22 @@ class Board
   include Displayable
 
   def initialize
-    @board = (1..9).each_with_object([]) { |_, result_arr| result_arr << Square.new}
+    @board = (1..9).each_with_object({}) { |position, result_arr| result_arr[position] = Square.new}
   end
 
   def [](index)
     board[index - 1]
   end
   
+  def free_spaces
+    binding.pry
+    board.map { |square| square.to_s }
+  end
 end
 
 class Player
+  include Displayable
+
   def initialize
   end
 end
@@ -90,9 +101,8 @@ class TTTGame
     puts "Welcome to Tic Tac Toe"
   end
 
-
   def first_player_moves
-
+    choice_prompt
   end
 
   def second_player_moves
@@ -110,16 +120,16 @@ class TTTGame
   def play
     greeting
     display_board
-    # loop do
-    #   display_board
-    #   first_player_moves
-    #   break if someone_won? || board_full?
+    loop do
+      display_board
+      first_player_moves
+      break if someone_won? || board_full?
 
-    #   second_player_moves
-    #   break if someone_won? || board_full?
-    # end
-    # display_result
-    # display_goodbye_message
+      second_player_moves
+      break if someone_won? || board_full?
+    end
+    display_result
+    display_goodbye_message
   end
 end
 
