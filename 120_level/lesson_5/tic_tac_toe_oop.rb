@@ -54,7 +54,8 @@ class Board
   end
 
   def [](index)
-    board[index - 1]
+    binding.pry
+    board[index]
   end
   
   def free_spaces
