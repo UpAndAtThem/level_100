@@ -12,11 +12,42 @@
 # Verbs:
 #   -play
 #   -choose
-
-class Board
-  def initialize
+require 'pry'
+module Displayable
+  def display_result
 
   end
+
+  def display_board
+    system 'clear'
+    puts ''
+    puts '     |     |'
+    puts "  #{board[1]}  |  #{board[2]}  |  #{board[3]} "
+    puts '     |     |'
+    puts '-----+-----+-----'
+    puts '     |     |'
+    puts "  #{board[4]}  |  #{board[5]}  |  #{board[6]}"
+    puts '     |     |'
+    puts '-----+-----+-----'
+    puts '     |     |'
+    puts "  #{board[7]}  |  #{board[8]}  |  #{board[9]}"
+    puts '     |     |'
+    puts ''
+  end  
+end
+
+class Board
+  attr_reader :board
+  include Displayable
+
+  def initialize
+    @board = (1..9).each_with_object([]) { |_, result_arr| result_arr << Square.new}
+  end
+
+  def [](index)
+    board[index - 1]
+  end
+  
 end
 
 class Player
@@ -30,11 +61,21 @@ class Computer
 end
 
 class Square
+  attr_accessor :marker
+
   def initialize
+    @marker = ' '
+  end
+
+  def to_s
+    marker
   end
 end
 
 class TTTGame
+  include Displayable
+  attr_accessor :board, :player, :computer
+
   def initialize
     @player = Player.new
     @computer = Computer.new
@@ -45,9 +86,40 @@ class TTTGame
     puts "Welcome to Tic Tac Toe"
   end
 
+
+  def first_player_moves
+
+  end
+
+  def second_player_moves
+
+  end
+
+  def someone_won?
+
+  end
+
+  def board_full?
+
+  end
+
+  def display_goodbye_message
+
+  end
+
   def play
     greeting
-    # ... Orchestration Engine ...
+    display_board
+    # loop do
+    #   display_board
+    #   first_player_moves
+    #   break if someone_won? || board_full?
+
+    #   second_player_moves
+    #   break if someone_won? || board_full?
+    # end
+    # display_result
+    # display_goodbye_message
   end
 end
 
