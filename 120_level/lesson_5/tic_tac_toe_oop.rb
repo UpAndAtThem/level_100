@@ -23,7 +23,7 @@ module Displayable
 
   def display_board
     system 'clear'
-    binding.pry
+
     puts ''
     puts '     |     |'
     puts "  #{board[1]}  |  #{board[2]}  |  #{board[3]} "
@@ -40,7 +40,8 @@ module Displayable
   end
 
   def choice_prompt
-    puts "hello"
+    puts "Choose a square: "
+    binding.pry
     board.free_spaces
   end  
 end
@@ -54,13 +55,11 @@ class Board
   end
 
   def [](index)
-    binding.pry
     board[index]
   end
   
   def free_spaces
-    binding.pry
-    board.map { |square| square.to_s }
+    board.select { |_, square| square.marker == ' ' }.keys
   end
 end
 
