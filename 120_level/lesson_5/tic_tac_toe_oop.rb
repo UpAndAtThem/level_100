@@ -13,9 +13,10 @@
 #   -choose
 
 require 'pry'
+
 module Displayable
   def display_result
-
+    binding.pry
   end
 
   def display_goodbye_message
@@ -69,8 +70,8 @@ class Board
     board.select { |_, square| square.marker == ' ' }.keys
   end
 
-  def board_full?
-    board.free_spaces.empty?
+  def full?
+    free_spaces.empty?
   end
 
   def choices
@@ -80,7 +81,7 @@ end
 
 class Player
   include Displayable
-  attr_accessor :choice
+  attr_accessor :choice, :winner
 
   def initialize
     @score = 0
@@ -92,6 +93,9 @@ class Player
 end
 
 class Computer
+  include Displayable
+  attr_accessor :choice, :winner
+
   def initialize
     @score = 0
   end
@@ -132,6 +136,7 @@ class TTTGame
 
     loop do
       player.choice = gets.chomp.to_i
+
       break if board.free_spaces.include? player.choice
       choice_prompt
     end
@@ -140,11 +145,14 @@ class TTTGame
   end
 
   def second_player_moves
-
+    choice = board.free_spaces.sample
+    board[choice].marker = 'O'
   end
 
-  def someone_won?
-    binding.pry
+  def someone_won?(player_marker)
+    board.winning_states.any? do |winning_line|
+      winning_line.all? { |square| board[square].marker == player_marker }
+    end
   end
 
   def play
@@ -154,10 +162,10 @@ class TTTGame
       display_board
       first_player_moves
 
-      break if someone_won? || board_full?
+      break if someone_won?("X") || board.full?
 
       second_player_moves
-      break if someone_won? || board_full?
+      break if someone_won?("O") || board.full?
     end
 
     display_result
