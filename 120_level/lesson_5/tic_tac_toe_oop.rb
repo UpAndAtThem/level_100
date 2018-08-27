@@ -16,6 +16,7 @@ require 'pry'
 
 module Displayable
   def display_result
+    display_board
     binding.pry
   end
 
@@ -67,7 +68,7 @@ class Board
   end
   
   def free_spaces
-    board.select { |_, square| square.marker == ' ' }.keys
+    board.select { |_, square| square.marking == ' ' }.keys
   end
 
   def full?
@@ -81,10 +82,11 @@ end
 
 class Player
   include Displayable
-  attr_accessor :choice, :winner
+  attr_accessor :choice, :winner, :marking
 
   def initialize
     @score = 0
+    @marking = 'X'
   end
 
   def increment_score
@@ -94,10 +96,11 @@ end
 
 class Computer
   include Displayable
-  attr_accessor :choice, :winner
+  attr_accessor :choice, :winner, :marking
 
   def initialize
     @score = 0
+    @marking = 'O'
   end
 
   def increment_score
@@ -106,14 +109,14 @@ class Computer
 end
 
 class Square
-  attr_accessor :marker
+  attr_accessor :marking
 
   def initialize
-    @marker = ' '
+    @marking = ' '
   end
 
   def to_s
-    marker
+    marking
   end
 end
 
@@ -131,6 +134,10 @@ class TTTGame
     puts "Welcome to Tic Tac Toe"
   end
 
+  def set_winner(marking)
+    @winner = player.marking == marking ? player : computer
+  end
+
   def first_player_moves
     choice_prompt
 
@@ -141,17 +148,18 @@ class TTTGame
       choice_prompt
     end
 
-    board[player.choice].marker = "X"
+    board[player.choice].marking = "X"
   end
 
   def second_player_moves
     choice = board.free_spaces.sample
-    board[choice].marker = 'O'
+    board[choice].marking = 'O'
   end
 
-  def someone_won?(player_marker)
-    board.winning_states.any? do |winning_line|
-      winning_line.all? { |square| board[square].marker == player_marker }
+  def someone_won?(passed_marking)
+    board.winning_states.any? do |winning_set|
+      win = winning_set.all? { |square| board[square].marking == passed_marking }
+      set_winner(passed_marking) if win
     end
   end
 
@@ -159,12 +167,13 @@ class TTTGame
     greeting
     display_board
     loop do
-      display_board
       first_player_moves
+      display_board
 
       break if someone_won?("X") || board.full?
 
       second_player_moves
+      display_board
       break if someone_won?("O") || board.full?
     end
 
