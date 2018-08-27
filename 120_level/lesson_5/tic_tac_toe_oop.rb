@@ -16,8 +16,8 @@ require 'pry'
 
 module Displayable
   def display_result
-    display_board
-    binding.pry
+    puts "#{@winner} wins!"
+    sleep 0.5
   end
 
   def display_goodbye_message
@@ -82,7 +82,7 @@ end
 
 class Player
   include Displayable
-  attr_accessor :choice, :winner, :marking
+  attr_accessor :choice, :winner, :marking, :score
 
   def initialize
     @score = 0
@@ -96,7 +96,7 @@ end
 
 class Computer
   include Displayable
-  attr_accessor :choice, :winner, :marking
+  attr_accessor :choice, :winner, :marking, :score
 
   def initialize
     @score = 0
@@ -130,28 +130,38 @@ class TTTGame
     @board = Board.new
   end
 
-  def greeting
-    puts "Welcome to Tic Tac Toe"
+  def greeting(best_to)
+    system "clear"
+    print "Welcome to Tic Tac Toe, the first player to #{best_to} wins! \nPress enter to continue:"
+    sleep 1.5
   end
 
   def set_winner(marking)
     @winner = player.marking == marking ? player : computer
+    @winner.score += 1 
+  end
+
+  def reset
+    @board = Board.new
+    @winner = nil
   end
 
   def first_player_moves
     choice_prompt
+    player_choice = nil
 
     loop do
-      player.choice = gets.chomp.to_i
+      player_choice = gets.chomp.to_i
 
-      break if board.free_spaces.include? player.choice
+      break if board.free_spaces.include? player_choice
       choice_prompt
     end
 
-    board[player.choice].marking = "X"
+    board[player_choice].marking = "X"
   end
 
   def second_player_moves
+    sleep 1.25
     choice = board.free_spaces.sample
     board[choice].marking = 'O'
   end
@@ -163,24 +173,32 @@ class TTTGame
     end
   end
 
-  def play
-    greeting
-    display_board
+  def play(best_to)
+    greeting(best_to)
     loop do
-      first_player_moves
       display_board
+      loop do
+        first_player_moves
+        display_board
+        break if board.full? || someone_won?("X") 
+  
+        second_player_moves
+        display_board
+        break if board.full? || someone_won?("O")
+      end
+  
+      display_result
+      break if [player.score, computer.score].include? best_to
 
-      break if someone_won?("X") || board.full?
-
-      second_player_moves
-      display_board
-      break if someone_won?("O") || board.full?
+      reset
     end
 
-    display_result
     display_goodbye_message
   end
 end
 
 game = TTTGame.new
-game.play
+best_to = 5
+
+game.play(best_to)
+
