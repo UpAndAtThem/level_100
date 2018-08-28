@@ -16,12 +16,18 @@ require 'pry'
 
 module Displayable
   def display_result
-    puts "#{@winner} wins!"
-    sleep 0.5
+    @winner ? puts("#{@winner} wins!") : puts("It's a tie!")
+    puts "\nPlayer score: #{player.score}\nComputer score: #{computer.score}"
+
+    return if [computer.score, player.score].include? best_to
+
+    print "\nPress enter to start new round:"
+    gets.chomp
   end
 
   def display_goodbye_message
-    puts "Thanks for playing Tic Tac Toe! Goodbye!"
+    puts "\nCongratulations to the #{winner} for being the grand champion."
+    puts "\nThanks for playing Tic Tac Toe! Goodbye!"
   end
 
   def display_board
@@ -89,6 +95,10 @@ class Player
     @marking = 'X'
   end
 
+  def to_s
+    "Player"
+  end
+
   def increment_score
     @score += 1
   end
@@ -101,6 +111,10 @@ class Computer
   def initialize
     @score = 0
     @marking = 'O'
+  end
+
+  def to_s
+    "Computer"
   end
 
   def increment_score
@@ -122,9 +136,10 @@ end
 
 class TTTGame
   include Displayable
-  attr_accessor :board, :player, :computer
+  attr_accessor :board, :player, :computer, :best_to, :winner
 
-  def initialize
+  def initialize(best_to)
+    @best_to = best_to
     @player = Player.new
     @computer = Computer.new
     @board = Board.new
@@ -132,8 +147,8 @@ class TTTGame
 
   def greeting(best_to)
     system "clear"
-    print "Welcome to Tic Tac Toe, the first player to #{best_to} wins! \nPress enter to continue:"
-    sleep 1.5
+    print "Welcome to Tic Tac Toe.\nThe first player to #{best_to} wins! \nPress enter to continue:"
+    gets.chomp
   end
 
   def set_winner(marking)
@@ -173,7 +188,7 @@ class TTTGame
     end
   end
 
-  def play(best_to)
+  def play
     greeting(best_to)
     loop do
       display_board
@@ -186,10 +201,10 @@ class TTTGame
         display_board
         break if board.full? || someone_won?("O")
       end
-  
-      display_result
-      break if [player.score, computer.score].include? best_to
 
+      display_result
+
+      break if [player.score, computer.score].include? best_to
       reset
     end
 
@@ -197,8 +212,8 @@ class TTTGame
   end
 end
 
-game = TTTGame.new
-best_to = 5
+game = TTTGame.new(3)
 
-game.play(best_to)
+
+game.play
 
