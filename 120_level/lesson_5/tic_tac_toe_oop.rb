@@ -73,22 +73,23 @@ class Board
     board[index]
   end
   
-  def free_spaces
+  def free_positions
     board.select { |_, square| square.marking == ' ' }.keys
   end
 
   def full?
-    free_spaces.empty?
+    free_positions.empty?
   end
 
   def choices
-    free_spaces.join " "
+    free_positions.join " "
   end
 end
 
 class Player
   include Displayable
-  attr_accessor :marker, :score
+  attr_reader :marker
+  attr_accessor :score
 
   def initialize(marker)
     @score = 0
@@ -106,7 +107,8 @@ end
 
 class Computer
   include Displayable
-  attr_accessor :marker, :score
+  attr_reader :marker
+  attr_accessor :score
 
   def initialize(marker)
     @score = 0
@@ -171,7 +173,7 @@ class TTTGame
     loop do
       player_choice = gets.chomp.to_i
 
-      break if board.free_spaces.include? player_choice
+      break if board.free_positions.include? player_choice
       choice_prompt
     end
 
@@ -180,7 +182,7 @@ class TTTGame
 
   def second_player_moves
     sleep 1.25
-    choice = board.free_spaces.sample
+    choice = board.free_positions.sample
     board[choice].marking = COMPUTER_MARKER
   end
 
@@ -208,7 +210,6 @@ class TTTGame
       display_result
 
       break if [player.score, computer.score].include? best_to
-      binding.pry
       reset
     end
 
@@ -217,7 +218,4 @@ class TTTGame
 end
 
 game = TTTGame.new(3)
-
-
 game.play
-
