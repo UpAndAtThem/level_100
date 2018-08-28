@@ -88,11 +88,11 @@ end
 
 class Player
   include Displayable
-  attr_accessor :choice, :winner, :marking, :score
+  attr_accessor :choice, :winner, :marker, :score
 
   def initialize
     @score = 0
-    @marking = 'X'
+    @marker = 'X'
   end
 
   def to_s
@@ -106,11 +106,11 @@ end
 
 class Computer
   include Displayable
-  attr_accessor :choice, :winner, :marking, :score
+  attr_accessor :choice, :winner, :marker, :score
 
   def initialize
     @score = 0
-    @marking = 'O'
+    @marker = 'O'
   end
 
   def to_s
@@ -151,8 +151,8 @@ class TTTGame
     gets.chomp
   end
 
-  def set_winner(marking)
-    @winner = player.marking == marking ? player : computer
+  def set_winner(passed_marker)
+    @winner = player.marker == passed_marker ? player : computer
     @winner.score += 1 
   end
 
@@ -181,10 +181,10 @@ class TTTGame
     board[choice].marking = 'O'
   end
 
-  def someone_won?(passed_marking)
+  def someone_won?(passed_marker)
     board.winning_states.any? do |winning_set|
-      win = winning_set.all? { |square| board[square].marking == passed_marking }
-      set_winner(passed_marking) if win
+      win = winning_set.all? { |square| board[square].marking == passed_marker }
+      set_winner(passed_marker) if win
     end
   end
 
