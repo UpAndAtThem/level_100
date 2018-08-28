@@ -88,7 +88,7 @@ end
 
 class Player
   include Displayable
-  attr_accessor :choice, :winner, :marker, :score
+  attr_accessor :marker, :score
 
   def initialize(marker)
     @score = 0
@@ -106,7 +106,7 @@ end
 
 class Computer
   include Displayable
-  attr_accessor :choice, :winner, :marker, :score
+  attr_accessor :marker, :score
 
   def initialize(marker)
     @score = 0
@@ -208,6 +208,7 @@ class TTTGame
       display_result
 
       break if [player.score, computer.score].include? best_to
+      binding.pry
       reset
     end
 
