@@ -175,13 +175,13 @@ class TTTGame
       choice_prompt
     end
 
-    board[player_choice].marking = "X"
+    board[player_choice].marking = PLAYER_MARKER
   end
 
   def second_player_moves
     sleep 1.25
     choice = board.free_spaces.sample
-    board[choice].marking = 'O'
+    board[choice].marking = COMPUTER_MARKER
   end
 
   def someone_won?(passed_marker)
@@ -198,11 +198,11 @@ class TTTGame
       loop do
         first_player_moves
         display_board
-        break if someone_won?("X") || board.full?
+        break if someone_won?(PLAYER_MARKER) || board.full?
   
         second_player_moves
         display_board
-        break if someone_won?("O") ||  board.full?
+        break if someone_won?(COMPUTER_MARKER) ||  board.full?
       end
 
       display_result
