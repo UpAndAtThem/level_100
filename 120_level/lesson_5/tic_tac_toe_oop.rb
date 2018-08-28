@@ -90,9 +90,9 @@ class Player
   include Displayable
   attr_accessor :choice, :winner, :marker, :score
 
-  def initialize
+  def initialize(marker)
     @score = 0
-    @marker = 'X'
+    @marker = marker
   end
 
   def to_s
@@ -108,9 +108,9 @@ class Computer
   include Displayable
   attr_accessor :choice, :winner, :marker, :score
 
-  def initialize
+  def initialize(marker)
     @score = 0
-    @marker = 'O'
+    @marker = marker
   end
 
   def to_s
@@ -135,13 +135,16 @@ class Square
 end
 
 class TTTGame
+  COMPUTER_MARKER = 'O'
+  PLAYER_MARKER = 'X'
+
   include Displayable
   attr_accessor :board, :player, :computer, :best_to, :winner
 
   def initialize(best_to)
     @best_to = best_to
-    @player = Player.new
-    @computer = Computer.new
+    @player = Player.new(PLAYER_MARKER)
+    @computer = Computer.new(COMPUTER_MARKER)
     @board = Board.new
   end
 
@@ -195,11 +198,11 @@ class TTTGame
       loop do
         first_player_moves
         display_board
-        break if board.full? || someone_won?("X") 
+        break if someone_won?("X") || board.full?
   
         second_player_moves
         display_board
-        break if board.full? || someone_won?("O")
+        break if someone_won?("O") ||  board.full?
       end
 
       display_result
