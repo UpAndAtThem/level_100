@@ -14,48 +14,8 @@
 
 require 'pry'
 
-module Displayable
-  def display_result
-    @winner ? puts("#{@winner} wins!") : puts("It's a tie!")
-    puts "\nPlayer score: #{player.score}\nComputer score: #{computer.score}"
-
-    return if [computer.score, player.score].include? best_to
-
-    print "\nPress enter to start new round:"
-    gets.chomp
-  end
-
-  def display_goodbye_message
-    puts "\nCongratulations to the #{winner} for being the grand champion."
-    puts "\nThanks for playing Tic Tac Toe! Goodbye!"
-  end
-
-  def display_board
-    system 'clear'
-
-    puts ''
-    puts '     |     |'
-    puts "  #{board[1]}  |  #{board[2]}  |  #{board[3]} "
-    puts '     |     |'
-    puts '-----+-----+-----'
-    puts '     |     |'
-    puts "  #{board[4]}  |  #{board[5]}  |  #{board[6]}"
-    puts '     |     |'
-    puts '-----+-----+-----'
-    puts '     |     |'
-    puts "  #{board[7]}  |  #{board[8]}  |  #{board[9]}"
-    puts '     |     |'
-    puts ''
-  end
-
-  def choice_prompt
-    puts "Choose a square: #{board.choices}"
-  end  
-end
-
 class Board
   attr_reader :board
-  include Displayable
 
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                   [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
@@ -87,7 +47,6 @@ class Board
 end
 
 class Player
-  include Displayable
   attr_reader :marker
   attr_accessor :score
 
@@ -106,7 +65,6 @@ class Player
 end
 
 class Computer
-  include Displayable
   attr_reader :marker
   attr_accessor :score
 
@@ -126,9 +84,10 @@ end
 
 class Square
   attr_accessor :marking
+  INITIAL_MARKER = ' '
 
   def initialize
-    @marking = ' '
+    @marking = INITIAL_MARKER
   end
 
   def to_s
@@ -140,7 +99,6 @@ class TTTGame
   COMPUTER_MARKER = 'O'
   PLAYER_MARKER = 'X'
 
-  include Displayable
   attr_accessor :board, :player, :computer, :best_to, :winner
 
   def initialize(best_to)
@@ -150,8 +108,15 @@ class TTTGame
     @board = Board.new
   end
 
+  private
+  
+  def clear
+    system 'clear'
+    system 'cls'
+  end
+
   def greeting(best_to)
-    system "clear"
+    system 'clear'
     print "Welcome to Tic Tac Toe.\nThe first player to #{best_to} wins! \nPress enter to continue:"
     gets.chomp
   end
@@ -186,25 +151,65 @@ class TTTGame
     board[choice].marking = COMPUTER_MARKER
   end
 
-  def someone_won?(passed_marker)
+  def won_round?(passed_marker)
     board.winning_states.any? do |winning_set|
-      win = winning_set.all? { |square| board[square].marking == passed_marker }
+      win = winning_set.all? { |square_position| board[square_position].marking == passed_marker }
       set_winner(passed_marker) if win
     end
   end
+
+  def display_board
+    clear
+    puts ''
+    puts '     |     |'
+    puts "  #{board[1]}  |  #{board[2]}  |  #{board[3]} "
+    puts '     |     |'
+    puts '-----+-----+-----'
+    puts '     |     |'
+    puts "  #{board[4]}  |  #{board[5]}  |  #{board[6]}"
+    puts '     |     |'
+    puts '-----+-----+-----'
+    puts '     |     |'
+    puts "  #{board[7]}  |  #{board[8]}  |  #{board[9]}"
+    puts '     |     |'
+    puts ''
+  end
+
+  def display_result
+    @winner ? puts("#{@winner} wins!") : puts("It's a tie!")
+    puts "\nPlayer score: #{player.score}\nComputer score: #{computer.score}"
+
+    return if [computer.score, player.score].include? best_to
+
+    print "\nPress enter to start new round:"
+    gets.chomp
+  end
+
+  def display_goodbye_message
+    puts "\nCongratulations to the #{winner} for being the grand champion."
+    puts "\nThanks for playing Tic Tac Toe! Goodbye!"
+  end
+
+  def choice_prompt
+    puts "Choose a square: #{board.choices}"
+  end 
+
+  public
 
   def play
     greeting(best_to)
     loop do
       display_board
+
       loop do
         first_player_moves
         display_board
-        break if someone_won?(PLAYER_MARKER) || board.full?
-  
+
+        break if won_round?(PLAYER_MARKER) || board.full?
+
         second_player_moves
         display_board
-        break if someone_won?(COMPUTER_MARKER) ||  board.full?
+        break if won_round?(COMPUTER_MARKER) ||  board.full?
       end
 
       display_result
