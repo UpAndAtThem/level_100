@@ -25,6 +25,22 @@ class Board
     @board = (1..9).each_with_object({}) { |pos, result| result[pos] = Square.new }
   end
 
+  def display
+    puts ''
+    puts '     |     |'
+    puts "  #{board[1]}  |  #{board[2]}  |  #{board[3]} "
+    puts '     |     |'
+    puts '-----+-----+-----'
+    puts '     |     |'
+    puts "  #{board[4]}  |  #{board[5]}  |  #{board[6]}"
+    puts '     |     |'
+    puts '-----+-----+-----'
+    puts '     |     |'
+    puts "  #{board[7]}  |  #{board[8]}  |  #{board[9]}"
+    puts '     |     |'
+    puts ''
+  end
+
   def winning_states
     WINNING_LINES
   end
@@ -109,7 +125,7 @@ class TTTGame
   end
 
   private
-  
+
   def clear
     system 'clear'
     system 'cls'
@@ -160,19 +176,7 @@ class TTTGame
 
   def display_board
     clear
-    puts ''
-    puts '     |     |'
-    puts "  #{board[1]}  |  #{board[2]}  |  #{board[3]} "
-    puts '     |     |'
-    puts '-----+-----+-----'
-    puts '     |     |'
-    puts "  #{board[4]}  |  #{board[5]}  |  #{board[6]}"
-    puts '     |     |'
-    puts '-----+-----+-----'
-    puts '     |     |'
-    puts "  #{board[7]}  |  #{board[8]}  |  #{board[9]}"
-    puts '     |     |'
-    puts ''
+    board.display
   end
 
   def display_result
