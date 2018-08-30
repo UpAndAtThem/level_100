@@ -45,7 +45,7 @@ class Board
   end
   # rubocop:enable Metrics/AbcSize, MethodLength
 
-  def winning_states
+  def winning_lines
     WINNING_LINES
   end
 
@@ -61,22 +61,6 @@ class Board
     board.select { |_, square| square.marking == ' ' }.keys
   end
 
-  def full?
-    free_positions.empty?
-  end
-
-  def three_in_a_row?(line)
-    line_markings = board.values_at(*line).map(&:marking)
-
-    line_markings.uniq.first != ' ' && line_markings.uniq.count == 1
-  end
-
-  def won_round?
-    WINNING_LINES.any? do |line|
-      three_in_a_row?(line) ? true : false
-    end
-  end
-
   def joinor(arr, delimiter = ',', conjunction = 'or')
     if arr.size == 1
       arr.first
@@ -90,6 +74,28 @@ class Board
 
   def choices
     joinor free_positions
+  end
+
+  def full?
+    free_positions.empty?
+  end
+
+  def two_opponent_and_blank?(line)
+    line_markings = board.values_at(*line).map(&:marking)
+    line_markings.count(TTTGame::PLAYER_MARKER) == 2 &&
+    line_markings.count(' ') == 1
+  end
+
+  def three_in_a_row?(line)
+    line_markings = board.values_at(*line).map(&:marking)
+
+    line_markings.uniq.first != ' ' && line_markings.uniq.count == 1
+  end
+
+  def won_round?
+    winning_lines.any? do |line|
+      three_in_a_row?(line) ? true : false
+    end
   end
 end
 
@@ -144,7 +150,60 @@ class Square
 end
 
 # TTTDisplays module
+module AI
+  private
+
+  def defensive?
+    board.winning_lines.any? do |line|
+      board.two_opponent_and_blank?(line)
+    end
+  end
+
+  def player_marker_position(line, marker)
+    line.select do |position|
+      board[position].marking == marker
+    end
+  end
+
+  def defensive
+    board.winning_lines.any? do |line|
+      marker = TTTGame::PLAYER_MARKER
+
+      player_markings = player_marker_position(line, marker)
+      blank_spaces = player_marker_position(line, ' ')
+
+      if player_markings.count == 2 && blank_spaces.count == 1
+        board[blank_spaces.first] = TTTGame::COMPUTER_MARKER
+        return
+      end
+    end
+  end
+
+  def offensive?
+
+  end
+
+  def offensive
+
+  end
+
+  def middle?
+
+  end
+
+  def middle
+
+  end
+
+  def random
+    choice = board.free_positions.sample
+    board[choice] = TTTGame::COMPUTER_MARKER
+  end
+end
+
 module TTTDisplays
+  private
+
   def display_greeting(best_to)
     clear
     puts 'Welcome to Tic Tac Toe.'
@@ -186,7 +245,7 @@ class TTTGame
   COMPUTER_MARKER = 'O'.freeze
   PLAYER_MARKER = 'X'.freeze
 
-  include TTTDisplays
+  include TTTDisplays, AI
   attr_accessor :board, :player, :computer, :best_to, :winner, :current_player
 
   def initialize(best_to)
@@ -218,6 +277,7 @@ class TTTGame
   end
 
   def set_winner
+    return unless board.won_round?
     @winner = player.marker == current_player.marker ? player : computer
     @winner.increment_score
   end
@@ -244,8 +304,18 @@ class TTTGame
 
   def second_player_moves
     sleep 1.25
-    choice = board.free_positions.sample
-    board[choice] = COMPUTER_MARKER
+    
+    require 'pry'
+
+    if offensive?
+      offensive
+    elsif defensive?
+      defensive
+    elsif middle?
+      middle
+    else
+      random
+    end
   end
 
   def choice_prompt
