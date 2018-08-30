@@ -13,17 +13,21 @@
 #   -play
 #   -choose
 
+# Board class
 class Board
   attr_reader :board
 
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                   [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
-                  [[1, 5, 9], [3, 5, 7]] # diagnals
+                  [[1, 5, 9], [3, 5, 7]].freeze # diagnals
 
   def initialize
-    @board = (1..9).each_with_object({}) { |pos, result| result[pos] = Square.new }
+    @board = (1..9).each_with_object({}) do |pos, result|
+      result[pos] = Square.new
+    end
   end
 
+  # rubocop:disable Metrics/AbcSize, MethodLength
   def display
     puts ''
     puts '     |     |'
@@ -39,6 +43,7 @@ class Board
     puts '     |     |'
     puts ''
   end
+  # rubocop:enable Metrics/AbcSize, MethodLength
 
   def winning_states
     WINNING_LINES
@@ -49,9 +54,9 @@ class Board
   end
 
   def []=(index, value)
-    board[index].marking = value 
+    board[index].marking = value
   end
-  
+
   def free_positions
     board.select { |_, square| square.marking == ' ' }.keys
   end
@@ -73,10 +78,11 @@ class Board
   end
 
   def choices
-    free_positions.join " "
+    free_positions.join ', '
   end
 end
 
+# Player class
 class Player
   attr_reader :marker, :score
 
@@ -86,7 +92,7 @@ class Player
   end
 
   def to_s
-    "Player"
+    'Player'
   end
 
   def increment_score
@@ -94,6 +100,7 @@ class Player
   end
 end
 
+# Computer class
 class Computer
   attr_reader :marker, :score
 
@@ -103,7 +110,7 @@ class Computer
   end
 
   def to_s
-    "Computer"
+    'Computer'
   end
 
   def increment_score
@@ -111,9 +118,10 @@ class Computer
   end
 end
 
+# Square class
 class Square
   attr_accessor :marking
-  INITIAL_MARKER = ' '
+  INITIAL_MARKER = ' '.freeze
 
   def initialize
     @marking = INITIAL_MARKER
@@ -124,10 +132,50 @@ class Square
   end
 end
 
-class TTTGame
-  COMPUTER_MARKER = 'O'
-  PLAYER_MARKER = 'X'
+# TTTDisplays module
+module TTTDisplays
+  def display_greeting(best_to)
+    clear
+    puts 'Welcome to Tic Tac Toe.'
+    print "The first player to #{best_to} wins! \nPress enter to continue:"
+    gets.chomp
+  end
 
+  def display_board
+    clear
+    board.display
+  end
+
+  def display_score
+    puts "\nPlayer score: #{player.score}\nComputer score: #{computer.score}"
+  end
+
+  def dispaly_round_winner
+    @winner ? puts("#{@winner} wins!") : puts("It's a tie!")
+  end
+
+  def display_result
+    dispaly_round_winner
+    display_score
+
+    return if [computer.score, player.score].include? best_to
+
+    print "\nPress enter to start new round:"
+    gets.chomp
+  end
+
+  def display_goodbye_message
+    puts "\nCongratulations to the #{winner} for being the grand champion."
+    puts "\nThanks for playing Tic Tac Toe! Goodbye!"
+  end
+end
+
+# TTTGame class
+class TTTGame
+  COMPUTER_MARKER = 'O'.freeze
+  PLAYER_MARKER = 'X'.freeze
+
+  include TTTDisplays
   attr_accessor :board, :player, :computer, :best_to, :winner, :current_player
 
   def initialize(best_to)
@@ -141,12 +189,14 @@ class TTTGame
 
   def choose_first
     choice = nil
-    
+
     loop do
-      print "\nWho do you want to go first? \nEnter '1' for Player.  Enter '2' for Computer: "
+      puts "\nWho do you want to go first?"
+      print "Enter '1' for Player.  Enter '2' for Computer: "
+
       choice = gets.chomp.to_i
 
-      break if [1,2].member? choice
+      break if [1, 2].member? choice
     end
     @current_player = choice == 1 ? player : computer
     @first_player = @current_player
@@ -156,15 +206,9 @@ class TTTGame
     system('clear') || system('cls')
   end
 
-  def greeting(best_to)
-    clear
-    print "Welcome to Tic Tac Toe.\nThe first player to #{best_to} wins! \nPress enter to continue:"
-    gets.chomp
-  end
-
   def set_winner
     @winner = player.marker == current_player.marker ? player : computer
-    @winner.increment_score 
+    @winner.increment_score
   end
 
   def reset
@@ -193,26 +237,6 @@ class TTTGame
     board[choice] = COMPUTER_MARKER
   end
 
-  def display_board
-    clear
-    board.display
-  end
-
-  def display_result
-    @winner ? puts("#{@winner} wins!") : puts("It's a tie!")
-    puts "\nPlayer score: #{player.score}\nComputer score: #{computer.score}"
-
-    return if [computer.score, player.score].include? best_to
-
-    print "\nPress enter to start new round:"
-    gets.chomp
-  end
-
-  def display_goodbye_message
-    puts "\nCongratulations to the #{winner} for being the grand champion."
-    puts "\nThanks for playing Tic Tac Toe! Goodbye!"
-  end
-
   def choice_prompt
     puts "Choose a square: #{board.choices}"
   end
@@ -233,6 +257,7 @@ class TTTGame
     loop do
       current_player_moves
       display_board
+
       break if board.won_round? || board.full?
       rotate_current_player
     end
@@ -253,7 +278,7 @@ class TTTGame
   public
 
   def play
-    greeting(best_to)
+    display_greeting(best_to)
     choose_first
     game_loop
     display_goodbye_message
