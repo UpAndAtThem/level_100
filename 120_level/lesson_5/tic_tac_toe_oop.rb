@@ -148,6 +148,7 @@ class TTTGame
       break if [1,2].member? choice
     end
     @current_player = choice == 1 ? player : computer
+    @first_player = @current_player
   end
 
   def clear
@@ -169,6 +170,7 @@ class TTTGame
   def reset
     @board = Board.new
     @winner = nil
+    @current_player = @first_player
   end
 
   def first_player_moves
@@ -239,16 +241,6 @@ class TTTGame
     loop do
       display_board
 
-      # loop do
-      #   
-
-      #   break if won_round?(PLAYER_MARKER) || board.full?
-
-      #   second_player_moves
-      #   display_board
-      #   break if won_round?(COMPUTER_MARKER) ||  board.full?
-      # end
-
       loop do
         current_player_moves
 
@@ -256,6 +248,7 @@ class TTTGame
         rotate_current_player
       end
 
+      set_winner(current_player.marker)
       display_result
 
       break if [player.score, computer.score].include? best_to
