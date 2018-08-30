@@ -1,6 +1,7 @@
 # Description
-# commandline tic tac toe is a game where 2 players a player and computer take turns choosing a square
-# on a 3 X 3 board until one of them reaches 3 squares in a row, column, or diagonal.
+# commandline tic tac toe is a game where 2 players a player and computer
+# take turns choosing a square on a 3 X 3 board until one of them reaches 3
+# quares in a row, column, or diagonal.
 
 # Nouns:
 #   -game
@@ -11,8 +12,6 @@
 # Verbs:
 #   -play
 #   -choose
-
-require 'pry'
 
 class Board
   attr_reader :board
@@ -69,11 +68,7 @@ class Board
 
   def won_round?
     WINNING_LINES.any? do |line|
-      if three_in_a_row? line
-        true
-      else
-        false
-      end
+      three_in_a_row?(line) ? true : false
     end
   end
 
@@ -83,8 +78,7 @@ class Board
 end
 
 class Player
-  attr_reader :marker
-  attr_accessor :score
+  attr_reader :marker, :score
 
   def initialize(marker)
     @score = 0
@@ -101,8 +95,7 @@ class Player
 end
 
 class Computer
-  attr_reader :marker
-  attr_accessor :score
+  attr_reader :marker, :score
 
   def initialize(marker)
     @score = 0
@@ -160,19 +153,18 @@ class TTTGame
   end
 
   def clear
-    system 'clear'
-    system 'cls'
+    system('clear') || system('cls')
   end
 
   def greeting(best_to)
-    system 'clear'
+    clear
     print "Welcome to Tic Tac Toe.\nThe first player to #{best_to} wins! \nPress enter to continue:"
     gets.chomp
   end
 
   def set_winner
     @winner = player.marker == current_player.marker ? player : computer
-    @winner.score += 1 
+    @winner.increment_score 
   end
 
   def reset
@@ -237,30 +229,33 @@ class TTTGame
     self.current_player = current_player.marker == 'X' ? computer : player
   end
 
-  public
+  def players_make_moves
+    loop do
+      current_player_moves
+      display_board
+      break if board.won_round? || board.full?
+      rotate_current_player
+    end
+  end
 
-  def play
-    greeting(best_to)
-    choose_first
-
+  def game_loop
     loop do
       display_board
-
-      loop do
-        current_player_moves
-        display_board
-
-        break if board.won_round? || board.full?
-        rotate_current_player
-      end
-
+      players_make_moves
       set_winner
       display_result
 
       break if [player.score, computer.score].include? best_to
       reset
     end
+  end
 
+  public
+
+  def play
+    greeting(best_to)
+    choose_first
+    game_loop
     display_goodbye_message
   end
 end
