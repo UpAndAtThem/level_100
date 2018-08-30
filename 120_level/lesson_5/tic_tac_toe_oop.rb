@@ -48,6 +48,10 @@ class Board
   def [](index)
     board[index]
   end
+
+  def []=(index, value)
+    board[index].marking = value 
+  end
   
   def free_positions
     board.select { |_, square| square.marking == ' ' }.keys
@@ -188,13 +192,13 @@ class TTTGame
       choice_prompt
     end
 
-    board[player_choice].marking = PLAYER_MARKER
+    board[player_choice] = PLAYER_MARKER
   end
 
   def second_player_moves
     sleep 1.25
     choice = board.free_positions.sample
-    board[choice].marking = COMPUTER_MARKER
+    board[choice] = COMPUTER_MARKER
   end
 
   def display_board
