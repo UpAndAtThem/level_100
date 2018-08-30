@@ -57,6 +57,18 @@ class Board
     free_positions.empty?
   end
 
+  def won_round?
+    WINNING_LINES.any? do |line|
+      line_markings = board.values_at(*line).map(&:marking)
+
+      if line_markings.uniq.first != ' ' && line_markings.uniq.count == 1
+        true
+      else
+        false
+      end
+    end
+  end
+
   def choices
     free_positions.join " "
   end
@@ -132,7 +144,7 @@ class TTTGame
     loop do
       print "\nWho do you want to go first? \nEnter '1' for Player.  Enter '2' for Computer: "
       choice = gets.chomp.to_i
-      
+
       break if [1,2].member? choice
     end
     @current_player = choice == 1 ? player : computer
@@ -179,19 +191,13 @@ class TTTGame
     board[choice].marking = COMPUTER_MARKER
   end
 
-  def won_round?(passed_marker)
-    board.winning_states.any? do |winning_set|
-      win = winning_set.all? { |square_position| board[square_position].marking == passed_marker }
-      set_winner(passed_marker) if win
-    end
-  end
-
   def display_board
     clear
     board.display
   end
 
   def display_result
+    binding.pry
     @winner ? puts("#{@winner} wins!") : puts("It's a tie!")
     puts "\nPlayer score: #{player.score}\nComputer score: #{computer.score}"
 
@@ -208,26 +214,46 @@ class TTTGame
 
   def choice_prompt
     puts "Choose a square: #{board.choices}"
-  end 
+  end
+
+  def current_player_moves
+    if current_player.marker == 'X'
+      first_player_moves
+    else
+      second_player_moves
+    end
+
+    display_board
+  end
+
+  def rotate_current_player
+    self.current_player = current_player.marker == 'X' ? computer : player
+  end
 
   public
 
   def play
     greeting(best_to)
     choose_first
-    binding.pry
+
     loop do
       display_board
 
+      # loop do
+      #   
+
+      #   break if won_round?(PLAYER_MARKER) || board.full?
+
+      #   second_player_moves
+      #   display_board
+      #   break if won_round?(COMPUTER_MARKER) ||  board.full?
+      # end
+
       loop do
-        first_player_moves
-        display_board
+        current_player_moves
 
-        break if won_round?(PLAYER_MARKER) || board.full?
-
-        second_player_moves
-        display_board
-        break if won_round?(COMPUTER_MARKER) ||  board.full?
+        break if board.won_round? || board.full?
+        rotate_current_player
       end
 
       display_result
