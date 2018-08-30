@@ -77,8 +77,19 @@ class Board
     end
   end
 
+  def joinor(arr, delimiter = ',', conjunction = 'or')
+    if arr.size == 1
+      arr.first
+    elsif arr.size == 2
+      "#{arr.first} #{conjunction} #{arr.last}"
+    else
+      arr[0..-2].join("#{delimiter} ") +
+        "#{delimiter} #{conjunction} #{arr.last}"
+    end
+  end
+
   def choices
-    free_positions.join ', '
+    joinor free_positions
   end
 end
 
