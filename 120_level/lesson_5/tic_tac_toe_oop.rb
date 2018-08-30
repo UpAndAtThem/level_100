@@ -80,10 +80,10 @@ class Board
     free_positions.empty?
   end
 
-  def two_opponent_and_blank?(line)
+  def two_markers_and_blank?(line, marker)
     line_markings = board.values_at(*line).map(&:marking)
-    line_markings.count(TTTGame::PLAYER_MARKER) == 2 &&
-    line_markings.count(' ') == 1
+    line_markings.count(marker) == 2 &&
+      line_markings.count(' ') == 1
   end
 
   def three_in_a_row?(line)
@@ -155,13 +155,7 @@ module AI
 
   def defensive_move?
     board.winning_lines.any? do |line|
-      board.two_opponent_and_blank?(line)
-    end
-  end
-
-  def player_marker_position(line, marker)
-    line.select do |position|
-      board[position].marking == marker
+      board.two_markers_and_blank?(line, TTTGame::PLAYER_MARKER)
     end
   end
 
@@ -180,19 +174,29 @@ module AI
   end
 
   def offensive_move?
-
+    board.winning_lines.any? do |line|
+      board.two_markers_and_blank? line, computer.marker
+    end  
   end
 
   def offensive
+    board.winning_lines.each do |line|
+      blank_spaces = player_marker_position(line, ' ')
+      player_spaces = player_marker_position(line, TTTGame::COMPUTER_MARKER)
 
+      if blank_spaces.count == 1 && player_spaces.count == 2
+        board[blank_spaces.first] = TTTGame::COMPUTER_MARKER
+        return
+      end
+    end
   end
 
   def middle_available?
-
+    board[5].marking == ' '
   end
 
   def middle
-
+    board[5] = computer.marker
   end
 
   def random
@@ -286,6 +290,12 @@ class TTTGame
     @board = Board.new
     @winner = nil
     @current_player = @first_player
+  end
+
+  def player_marker_position(line, marker)
+    line.select do |position|
+      board[position].marking == marker
+    end
   end
 
   def first_player_moves
