@@ -57,11 +57,15 @@ class Board
     free_positions.empty?
   end
 
+  def three_in_a_row?(line)
+    line_markings = board.values_at(*line).map(&:marking)
+
+    line_markings.uniq.first != ' ' && line_markings.uniq.count == 1
+  end
+
   def won_round?
     WINNING_LINES.any? do |line|
-      line_markings = board.values_at(*line).map(&:marking)
-
-      if line_markings.uniq.first != ' ' && line_markings.uniq.count == 1
+      if three_in_a_row? line
         true
       else
         false
@@ -162,8 +166,8 @@ class TTTGame
     gets.chomp
   end
 
-  def set_winner(passed_marker)
-    @winner = player.marker == passed_marker ? player : computer
+  def set_winner
+    @winner = player.marker == current_player.marker ? player : computer
     @winner.score += 1 
   end
 
@@ -246,7 +250,7 @@ class TTTGame
         rotate_current_player
       end
 
-      set_winner(current_player.marker)
+      set_winner
       display_result
 
       break if [player.score, computer.score].include? best_to
