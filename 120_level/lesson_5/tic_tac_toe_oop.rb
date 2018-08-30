@@ -153,7 +153,7 @@ end
 module AI
   private
 
-  def defensive?
+  def defensive_move?
     board.winning_lines.any? do |line|
       board.two_opponent_and_blank?(line)
     end
@@ -179,7 +179,7 @@ module AI
     end
   end
 
-  def offensive?
+  def offensive_move?
 
   end
 
@@ -187,7 +187,7 @@ module AI
 
   end
 
-  def middle?
+  def middle_available?
 
   end
 
@@ -304,14 +304,12 @@ class TTTGame
 
   def second_player_moves
     sleep 1.25
-    
-    require 'pry'
 
-    if offensive?
+    if offensive_move?
       offensive
-    elsif defensive?
+    elsif defensive_move?
       defensive
-    elsif middle?
+    elsif middle_available?
       middle
     else
       random
