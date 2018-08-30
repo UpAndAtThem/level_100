@@ -199,7 +199,6 @@ class TTTGame
   end
 
   def display_result
-    binding.pry
     @winner ? puts("#{@winner} wins!") : puts("It's a tie!")
     puts "\nPlayer score: #{player.score}\nComputer score: #{computer.score}"
 
@@ -224,8 +223,6 @@ class TTTGame
     else
       second_player_moves
     end
-
-    display_board
   end
 
   def rotate_current_player
@@ -243,6 +240,7 @@ class TTTGame
 
       loop do
         current_player_moves
+        display_board
 
         break if board.won_round? || board.full?
         rotate_current_player
