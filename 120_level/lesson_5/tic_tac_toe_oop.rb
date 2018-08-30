@@ -115,7 +115,7 @@ class TTTGame
   COMPUTER_MARKER = 'O'
   PLAYER_MARKER = 'X'
 
-  attr_accessor :board, :player, :computer, :best_to, :winner
+  attr_accessor :board, :player, :computer, :best_to, :winner, :current_player
 
   def initialize(best_to)
     @best_to = best_to
@@ -125,6 +125,18 @@ class TTTGame
   end
 
   private
+
+  def choose_first
+    choice = nil
+    
+    loop do
+      print "\nWho do you want to go first? \nEnter '1' for Player.  Enter '2' for Computer: "
+      choice = gets.chomp.to_i
+      
+      break if [1,2].member? choice
+    end
+    @current_player = choice == 1 ? player : computer
+  end
 
   def clear
     system 'clear'
@@ -202,6 +214,8 @@ class TTTGame
 
   def play
     greeting(best_to)
+    choose_first
+    binding.pry
     loop do
       display_board
 
