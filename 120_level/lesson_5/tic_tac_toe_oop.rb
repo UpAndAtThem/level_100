@@ -168,7 +168,7 @@ module AI
 
       if player_markings.count == 2 && blank_spaces.count == 1
         board[blank_spaces.first] = TTTGame::COMPUTER_MARKER
-        return
+        return nil
       end
     end
   end
@@ -176,7 +176,7 @@ module AI
   def offensive_move?
     board.winning_lines.any? do |line|
       board.two_markers_and_blank? line, computer.marker
-    end  
+    end
   end
 
   def offensive
@@ -186,7 +186,7 @@ module AI
 
       if blank_spaces.count == 1 && player_spaces.count == 2
         board[blank_spaces.first] = TTTGame::COMPUTER_MARKER
-        return
+        return nil
       end
     end
   end
@@ -205,6 +205,7 @@ module AI
   end
 end
 
+# module TTTDisplays
 module TTTDisplays
   private
 
