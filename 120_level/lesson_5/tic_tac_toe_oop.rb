@@ -13,6 +13,8 @@
 #   -play
 #   -choose
 
+# --------------------------------------------------
+
 # Board class
 class Board
   attr_reader :board
@@ -58,7 +60,7 @@ class Board
   end
 
   def free_positions
-    board.select { |_, square| square.marking == ' ' }.keys
+    board.select { |_, square| square.marking == Square::INITIAL_MARKER }.keys
   end
 
   def joinor(arr, delimiter = ',', conjunction = 'or')
@@ -83,13 +85,13 @@ class Board
   def two_markers_and_blank?(line, marker)
     line_markings = board.values_at(*line).map(&:marking)
     line_markings.count(marker) == 2 &&
-      line_markings.count(' ') == 1
+      line_markings.count(Square::INITIAL_MARKER) == 1
   end
 
   def three_in_a_row?(line)
     line_markings = board.values_at(*line).map(&:marking)
 
-    line_markings.uniq.first != ' ' && line_markings.uniq.count == 1
+    line_markings.uniq.first != Square::INITIAL_MARKER && line_markings.uniq.count == 1
   end
 
   def won_round?
@@ -160,11 +162,11 @@ module AI
   end
 
   def defensive
-    board.winning_lines.any? do |line|
+    board.winning_lines.each do |line|
       marker = TTTGame::PLAYER_MARKER
 
       player_markings = player_marker_position(line, marker)
-      blank_spaces = player_marker_position(line, ' ')
+      blank_spaces = player_marker_position(line, Square::INITIAL_MARKER)
 
       if player_markings.count == 2 && blank_spaces.count == 1
         board[blank_spaces.first] = TTTGame::COMPUTER_MARKER
@@ -181,7 +183,7 @@ module AI
 
   def offensive
     board.winning_lines.each do |line|
-      blank_spaces = player_marker_position(line, ' ')
+      blank_spaces = player_marker_position(line, Square::INITIAL_MARKER)
       player_spaces = player_marker_position(line, TTTGame::COMPUTER_MARKER)
 
       if blank_spaces.count == 1 && player_spaces.count == 2
@@ -192,7 +194,7 @@ module AI
   end
 
   def middle_available?
-    board[5].marking == ' '
+    board[5].marking == Square::INITIAL_MARKER
   end
 
   def middle
@@ -377,3 +379,5 @@ end
 
 game = TTTGame.new(3)
 game.play
+
+binding.pry
