@@ -104,15 +104,16 @@ end
 
 # Player class
 class Player
-  attr_reader :marker, :score
+  attr_reader :score
+  attr_accessor :name
 
-  def initialize(marker)
+  def initialize(name)
     @score = 0
-    @marker = marker
+    @name = name
   end
 
   def to_s
-    'Player'
+    self.class.to_s
   end
 
   def increment_score
@@ -120,21 +121,23 @@ class Player
   end
 end
 
-# Computer class
-class Computer
-  attr_reader :marker, :score
+# Human class
+class Human < Player
+  attr_reader :marker
 
-  def initialize(marker)
-    @score = 0
+  def initialize(marker, name = 'Player')
+    super(name)
     @marker = marker
   end
+end
 
-  def to_s
-    'Computer'
-  end
+# Computer class
+class Computer < Player
+  attr_reader :marker
 
-  def increment_score
-    @score += 1
+  def initialize(marker, name = 'Computer')
+    super(name)
+    @marker = marker
   end
 end
 
@@ -225,11 +228,12 @@ module TTTDisplays
   end
 
   def display_score
-    puts "\nPlayer score: #{player.score}\nComputer score: #{computer.score}"
+    puts "\n#{player.name}'s score: #{player.score}"
+    puts "#{computer.name}'s score: #{computer.score}"
   end
 
   def dispaly_round_winner
-    @winner ? puts("#{@winner} wins!") : puts("It's a tie!")
+    @winner ? puts("#{@winner.name} wins!") : puts("It's a tie!")
   end
 
   def display_result
@@ -258,7 +262,7 @@ class TTTGame
 
   def initialize(best_to)
     @best_to = best_to
-    @player = Player.new(PLAYER_MARKER)
+    @player = Human.new(PLAYER_MARKER)
     @computer = Computer.new(COMPUTER_MARKER)
     @board = Board.new
   end
@@ -270,7 +274,7 @@ class TTTGame
 
     loop do
       puts "\nWho do you want to go first?"
-      print "Enter '1' for Player.  Enter '2' for Computer: "
+      print "Enter '1' for #{player.name}.  Enter '2' for Computer: "
 
       choice = gets.chomp.to_i
 
@@ -334,6 +338,14 @@ class TTTGame
     puts "Choose a square: #{board.choices}"
   end
 
+  def set_human_name
+    loop do
+      puts 'What is your first name'
+      player.name = gets.chomp.capitalize
+      break unless player.name.strip.empty?
+    end
+  end
+
   def current_player_moves
     if current_player.marker == 'X'
       first_player_moves
@@ -372,6 +384,7 @@ class TTTGame
 
   def play
     display_greeting(best_to)
+    set_human_name
     choose_first
     game_loop
     display_goodbye_message
