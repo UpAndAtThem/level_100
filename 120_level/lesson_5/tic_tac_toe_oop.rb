@@ -91,7 +91,8 @@ class Board
   def three_in_a_row?(line)
     line_markings = board.values_at(*line).map(&:marking)
 
-    line_markings.uniq.first != Square::INITIAL_MARKER && line_markings.uniq.count == 1
+    line_markings.uniq.first != Square::INITIAL_MARKER &&
+      line_markings.uniq.count == 1
   end
 
   def won_round?
@@ -379,5 +380,3 @@ end
 
 game = TTTGame.new(3)
 game.play
-
-binding.pry
