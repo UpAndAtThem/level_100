@@ -252,22 +252,7 @@ end
 
 # Moving module
 module Moving
-  def choose_first
-    choice = nil
-
-    loop do
-      puts "\nWho do you want to go first?"
-      print "Enter '1' for #{player.name}.  Enter '2' for Computer: "
-
-      choice = gets.chomp.to_i
-
-      break if [1, 2].member? choice
-    end
-    @current_player = choice == 1 ? player : computer
-    @first_player = @current_player
-  end
-
-  def first_player_moves
+  def human_moves
     choice_prompt
     player_choice = nil
 
@@ -281,7 +266,7 @@ module Moving
     board[player_choice] = TTTGame::PLAYER_MARKER
   end
 
-  def second_player_moves
+  def computer_moves
     sleep 1.25
 
     if offensive_move?
@@ -297,9 +282,9 @@ module Moving
 
   def current_player_moves
     if current_player.marker == TTTGame::PLAYER_MARKER
-      first_player_moves
+      human_moves
     else
-      second_player_moves
+      computer_moves
     end
   end
 
@@ -345,6 +330,21 @@ class TTTGame
     @board = Board.new
     @winner = nil
     @current_player = @first_player
+  end
+
+  def choose_first
+    choice = nil
+
+    loop do
+      puts "\nWho do you want to go first?"
+      print "Enter '1' for #{player.name}.  Enter '2' for Computer: "
+
+      choice = gets.chomp.to_i
+
+      break if [1, 2].member? choice
+    end
+    @current_player = choice == 1 ? player : computer
+    @first_player = @current_player
   end
 
   def player_marker_position(line, marker)
