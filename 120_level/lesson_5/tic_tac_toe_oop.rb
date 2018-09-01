@@ -304,7 +304,7 @@ class TTTGame
   attr_accessor :board, :player, :computer, :winner,
                 :current_player, :first_player
 
-  attr_reader :board, :player, :computer, :best_to
+  attr_reader :best_to
 
   def initialize(best_to)
     @best_to = best_to
@@ -359,8 +359,8 @@ class TTTGame
   def set_human_name
     loop do
       puts 'What is your first name'
-      player.name = gets.chomp.capitalize
-      break unless player.name.strip.empty?
+      player.name = gets.chomp.capitalize.strip
+      break unless player.name.empty?
     end
   end
 
