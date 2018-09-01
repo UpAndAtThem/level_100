@@ -169,7 +169,7 @@ module AI
     board.winning_lines.each do |line|
       marker = TTTGame::PLAYER_MARKER
 
-      player_markings = player_marker_position(line, marker)
+      player_markings = player_marker_position(line, TTTGame::PLAYER_MARKER)
       blank_spaces = player_marker_position(line, Square::INITIAL_MARKER)
 
       if player_markings.count == 2 && blank_spaces.count == 1
@@ -187,10 +187,12 @@ module AI
 
   def offensive
     board.winning_lines.each do |line|
-      blank_spaces = player_marker_position(line, Square::INITIAL_MARKER)
-      player_spaces = player_marker_position(line, TTTGame::COMPUTER_MARKER)
+      marker = TTTGame::COMPUTER_MARKER
 
-      if blank_spaces.count == 1 && player_spaces.count == 2
+      computer_markings = player_marker_position(line, TTTGame::COMPUTER_MARKER)
+      blank_spaces = player_marker_position(line, Square::INITIAL_MARKER)
+
+      if blank_spaces.count == 1 && computer_markings.count == 2
         board[blank_spaces.first] = TTTGame::COMPUTER_MARKER
         return nil
       end
