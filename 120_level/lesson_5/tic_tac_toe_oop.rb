@@ -167,8 +167,6 @@ module AI
 
   def defensive
     board.winning_lines.each do |line|
-      marker = TTTGame::PLAYER_MARKER
-
       player_markings = player_marker_position(line, TTTGame::PLAYER_MARKER)
       blank_spaces = player_marker_position(line, Square::INITIAL_MARKER)
 
@@ -187,8 +185,6 @@ module AI
 
   def offensive
     board.winning_lines.each do |line|
-      marker = TTTGame::COMPUTER_MARKER
-
       computer_markings = player_marker_position(line, TTTGame::COMPUTER_MARKER)
       blank_spaces = player_marker_position(line, Square::INITIAL_MARKER)
 
@@ -254,23 +250,8 @@ module TTTDisplays
   end
 end
 
-# TTTGame class
-class TTTGame
-  COMPUTER_MARKER = 'O'.freeze
-  PLAYER_MARKER = 'X'.freeze
-
-  include TTTDisplays, AI
-  attr_accessor :board, :player, :computer, :best_to, :winner, :current_player
-
-  def initialize(best_to)
-    @best_to = best_to
-    @player = Human.new(PLAYER_MARKER)
-    @computer = Computer.new(COMPUTER_MARKER)
-    @board = Board.new
-  end
-
-  private
-
+# Moving module
+module Moving
   def choose_first
     choice = nil
 
@@ -285,6 +266,70 @@ class TTTGame
     @current_player = choice == 1 ? player : computer
     @first_player = @current_player
   end
+
+  def first_player_moves
+    choice_prompt
+    player_choice = nil
+
+    loop do
+      player_choice = gets.chomp.to_i
+
+      break if board.free_positions.include? player_choice
+      choice_prompt
+    end
+
+    board[player_choice] = TTTGame::PLAYER_MARKER
+  end
+
+  def second_player_moves
+    sleep 1.25
+
+    if offensive_move?
+      offensive
+    elsif defensive_move?
+      defensive
+    elsif middle_available?
+      middle
+    else
+      random
+    end
+  end
+
+  def current_player_moves
+    if current_player.marker == TTTGame::PLAYER_MARKER
+      first_player_moves
+    else
+      second_player_moves
+    end
+  end
+
+  def players_make_moves
+    loop do
+      current_player_moves
+      display_board
+
+      break if board.won_round? || board.full?
+      rotate_current_player
+    end
+  end
+end
+
+# TTTGame class
+class TTTGame
+  COMPUTER_MARKER = 'O'.freeze
+  PLAYER_MARKER = 'X'.freeze
+
+  include TTTDisplays, AI, Moving
+  attr_accessor :board, :player, :computer, :best_to, :winner, :current_player
+
+  def initialize(best_to)
+    @best_to = best_to
+    @player = Human.new(PLAYER_MARKER)
+    @computer = Computer.new(COMPUTER_MARKER)
+    @board = Board.new
+  end
+
+  private
 
   def clear
     system('clear') || system('cls')
@@ -308,34 +353,6 @@ class TTTGame
     end
   end
 
-  def first_player_moves
-    choice_prompt
-    player_choice = nil
-
-    loop do
-      player_choice = gets.chomp.to_i
-
-      break if board.free_positions.include? player_choice
-      choice_prompt
-    end
-
-    board[player_choice] = PLAYER_MARKER
-  end
-
-  def second_player_moves
-    sleep 1.25
-
-    if offensive_move?
-      offensive
-    elsif defensive_move?
-      defensive
-    elsif middle_available?
-      middle
-    else
-      random
-    end
-  end
-
   def choice_prompt
     puts "Choose a square: #{board.choices}"
   end
@@ -348,26 +365,8 @@ class TTTGame
     end
   end
 
-  def current_player_moves
-    if current_player.marker == 'X'
-      first_player_moves
-    else
-      second_player_moves
-    end
-  end
-
   def rotate_current_player
     self.current_player = current_player.marker == 'X' ? computer : player
-  end
-
-  def players_make_moves
-    loop do
-      current_player_moves
-      display_board
-
-      break if board.won_round? || board.full?
-      rotate_current_player
-    end
   end
 
   def game_loop
