@@ -104,50 +104,45 @@ end
 
 # Player class
 class Player
-  attr_reader :score
-  attr_accessor :name
+  attr_accessor :name, :score, :marker
 
-  def initialize(name)
-    @score = 0
-    @name = name
+  def initialize(marker, name)
+    self.score = 0
+    self.marker = marker
+    self.name = name
   end
 
   def to_s
-    self.class.to_s
+    name
   end
 
   def increment_score
-    @score += 1
+    self.score += 1
   end
 end
 
 # Human class
 class Human < Player
-  attr_reader :marker
-
-  def initialize(marker, name = 'Player')
-    super(name)
-    @marker = marker
+  def initialize(marker, name = nil)
+    super
   end
 end
 
 # Computer class
 class Computer < Player
-  attr_reader :marker
-
   def initialize(marker, name = 'Computer')
-    super(name)
-    @marker = marker
+    super
   end
 end
 
 # Square class
 class Square
   attr_accessor :marking
+
   INITIAL_MARKER = ' '.freeze
 
   def initialize
-    @marking = INITIAL_MARKER
+    self.marking = INITIAL_MARKER
   end
 
   def to_s
@@ -231,7 +226,7 @@ module TTTDisplays
   end
 
   def dispaly_round_winner
-    @winner ? puts("#{@winner.name} wins!") : puts("It's a tie!")
+    winner ? puts("#{@winner.name} wins!") : puts("It's a tie!")
   end
 
   def display_result
@@ -305,7 +300,11 @@ class TTTGame
   PLAYER_MARKER = 'X'.freeze
 
   include TTTDisplays, AI, Moving
-  attr_accessor :board, :player, :computer, :best_to, :winner, :current_player
+
+  attr_accessor :board, :player, :computer, :winner,
+                :current_player, :first_player
+
+  attr_reader :board, :player, :computer, :best_to
 
   def initialize(best_to)
     @best_to = best_to
@@ -322,14 +321,14 @@ class TTTGame
 
   def set_winner
     return unless board.won_round?
-    @winner = player.marker == current_player.marker ? player : computer
-    @winner.increment_score
+    self.winner = player.marker == current_player.marker ? player : computer
+    winner.increment_score
   end
 
   def reset
-    @board = Board.new
-    @winner = nil
-    @current_player = @first_player
+    self.board = Board.new
+    self.winner = nil
+    self.current_player = first_player
   end
 
   def choose_first
@@ -343,8 +342,8 @@ class TTTGame
 
       break if [1, 2].member? choice
     end
-    @current_player = choice == 1 ? player : computer
-    @first_player = @current_player
+    self.current_player = choice == 1 ? player : computer
+    self.first_player = @current_player
   end
 
   def player_marker_position(line, marker)
