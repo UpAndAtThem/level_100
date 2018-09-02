@@ -64,9 +64,10 @@ class Board
   end
 
   def joinor(arr, delimiter = ',', conjunction = 'or')
-    if arr.size == 1
+    case arr.size
+    when 1
       arr.first
-    elsif arr.size == 2
+    when 2
       "#{arr.first} #{conjunction} #{arr.last}"
     else
       arr[0..-2].join("#{delimiter} ") +
@@ -160,30 +161,18 @@ module AI
     end
   end
 
-  def defensive
-    board.winning_lines.each do |line|
-      player_markings = player_marker_position(line, TTTGame::PLAYER_MARKER)
-      blank_spaces = player_marker_position(line, Square::INITIAL_MARKER)
-
-      if player_markings.count == 2 && blank_spaces.count == 1
-        board[blank_spaces.first] = TTTGame::COMPUTER_MARKER
-        return nil
-      end
-    end
-  end
-
   def offensive_move?
     board.winning_lines.any? do |line|
       board.two_markers_and_blank? line, computer.marker
     end
   end
 
-  def offensive
+  def make_move(marker)
     board.winning_lines.each do |line|
-      computer_markings = player_marker_position(line, TTTGame::COMPUTER_MARKER)
+      player_markings = player_marker_position(line, marker)
       blank_spaces = player_marker_position(line, Square::INITIAL_MARKER)
 
-      if blank_spaces.count == 1 && computer_markings.count == 2
+      if player_markings.count == 2 && blank_spaces.count == 1
         board[blank_spaces.first] = TTTGame::COMPUTER_MARKER
         return nil
       end
@@ -265,9 +254,9 @@ module Moving
     sleep 1.25
 
     if offensive_move?
-      offensive
+      make_move TTTGame::COMPUTER_MARKER
     elsif defensive_move?
-      defensive
+      make_move TTTGame::PLAYER_MARKER
     elsif middle_available?
       middle
     else
