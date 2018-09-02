@@ -107,10 +107,9 @@ end
 class Player
   attr_accessor :name, :score, :marker
 
-  def initialize(marker, name)
+  def initialize(marker)
     self.score = 0
     self.marker = marker
-    self.name = name
   end
 
   def to_s
@@ -124,15 +123,28 @@ end
 
 # Human class
 class Human < Player
-  def initialize(marker, name = nil)
+  def initialize(marker)
     super
+  end
+
+  def set_name
+    loop do
+      puts 'What is your first name'
+      self.name = gets.chomp.capitalize.strip
+      break unless name.empty?
+    end
   end
 end
 
 # Computer class
 class Computer < Player
-  def initialize(marker, name = 'Computer')
+  def initialize(marker)
     super
+  end
+
+  def set_name
+    self.name = ['Wall-e', 'R2D2', 'Hal',
+                 'Miss Machina', 'The Voice of Knight Rider'].sample
   end
 end
 
@@ -210,7 +222,7 @@ module TTTDisplays
   end
 
   def display_score
-    puts "\n#{player.name}'s score: #{player.score}"
+    puts "\n#{human.name}'s score: #{human.score}"
     puts "#{computer.name}'s score: #{computer.score}"
   end
 
@@ -222,14 +234,14 @@ module TTTDisplays
     dispaly_round_winner
     display_score
 
-    return if [computer.score, player.score].include? best_to
+    return if [computer.score, human.score].include? best_to
 
     print "\nPress enter to start new round:"
     gets.chomp
   end
 
   def display_goodbye_message
-    puts "\nCongratulations to the #{winner} for being the grand champion."
+    puts "\nCongratulations to #{winner} for being the grand champion."
     puts "\nThanks for playing Tic Tac Toe! Goodbye!"
   end
 end
@@ -238,16 +250,16 @@ end
 module Moving
   def human_moves
     choice_prompt
-    player_choice = nil
+    choice = nil
 
     loop do
-      player_choice = gets.chomp.to_i
+      choice = gets.chomp.to_i
 
-      break if board.free_positions.include? player_choice
+      break if board.free_positions.include? choice
       choice_prompt
     end
 
-    board[player_choice] = TTTGame::PLAYER_MARKER
+    board[choice] = TTTGame::PLAYER_MARKER
   end
 
   def computer_moves
@@ -290,14 +302,14 @@ class TTTGame
 
   include TTTDisplays, AI, Moving
 
-  attr_accessor :board, :player, :computer, :winner,
+  attr_accessor :board, :human, :computer, :winner,
                 :current_player, :first_player
 
   attr_reader :best_to
 
   def initialize(best_to)
     @best_to = best_to
-    @player = Human.new(PLAYER_MARKER)
+    @human = Human.new(PLAYER_MARKER)
     @computer = Computer.new(COMPUTER_MARKER)
     @board = Board.new
   end
@@ -310,7 +322,7 @@ class TTTGame
 
   def set_winner
     return unless board.won_round?
-    self.winner = player.marker == current_player.marker ? player : computer
+    self.winner = human.marker == current_player.marker ? player : computer
     winner.increment_score
   end
 
@@ -325,13 +337,13 @@ class TTTGame
 
     loop do
       puts "\nWho do you want to go first?"
-      print "Enter '1' for #{player.name}.  Enter '2' for Computer: "
+      print "Enter '1' for #{human.name}.  Enter '2' for #{computer.name}: "
 
       choice = gets.chomp.to_i
 
       break if [1, 2].member? choice
     end
-    self.current_player = choice == 1 ? player : computer
+    self.current_player = choice == 1 ? human : computer
     self.first_player = @current_player
   end
 
@@ -345,16 +357,13 @@ class TTTGame
     puts "Choose a square: #{board.choices}"
   end
 
-  def set_human_name
-    loop do
-      puts 'What is your first name'
-      player.name = gets.chomp.capitalize.strip
-      break unless player.name.empty?
-    end
+  def rotate_current_player
+    self.current_player = current_player.marker == 'X' ? computer : human
   end
 
-  def rotate_current_player
-    self.current_player = current_player.marker == 'X' ? computer : player
+  def set_names
+    human.set_name
+    computer.set_name
   end
 
   def game_loop
@@ -364,7 +373,7 @@ class TTTGame
       set_winner
       display_result
 
-      break if [player.score, computer.score].include? best_to
+      break if [human.score, computer.score].include? best_to
       reset
     end
   end
@@ -373,7 +382,7 @@ class TTTGame
 
   def play
     display_greeting(best_to)
-    set_human_name
+    set_names
     choose_first
     game_loop
     display_goodbye_message
