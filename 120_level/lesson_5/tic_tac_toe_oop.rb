@@ -105,7 +105,14 @@ end
 
 # Player class
 class Player
-  attr_accessor :name, :score, :marker
+  private
+
+  attr_writer :score
+
+  public
+
+  attr_accessor :name, :marker
+  attr_reader :score
 
   def initialize(marker)
     self.score = 0
@@ -143,8 +150,8 @@ class Computer < Player
   end
 
   def set_name
-    self.name = ['Wall-e', 'R2D2', 'Hal',
-                 'Miss Machina', 'The Voice of Knight Rider'].sample
+    self.name = ['Wall-e', 'Eve', 'R2D2', 'Hal', 
+                 'Miss Machina', 'The Voice from Knight Rider'].sample
   end
 end
 
@@ -322,7 +329,7 @@ class TTTGame
 
   def set_winner
     return unless board.won_round?
-    self.winner = human.marker == current_player.marker ? player : computer
+    self.winner = human.marker == current_player.marker ? human : computer
     winner.increment_score
   end
 
