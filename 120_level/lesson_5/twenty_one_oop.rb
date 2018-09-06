@@ -38,14 +38,26 @@
 require 'pry'
 
 class Participant
-  attr_accessor :cards, :name, :hand
+  attr_accessor :cards, :name, :hand, :is_hitting
 
-  def hit
-
+  def initialize
+    @is_hitting = false
   end
 
-  def stay
+  def total
+    binding.pry
+  end
 
+  def hit?
+    is_hitting == true
+  end
+
+  def hit(deck)
+    hand << deck.deal_card
+  end
+
+  def stay?
+    is_hitting == false
   end
 
   def busted?
@@ -55,21 +67,21 @@ class Participant
   def total
 
   end
-
-  def sum_of_cards(cards)
-    binding.pry
-  end
 end
 
 class Player < Participant
-  def initialize
 
-  end
 end
 
 class Dealer < Participant
   def deal
 
+  end
+
+  def mask
+    dup_hand = hand.dup
+    dup_hand[1] = Card.new(' ', ' ')
+    dup_hand
   end
 end
 
@@ -101,6 +113,10 @@ class Deck
     2.times.with_object([]) do |_, hand|
       hand << deck.pop
     end
+  end
+
+  def deal_card
+    deck.pop
   end
 end
 
@@ -142,9 +158,9 @@ module DisplayableCards
     end
 end
 
-  def create_display_cards(participant)
+  def display_cards(hand)
     display_cards = []
-    participant.hand.each { |card| display_cards << create_card(card) }
+    hand.each { |card| display_cards << create_card(card) }
     create_row_cards display_cards
   end
 
@@ -164,16 +180,16 @@ end
   end
 
   def display_hands
-    dealer.hand.length.times do |index|
+    # dealer.hand.length.times do |index|
       system 'clear'
       puts 'Dealers cards: '
-      puts create_display_cards dealer
+      puts display_cards dealer.mask
       # puts "Dealer count: #{dealer.sum_of_cards(dealer.hand[0..index])}\n\n"
       puts 'YOUR CARDS'
-      puts create_display_cards player
+      puts display_cards player.hand
       # puts "Your count: #{player_count}\n\n"
-      index.zero? ? sleep(0.66) : sleep(1.0)
-    end
+      # index.zero? ? sleep(0.66) : sleep(1.0)
+    # end
   end
 end
 
@@ -194,14 +210,40 @@ class Game
     dealer.hand = deck.deal
   end
 
-  def show_initial_cards
+  def show_cards
     display_hands
+  end
+
+  def hit_or_stay
+    loop do
+      print "Do you want to hit or stay? :"
+      response = gets.chomp
+
+      if %w(hit stay).include?(response.downcase)
+        (response == 'hit') ? player.is_hitting = true : player.is_hitting = false
+        break
+      end
+    end
+  end
+
+  def player_turn
+    loop do
+      show_cards
+      hit_or_stay
+      player.hit(deck) if player.hit?
+      return if player.stay?
+      break if player.total
+    end
+  end
+
+  def dealer_turn
+
   end
 
   def play
     deal_cards
-    show_initial_cards
-    # player_turn
+    show_cards
+    player_turn
     # dealer_turn
     # show_result
   end
