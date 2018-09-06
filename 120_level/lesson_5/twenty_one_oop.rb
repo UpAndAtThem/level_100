@@ -37,30 +37,8 @@
 #   play
 require 'pry'
 
-class Player
-  def initialize
-
-  end
-end
-
-class Dealer
-  def deal
-
-  end
-end
-
-class Deck
-  def deal
-
-  end
-end
-
-class Card
-  attr_accessor :rank, :suit
-end
-
 class Participant
-  attr_accessor :cards, :name
+  attr_accessor :cards, :name, :hand
 
   def hit
 
@@ -79,12 +57,74 @@ class Participant
   end
 end
 
+class Player < Participant
+  def initialize
+
+  end
+end
+
+class Dealer < Participant
+  def deal
+
+  end
+end
+
+class Card
+  attr_accessor :rank, :suit
+
+  def initialize(rank, suit)
+    @rank = rank
+    @suit = suit
+  end
+end
+
+class Deck
+  attr_accessor :deck
+
+  def initialize
+    @deck = new_deck.shuffle
+  end
+
+  def new_deck
+    deck_makeup = %w(2 3 4 5 6 7 8 9 10 J Q K A).product %w(Clubs Diamonds Hearts Spades)
+
+    @deck = deck_makeup.each_with_object([]) do |(rank, suit), deck|
+      deck << Card.new(rank, suit)
+    end
+  end
+
+  def deal
+    2.times.with_object([]) do |_, hand|
+      hand << deck.pop
+    end
+  end
+end
+
 class Game
+  attr_accessor :deck, :player, :dealer
+
+  def initialize
+    @player = Player.new
+    @dealer = Dealer.new
+    @deck = Deck.new
+  end
+
+  def deal_cards
+    player.hand = deck.deal
+    dealer.hand = deck.deal
+  end
+
   def play
-    binding.pry
+    deal_cards
+    # show_initial_cards
+    # player_turn
+    # dealer_turn
+    # show_result
   end
 end
 
 twenty_one = Game.new
 
 twenty_one.play
+
+binding.pry
