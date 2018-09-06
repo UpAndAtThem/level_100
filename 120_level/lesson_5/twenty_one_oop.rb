@@ -108,13 +108,13 @@ module DisplayableCards
   def create_card(card)
     if card.rank == ' '
       ['@==========@',
-       "|//////////|",
        '|//////////|',
        '|//////////|',
        '|//////////|',
        '|//////////|',
        '|//////////|',
-       "|//////////|",
+       '|//////////|',
+       '|//////////|',
        '@==========@']
   
     elsif card.rank.length == 1
@@ -147,7 +147,7 @@ end
     participant.hand.each { |card| display_cards << create_card(card) }
     create_row_cards display_cards
   end
-  
+
   def create_row_cards(cards)
     return_arr = []
     count = 0
@@ -158,7 +158,7 @@ end
       end
       return_arr << result
       count += 1
-      break if count == 9 # 9 is the height of the individual card
+      break if count == cards.first.count
     end
     return_arr
   end
@@ -172,11 +172,12 @@ end
       puts 'YOUR CARDS'
       puts create_display_cards player
       # puts "Your count: #{player_count}\n\n"
-      index == 0 ? sleep(0.66) : sleep(1.0)
+      index.zero? ? sleep(0.66) : sleep(1.0)
     end
   end
 end
 
+# Game class
 class Game
   attr_accessor :deck, :player, :dealer
 
@@ -209,5 +210,3 @@ end
 twenty_one = Game.new
 
 twenty_one.play
-
-binding.pry
