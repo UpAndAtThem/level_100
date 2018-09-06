@@ -55,6 +55,10 @@ class Participant
   def total
 
   end
+
+  def sum_of_cards(cards)
+    binding.pry
+  end
 end
 
 class Player < Participant
@@ -86,7 +90,7 @@ class Deck
   end
 
   def new_deck
-    deck_makeup = %w(2 3 4 5 6 7 8 9 10 J Q K A).product %w(Clubs Diamonds Hearts Spades)
+    deck_makeup = %w(2 3 4 5 6 7 8 9 10 J Q K A).product ["\u2662", "\u2661", "\u2664", "\u2667"]
 
     @deck = deck_makeup.each_with_object([]) do |(rank, suit), deck|
       deck << Card.new(rank, suit)
@@ -100,8 +104,83 @@ class Deck
   end
 end
 
+module DisplayableCards
+  def create_card(card)
+    if card.rank == ' '
+      ['@==========@',
+       "|//////////|",
+       '|//////////|',
+       '|//////////|',
+       '|//////////|',
+       '|//////////|',
+       '|//////////|',
+       "|//////////|",
+       '@==========@']
+  
+    elsif card.rank.length == 1
+      ['@==========@',
+       "| #{card.rank}        |",
+       '|          |',
+       '|          |',
+       "|    #{card.suit}     |",
+       '|          |',
+       '|          |',
+       "|        #{card.rank} |",
+       '@==========@']
+  
+    else
+      # double char card
+      ['@==========@',
+       "| #{card.rank}       |",
+       '|          |',
+       '|          |',
+       "|    #{card.suit}     |",
+       '|          |',
+       '|          |',
+       "|       #{card.rank} |",
+       '@==========@']
+    end
+end
+
+  def create_display_cards(participant)
+    display_cards = []
+    participant.hand.each { |card| display_cards << create_card(card) }
+    create_row_cards display_cards
+  end
+  
+  def create_row_cards(cards)
+    return_arr = []
+    count = 0
+    loop do
+      result = ''
+      cards.each do |card|
+        result += card[count]
+      end
+      return_arr << result
+      count += 1
+      break if count == 9 # 9 is the height of the individual card
+    end
+    return_arr
+  end
+
+  def display_hands
+    dealer.hand.length.times do |index|
+      system 'clear'
+      puts 'Dealers cards: '
+      puts create_display_cards dealer
+      # puts "Dealer count: #{dealer.sum_of_cards(dealer.hand[0..index])}\n\n"
+      puts 'YOUR CARDS'
+      puts create_display_cards player
+      # puts "Your count: #{player_count}\n\n"
+      index == 0 ? sleep(0.66) : sleep(1.0)
+    end
+  end
+end
+
 class Game
   attr_accessor :deck, :player, :dealer
+
+  include DisplayableCards
 
   def initialize
     @player = Player.new
@@ -114,9 +193,13 @@ class Game
     dealer.hand = deck.deal
   end
 
+  def show_initial_cards
+    display_hands
+  end
+
   def play
     deal_cards
-    # show_initial_cards
+    show_initial_cards
     # player_turn
     # dealer_turn
     # show_result
