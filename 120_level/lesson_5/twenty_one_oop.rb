@@ -44,8 +44,28 @@ class Participant
     @is_hitting = false
   end
 
+  def num_aces
+    hand.count { |card| card.rank == 'A'}
+  end
+
+  def subract_aces(total)
+    num_aces.times do |_| 
+      total -= 10
+      return total if total <= 21
+    end
+    total
+  end
+
   def total
-    binding.pry
+    total = hand.reduce(0) do |memo, card|
+      memo += Card::VALUES[card.rank]
+    end
+
+    if total > 21 && num_aces > 0
+      subract_aces total
+    else
+      total
+    end
   end
 
   def hit?
@@ -61,11 +81,7 @@ class Participant
   end
 
   def busted?
-
-  end
-
-  def total
-
+    total > 21
   end
 end
 
@@ -87,6 +103,12 @@ end
 
 class Card
   attr_accessor :rank, :suit
+
+  VALUES = {'2' => 2, '3' => 3, '4' => 4,
+            '5' => 5, '6' => 6, '7' => 7,
+            '8' => 8, '9' => 9, '10' => 10,
+            'J' => 10, 'Q' => 10, 'K' => 10,
+            'A' => 11}
 
   def initialize(rank, suit)
     @rank = rank
@@ -231,8 +253,8 @@ class Game
       show_cards
       hit_or_stay
       player.hit(deck) if player.hit?
-      return if player.stay?
-      break if player.total
+
+      return if player.stay? || player.busted?
     end
   end
 
@@ -244,6 +266,7 @@ class Game
     deal_cards
     show_cards
     player_turn
+    show_cards
     # dealer_turn
     # show_result
   end
@@ -252,3 +275,5 @@ end
 twenty_one = Game.new
 
 twenty_one.play
+
+binding.pry
