@@ -201,17 +201,21 @@ end
     return_arr
   end
 
-  def display_hands
+  def display_hands(dealer_hand)
     # dealer.hand.length.times do |index|
       system 'clear'
       puts 'Dealers cards: '
-      puts display_cards dealer.mask
-      # puts "Dealer count: #{dealer.sum_of_cards(dealer.hand[0..index])}\n\n"
+      puts display_cards dealer_hand
+      puts "Dealer has: #{dealer.hand[0].rank} of #{dealer.hand[0].suit}\n\n"
       puts 'YOUR CARDS'
       puts display_cards player.hand
-      # puts "Your count: #{player_count}\n\n"
+      puts "Your count: #{player.total}\n\n"
       # index.zero? ? sleep(0.66) : sleep(1.0)
     # end
+  end
+
+  def dealer_hand_reveal
+
   end
 end
 
@@ -232,8 +236,8 @@ class Game
     dealer.hand = deck.deal
   end
 
-  def show_cards
-    display_hands
+  def show_cards(dealer_hand)
+    display_hands dealer_hand
   end
 
   def hit_or_stay
@@ -250,7 +254,7 @@ class Game
 
   def player_turn
     loop do
-      show_cards
+      show_cards dealer.mask
       hit_or_stay
       player.hit(deck) if player.hit?
 
@@ -259,15 +263,20 @@ class Game
   end
 
   def dealer_turn
+    # display cards
+    # checks if >= 17 or > 21 if true end turn
+    # if not hit
+    loop do
+      show_cards dealer.hand
 
+      dealer.total >= 17 ? return : dealer.hit(deck)
+    end
   end
 
   def play
     deal_cards
-    show_cards
     player_turn
-    show_cards
-    # dealer_turn
+    dealer_turn
     # show_result
   end
 end
