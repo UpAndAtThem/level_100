@@ -48,27 +48,24 @@ class Participant
     hand.count { |card| card.rank == 'A'}
   end
 
-  def subract_aces(total)
+  def subract_aces(total_amount)
     num_aces.times do |_| 
-      total -= 10
-      return total if total <= 21
+      total_amount -= 10
+      return total_amount if total_amount <= 21
     end
-    total
+    total_amount
   end
 
-  def masked_total(masked_hand)
-    masked_hand.reduce(0) { |memo, card| memo += Card::VALUES[card.rank]}
-  end
+  def total(hand = self.hand)
 
-  def total
-    total = hand.reduce(0) do |memo, card|
+    total_amount = hand.reduce(0) do |memo, card|
       memo += Card::VALUES[card.rank]
     end
 
-    if total > 21 && num_aces > 0
-      subract_aces total
+    if total_amount > 21 && num_aces > 0
+      subract_aces total_amount
     else
-      total
+      total_amount
     end
   end
 
@@ -94,10 +91,6 @@ class Player < Participant
 end
 
 class Dealer < Participant
-  def deal
-
-  end
-
   def mask
     dup_hand = hand.dup
     dup_hand[1] = Card.new('masked', ' ')
@@ -206,21 +199,13 @@ end
   end
 
   def display_hands(dealer_hand)
-    # dealer.hand.length.times do |index|
-      system 'clear'
-      puts 'Dealers cards: '
-      puts display_cards dealer_hand
-      
-      puts "Dealer has: #{dealer.masked_total(dealer_hand)}\n\n"
-      puts 'YOUR CARDS'
-      puts display_cards player.hand
-      puts "Your count: #{player.total}\n\n"
-      # index.zero? ? sleep(0.66) : sleep(1.0)
-    # end
-  end
-
-  def dealer_hand_reveal
-
+    system 'clear'
+    puts 'Dealers cards: '
+    puts display_cards dealer_hand
+    puts "Dealer has: #{dealer.total dealer_hand}\n\n"
+    puts 'YOUR CARDS'
+    puts display_cards player.hand
+    puts "Your count: #{player.total}\n\n"
   end
 end
 
@@ -271,7 +256,8 @@ class Game
     loop do
       show_cards dealer.hand
 
-      dealer.total >= 17 ? return : dealer.hit(deck)
+      dealer.total >= 17 || player.busted? ? return : dealer.hit(deck)
+      sleep 1.25
     end
   end
 
