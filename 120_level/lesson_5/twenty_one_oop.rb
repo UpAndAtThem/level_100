@@ -56,6 +56,10 @@ class Participant
     total
   end
 
+  def masked_total(masked_hand)
+    masked_hand.reduce(0) { |memo, card| memo += Card::VALUES[card.rank]}
+  end
+
   def total
     total = hand.reduce(0) do |memo, card|
       memo += Card::VALUES[card.rank]
@@ -96,7 +100,7 @@ class Dealer < Participant
 
   def mask
     dup_hand = hand.dup
-    dup_hand[1] = Card.new(' ', ' ')
+    dup_hand[1] = Card.new('masked', ' ')
     dup_hand
   end
 end
@@ -108,7 +112,7 @@ class Card
             '5' => 5, '6' => 6, '7' => 7,
             '8' => 8, '9' => 9, '10' => 10,
             'J' => 10, 'Q' => 10, 'K' => 10,
-            'A' => 11}
+            'A' => 11, 'masked' => 0}
 
   def initialize(rank, suit)
     @rank = rank
@@ -144,7 +148,7 @@ end
 
 module DisplayableCards
   def create_card(card)
-    if card.rank == ' '
+    if card.rank == 'masked'
       ['@==========@',
        '|//////////|',
        '|//////////|',
@@ -206,7 +210,8 @@ end
       system 'clear'
       puts 'Dealers cards: '
       puts display_cards dealer_hand
-      puts "Dealer has: #{dealer.hand[0].rank} of #{dealer.hand[0].suit}\n\n"
+      
+      puts "Dealer has: #{dealer.masked_total(dealer_hand)}\n\n"
       puts 'YOUR CARDS'
       puts display_cards player.hand
       puts "Your count: #{player.total}\n\n"
@@ -263,9 +268,6 @@ class Game
   end
 
   def dealer_turn
-    # display cards
-    # checks if >= 17 or > 21 if true end turn
-    # if not hit
     loop do
       show_cards dealer.hand
 
@@ -273,11 +275,15 @@ class Game
     end
   end
 
+  def show_result
+    binding.pry
+  end
+
   def play
     deal_cards
     player_turn
     dealer_turn
-    # show_result
+    show_result
   end
 end
 
