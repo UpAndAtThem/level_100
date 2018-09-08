@@ -48,16 +48,15 @@ class Participant
     hand.count { |card| card.rank == 'A'}
   end
 
-  def subract_aces(total_amount)
-    num_aces.times do |_| 
-      total_amount -= 10
-      return total_amount if total_amount <= 21
+  def subract_aces(total_count)
+    num_aces.times do |_|
+      total_count -= 10
+      return total_count if total_count <= 21
     end
-    total_amount
+    total_count
   end
 
   def total(hand = self.hand)
-
     total_amount = hand.reduce(0) do |memo, card|
       memo += Card::VALUES[card.rank]
     end
@@ -205,7 +204,8 @@ end
     puts "Dealer has: #{dealer.total dealer_hand}\n\n"
     puts 'YOUR CARDS'
     puts display_cards player.hand
-    puts "Your count: #{player.total}\n\n"
+    puts "Your count: #{player.total}"
+    puts "#{"YOU BUST!" if player.busted?}"
   end
 end
 
@@ -260,9 +260,28 @@ class Game
       sleep 1.25
     end
   end
+  
+  def tie?
+    player.total == dealer.total
+  end
+
+  def player_won?
+   (dealer.busted? && !player.busted?) || (player.total > dealer.total && !player.busted?)
+  end
+
+  def win_lose_tie_message
+    if tie?
+      "It's a tie!"
+    elsif player_won?
+      "You Won!"
+    else
+      "The Dealer Won"
+    end
+  end
 
   def show_result
-    binding.pry
+    puts "You have #{player.total} and the Dealer has #{dealer.total}"
+    puts win_lose_tie_message
   end
 
   def play
@@ -276,5 +295,3 @@ end
 twenty_one = Game.new
 
 twenty_one.play
-
-binding.pry
