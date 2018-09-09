@@ -35,6 +35,7 @@
 #   -busted?
 # Game
 #   play
+
 require 'pry'
 
 class Participant
@@ -273,7 +274,7 @@ class Game
       show_cards dealer.mask
       hit_or_stay
       player.hit(deck) if player.hit?
-      sleep 0.50
+      sleep 0.35
 
       return if player.stay? || player.busted?
     end
@@ -293,16 +294,17 @@ class Game
   end
 
   def player_won?
-   (dealer.busted? && !player.busted?) || (player.total > dealer.total && !player.busted?)
+    (dealer.busted? && !player.busted?) ||
+      (player.total > dealer.total && !player.busted?)
   end
 
   def win_lose_tie_message
     if tie?
-      "It's a tie!"
+      'It\'s a tie!'
     elsif player_won?
-      "You won!"
+      'You won!'
     else
-      "The dealer won!"
+      'The dealer won!'
     end
   end
 
@@ -312,7 +314,7 @@ class Game
 
   def adjust_score
     if tie?
-      return
+
     elsif player_won?
       player.wins += 1
     else
@@ -322,13 +324,13 @@ class Game
 
   def play
     display_greeting
-    loop do 
+    loop do
       deal_cards
       player_turn
       dealer_turn
       adjust_score
       display_result
-      
+
       break if wins_needed_reached?
     end
     display_grand_result
