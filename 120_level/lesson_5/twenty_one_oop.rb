@@ -38,10 +38,11 @@
 require 'pry'
 
 class Participant
-  attr_accessor :cards, :name, :hand, :is_hitting
+  attr_accessor :cards, :name, :hand, :wins, :is_hitting
 
   def initialize
     @is_hitting = false
+    @wins = 0
   end
 
   def num_aces
@@ -205,13 +206,15 @@ end
     puts 'YOUR CARDS'
     puts display_cards player.hand
     puts "Your count: #{player.total}"
-    puts "#{"YOU BUST!" if player.busted?}"
+    puts "\n#{"YOU BUST!" if player.busted?}"
   end
 end
 
 # Game class
 class Game
   attr_accessor :deck, :player, :dealer
+
+  WINS_NEEDED = 5
 
   include DisplayableCards
 
@@ -260,7 +263,7 @@ class Game
       sleep 1.25
     end
   end
-  
+
   def tie?
     player.total == dealer.total
   end
@@ -280,15 +283,40 @@ class Game
   end
 
   def show_result
-    puts "You have #{player.total} and the Dealer has #{dealer.total}"
+    puts "\nYou have #{player.total} and the Dealer has #{dealer.total}"
     puts win_lose_tie_message
   end
 
+  def wins_needed_reached?
+    [player.wins, dealer.wins].include? WINS_NEEDED
+  end
+
+  def adjust_score
+    if tie?
+      return
+    elsif player_won?
+      player.wins += 1
+    else
+      dealer.wins += 1
+    end
+  end
+
+  def display_grand_result
+    puts "\nThank you for playing 21! Goodbye"
+  end
+
   def play
-    deal_cards
-    player_turn
-    dealer_turn
-    show_result
+    loop do 
+      deal_cards
+      player_turn
+      dealer_turn
+      show_result
+      adjust_score
+
+      binding.pry
+      break if wins_needed_reached?
+    end
+    display_grand_result
   end
 end
 
