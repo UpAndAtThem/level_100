@@ -175,7 +175,19 @@ module DisplayableCards
        "|       #{card.rank} |",
        '@==========@']
     end
-end
+  end
+
+  def display_greeting
+    system 'clear'
+    puts "Welcome to Twenty-one."
+    puts "\nAttempt to beat the dealer by getting a count"
+    puts "as close to 21 as possible, without going over."
+    puts "\nNumbered cards are worth their value,"
+    puts "face cards are worth 10, and aces are worth 1 or 11."
+    puts "\nFirst participant to #{Game::WINS_NEEDED} wins is the overall winner"
+    print "\nPress enter to continue:"
+    gets.chomp
+  end
 
   def display_cards(hand)
     display_cards = []
@@ -196,6 +208,17 @@ end
       break if count == cards.first.count
     end
     return_arr
+  end
+
+  def display_result
+    puts win_lose_tie_message
+    puts "\nPlayer wins: #{player.wins} \nDealer wins: #{dealer.wins}"
+    print "\nPRESS ENTER TO CONTINUE:"
+    gets.chomp
+  end
+
+  def display_grand_result
+    puts "\nThank you for playing 21! Goodbye"
   end
 
   def display_hands(dealer_hand)
@@ -250,6 +273,7 @@ class Game
       show_cards dealer.mask
       hit_or_stay
       player.hit(deck) if player.hit?
+      sleep 0.50
 
       return if player.stay? || player.busted?
     end
@@ -258,9 +282,9 @@ class Game
   def dealer_turn
     loop do
       show_cards dealer.hand
+      sleep 1.25
 
       dealer.total >= 17 || player.busted? ? return : dealer.hit(deck)
-      sleep 1.25
     end
   end
 
@@ -276,15 +300,10 @@ class Game
     if tie?
       "It's a tie!"
     elsif player_won?
-      "You Won!"
+      "You won!"
     else
-      "The Dealer Won"
+      "The dealer won!"
     end
-  end
-
-  def show_result
-    puts "\nYou have #{player.total} and the Dealer has #{dealer.total}"
-    puts win_lose_tie_message
   end
 
   def wins_needed_reached?
@@ -301,19 +320,15 @@ class Game
     end
   end
 
-  def display_grand_result
-    puts "\nThank you for playing 21! Goodbye"
-  end
-
   def play
+    display_greeting
     loop do 
       deal_cards
       player_turn
       dealer_turn
-      show_result
       adjust_score
-
-      binding.pry
+      display_result
+      
       break if wins_needed_reached?
     end
     display_grand_result
