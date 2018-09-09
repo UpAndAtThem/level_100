@@ -1,7 +1,12 @@
-# Twenty-one is a game where from a shuffled deck, 2 cards are dealt face up to the player, and 2 cards are dealt to the dealer, one face up, and one face down.  
-# Then the player has options to hit or stay.  If the player or dealer surpasses the score of 21 they bust.  
-# The dealer must continue to hit until they reach a minium score of 17.  Once they reach 17 or above the must stay.  
-# The scores are compared and a winner is declared. the winner is awarded a point, the first player to a score of 5 wins
+# Twenty-one is a game where from a shuffled deck, 2 cards are dealt
+# face up to the player, and 2 cards are dealt to the dealer, one face
+# up, and one face down.
+# Then the player has options to hit or stay.  If the player or dealer
+# surpasses the score of 21 they bust.
+# The dealer must continue to hit until they reach a minium score of 17.
+# Once they reach 17 or above the must stay.
+# The scores are compared and a winner is declared.
+# the winner is awarded a point, the first player to a score of 5 wins
 
 # Nouns:
 #   game
@@ -36,8 +41,7 @@
 # Game
 #   play
 
-require 'pry'
-
+# Participant class
 class Participant
   attr_accessor :cards, :name, :hand, :wins, :is_hitting
 
@@ -47,7 +51,7 @@ class Participant
   end
 
   def num_aces
-    hand.count { |card| card.rank == 'A'}
+    hand.count { |card| card.rank == 'A' }
   end
 
   def subract_aces(total_count)
@@ -60,7 +64,7 @@ class Participant
 
   def total(hand = self.hand)
     total_amount = hand.reduce(0) do |memo, card|
-      memo += Card::VALUES[card.rank]
+      memo + Card::VALUES[card.rank]
     end
 
     if total_amount > 21 && num_aces > 0
@@ -87,10 +91,10 @@ class Participant
   end
 end
 
-class Player < Participant
+# Player class
+class Player < Participant; end
 
-end
-
+# Dealer class
 class Dealer < Participant
   def mask
     dup_hand = hand.dup
@@ -99,14 +103,15 @@ class Dealer < Participant
   end
 end
 
+# Card class
 class Card
   attr_accessor :rank, :suit
 
-  VALUES = {'2' => 2, '3' => 3, '4' => 4,
-            '5' => 5, '6' => 6, '7' => 7,
-            '8' => 8, '9' => 9, '10' => 10,
-            'J' => 10, 'Q' => 10, 'K' => 10,
-            'A' => 11, 'masked' => 0}
+  VALUES = { '2' => 2, '3' => 3, '4' => 4,
+             '5' => 5, '6' => 6, '7' => 7,
+             '8' => 8, '9' => 9, '10' => 10,
+             'J' => 10, 'Q' => 10, 'K' => 10,
+             'A' => 11, 'masked' => 0 }.freeze
 
   def initialize(rank, suit)
     @rank = rank
@@ -114,6 +119,7 @@ class Card
   end
 end
 
+# Deck class
 class Deck
   attr_accessor :deck
 
@@ -122,7 +128,9 @@ class Deck
   end
 
   def new_deck
-    deck_makeup = %w(2 3 4 5 6 7 8 9 10 J Q K A).product ["\u2662", "\u2661", "\u2664", "\u2667"]
+    ranks = %w(2 3 4 5 6 7 8 9 10 J Q K A)
+    suits = ["\u2662", "\u2661", "\u2664", "\u2667"]
+    deck_makeup = ranks.product suits
 
     @deck = deck_makeup.each_with_object([]) do |(rank, suit), deck|
       deck << Card.new(rank, suit)
@@ -140,7 +148,9 @@ class Deck
   end
 end
 
+# DisplayableCards module
 module DisplayableCards
+  # rubocop:disable MethodLength
   def create_card(card)
     if card.rank == 'masked'
       ['@==========@',
@@ -152,7 +162,7 @@ module DisplayableCards
        '|//////////|',
        '|//////////|',
        '@==========@']
-  
+
     elsif card.rank.length == 1
       ['@==========@',
        "| #{card.rank}        |",
@@ -163,7 +173,7 @@ module DisplayableCards
        '|          |',
        "|        #{card.rank} |",
        '@==========@']
-  
+
     else
       # double char card
       ['@==========@',
@@ -177,15 +187,16 @@ module DisplayableCards
        '@==========@']
     end
   end
+  # rubocop:enable MethodLength
 
   def display_greeting
     system 'clear'
-    puts "Welcome to Twenty-one."
+    puts 'Welcome to Twenty-one.'
     puts "\nAttempt to beat the dealer by getting a count"
-    puts "as close to 21 as possible, without going over."
+    puts 'as close to 21 as possible, without going over.'
     puts "\nNumbered cards are worth their value,"
-    puts "face cards are worth 10, and aces are worth 1 or 11."
-    puts "\nFirst participant to #{Game::WINS_NEEDED} wins is the overall winner"
+    puts 'face cards are worth 10, and aces are worth 1 or 11.'
+    puts "\nFirst participant to #{Game::WINS_NEEDED} wins is the champ."
     print "\nPress enter to continue:"
     gets.chomp
   end
@@ -201,11 +212,10 @@ module DisplayableCards
     count = 0
     loop do
       result = ''
-      cards.each do |card|
-        result += card[count]
-      end
+      cards.each { |card| result += card[count] }
       return_arr << result
       count += 1
+
       break if count == cards.first.count
     end
     return_arr
@@ -224,13 +234,12 @@ module DisplayableCards
 
   def display_hands(dealer_hand)
     system 'clear'
-    puts 'Dealers cards: '
+    puts 'DEALERS CARDS: '
     puts display_cards dealer_hand
-    puts "Dealer has: #{dealer.total dealer_hand}\n\n"
-    puts 'YOUR CARDS'
+    puts "Dealer count: #{dealer.total dealer_hand}\n\n"
+    puts 'YOUR CARDS:'
     puts display_cards player.hand
-    puts "Your count: #{player.total}"
-    puts "\n#{"YOU BUST!" if player.busted?}"
+    puts "Your count: #{player.total}\n\n"
   end
 end
 
@@ -257,16 +266,24 @@ class Game
     display_hands dealer_hand
   end
 
+  def hitting=(response)
+    response == 'hit' ? player.is_hitting = true : player.is_hitting = false
+  end
+
   def hit_or_stay
     loop do
-      print "Do you want to hit or stay? :"
-      response = gets.chomp
+      print 'Do you want to hit or stay? :'
+      response = gets.chomp.downcase
 
-      if %w(hit stay).include?(response.downcase)
-        (response == 'hit') ? player.is_hitting = true : player.is_hitting = false
+      if %w(hit stay).include?(response)
+        self.hitting = response
         break
       end
     end
+  end
+
+  def end_turn?
+    player.stay? || player.busted?
   end
 
   def player_turn
@@ -274,9 +291,9 @@ class Game
       show_cards dealer.mask
       hit_or_stay
       player.hit(deck) if player.hit?
-      sleep 0.35
+      sleep 0.25
 
-      return if player.stay? || player.busted?
+      return if end_turn?
     end
   end
 
