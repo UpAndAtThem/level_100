@@ -41,8 +41,6 @@
 # Game
 #   play
 
-require 'pry'
-
 # Participant class
 class Participant
   attr_accessor :cards, :name, :hand, :wins
