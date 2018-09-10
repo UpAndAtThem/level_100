@@ -99,7 +99,7 @@ class Player < Participant
   end
 
   def hitting=(response)
-    @hitting = response == 'hit' ? true : false
+    @hitting = %w(h hit).include?(response) ? true : false
   end
 end
 
@@ -311,7 +311,7 @@ class Game
       print 'Do you want to hit or stay? :'
       response = gets.chomp.downcase
 
-      if %w(hit stay).include?(response)
+      if %w(hit stay h s).include?(response)
         player.hitting = response
         break
       end
@@ -416,4 +416,3 @@ end
 
 twenty_one = Game.new
 twenty_one.play
-
