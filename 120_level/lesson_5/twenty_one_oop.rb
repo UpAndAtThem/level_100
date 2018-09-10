@@ -41,12 +41,13 @@
 # Game
 #   play
 
+require 'pry'
+
 # Participant class
 class Participant
-  attr_accessor :cards, :name, :hand, :wins, :is_hitting
-
+  attr_accessor :cards, :name, :hand, :wins
   def initialize
-    @is_hitting = false
+    @hitting = false
     @wins = 0
   end
 
@@ -74,16 +75,16 @@ class Participant
     end
   end
 
-  def hit?
-    is_hitting == true
+  def hitting?
+    hitting == true
   end
 
-  def hit(deck)
-    hand << deck.deal_card
+  def staying?
+    !hitting?
   end
 
-  def stay?
-    is_hitting == false
+  def hit(shoe)
+    hand << shoe.deal_card
   end
 
   def busted?
@@ -92,10 +93,26 @@ class Participant
 end
 
 # Player class
-class Player < Participant; end
+class Player < Participant
+  attr_reader :hitting
+
+  def end_turn?
+    staying? || busted?
+  end
+
+  def hitting=(response)
+    @hitting = response == 'hit' ? true : false
+  end
+end
 
 # Dealer class
 class Dealer < Participant
+  def initialize
+    super
+    @name = ['Split Freeley', 'Tina \'Double Trouble\' Gracey',
+             'Charlie Shoe', 'Push Williams'].sample
+  end
+
   def mask
     dup_hand = hand.dup
     dup_hand[1] = Card.new('masked', ' ')
@@ -121,10 +138,10 @@ end
 
 # Deck class
 class Deck
-  attr_accessor :deck
+  attr_accessor :cards
 
   def initialize
-    @deck = new_deck.shuffle
+    @cards = new_deck.shuffle
   end
 
   def new_deck
@@ -132,19 +149,28 @@ class Deck
     suits = ["\u2662", "\u2661", "\u2664", "\u2667"]
     deck_makeup = ranks.product suits
 
-    @deck = deck_makeup.each_with_object([]) do |(rank, suit), deck|
-      deck << Card.new(rank, suit)
+    deck_makeup.each_with_object([]) do |(rank, suit), cards|
+      cards << Card.new(rank, suit)
     end
   end
 
   def deal
     2.times.with_object([]) do |_, hand|
-      hand << deck.pop
+      hand << cards.pop
     end
   end
 
   def deal_card
-    deck.pop
+    cards.pop
+  end
+end
+
+# Shoe class
+class Shoe < Deck
+  def initialize(num_decks)
+    @cards = num_decks.times.with_object([]) do |_, shoe|
+      shoe << Deck.new.cards
+    end.flatten
   end
 end
 
@@ -192,10 +218,10 @@ module DisplayableCards
   def display_greeting
     system 'clear'
     puts 'Welcome to Twenty-one.'
-    puts "\nAttempt to beat the dealer by getting a count"
+    puts "\nAttempt to win against the dealer by getting a count"
     puts 'as close to 21 as possible, without going over.'
-    puts "\nNumbered cards are worth their value,"
-    puts 'face cards are worth 10, and aces are worth 1 or 11.'
+    puts "\nNumbered cards are worth their stated value."
+    puts 'Face cards are worth 10, and aces are worth 1 or 11.'
     puts "\nFirst participant to #{Game::WINS_NEEDED} wins is the champ."
     print "\nPress enter to continue:"
     gets.chomp
@@ -221,14 +247,23 @@ module DisplayableCards
     return_arr
   end
 
-  def display_result
-    puts win_lose_tie_message
-    puts "\nPlayer wins: #{player.wins} \nDealer wins: #{dealer.wins}"
+  def press_enter_prompt
     print "\nPRESS ENTER TO CONTINUE:"
     gets.chomp
   end
 
-  def display_grand_result
+  def display_result
+    puts win_lose_tie_message
+
+    if wins_needed_reached?
+      puts "\nCongratulations to our overall winner, #{winner_name}!"
+    end
+
+    puts "\nPlayer wins: #{player.wins} \nDealer wins: #{dealer.wins}"
+    press_enter_prompt unless wins_needed_reached?
+  end
+
+  def display_farewell_message
     puts "\nThank you for playing 21! Goodbye"
   end
 
@@ -241,33 +276,36 @@ module DisplayableCards
     puts display_cards player.hand
     puts "Your count: #{player.total}\n\n"
   end
+
+  def win_lose_tie_message
+    if tie?
+      'It\'s a tie!'
+    elsif player_won?
+      'You won!'
+    else
+      'The dealer won!'
+    end
+  end
 end
 
 # Game class
 class Game
-  attr_accessor :deck, :player, :dealer
+  attr_accessor :shoe, :player, :dealer
 
-  WINS_NEEDED = 5
+  WINS_NEEDED = 3
+  NUM_DECKS = 3
 
   include DisplayableCards
 
   def initialize
     @player = Player.new
     @dealer = Dealer.new
-    @deck = Deck.new
+    @shoe = Shoe.new NUM_DECKS
   end
 
   def deal_cards
-    player.hand = deck.deal
-    dealer.hand = deck.deal
-  end
-
-  def show_cards(dealer_hand)
-    display_hands dealer_hand
-  end
-
-  def hitting=(response)
-    response == 'hit' ? player.is_hitting = true : player.is_hitting = false
+    player.hand = shoe.deal
+    dealer.hand = shoe.deal
   end
 
   def hit_or_stay
@@ -276,33 +314,29 @@ class Game
       response = gets.chomp.downcase
 
       if %w(hit stay).include?(response)
-        self.hitting = response
+        player.hitting = response
         break
       end
     end
   end
 
-  def end_turn?
-    player.stay? || player.busted?
-  end
-
   def player_turn
     loop do
-      show_cards dealer.mask
+      display_hands dealer.mask
       hit_or_stay
-      player.hit(deck) if player.hit?
+      player.hit(shoe) if player.hitting?
       sleep 0.25
 
-      return if end_turn?
+      return if player.end_turn?
     end
   end
 
   def dealer_turn
     loop do
-      show_cards dealer.hand
+      display_hands dealer.hand
       sleep 1.25
 
-      dealer.total >= 17 || player.busted? ? return : dealer.hit(deck)
+      dealer.total >= 17 || player.busted? ? return : dealer.hit(shoe)
     end
   end
 
@@ -315,23 +349,17 @@ class Game
       (player.total > dealer.total && !player.busted?)
   end
 
-  def win_lose_tie_message
-    if tie?
-      'It\'s a tie!'
-    elsif player_won?
-      'You won!'
-    else
-      'The dealer won!'
-    end
-  end
-
   def wins_needed_reached?
     [player.wins, dealer.wins].include? WINS_NEEDED
   end
 
+  def winner_name
+    player.wins == Game::WINS_NEEDED ? 'you' : dealer.name
+  end
+
   def adjust_score
     if tie?
-
+      nil
     elsif player_won?
       player.wins += 1
     else
@@ -339,8 +367,31 @@ class Game
     end
   end
 
-  def play
-    display_greeting
+  def play_again?
+    loop do
+      puts "\nWould you like to play again 'yes' or 'no'?"
+      response = gets.chomp.downcase
+
+      return response == 'yes' if %w(yes no).include? response
+    end
+  end
+
+  def new_shoe
+    @shoe = Shoe.new NUM_DECKS
+  end
+
+  def low_cards?
+    shoe.cards.count < 20
+  end
+
+  def reset_round
+    player.wins = 0
+    dealer.wins = 0
+    player.hand = []
+    dealer.hand = []
+  end
+
+  def game_loop
     loop do
       deal_cards
       player_turn
@@ -348,12 +399,22 @@ class Game
       adjust_score
       display_result
 
+      new_shoe if low_cards?
+
       break if wins_needed_reached?
     end
-    display_grand_result
+  end
+
+  def play
+    display_greeting
+    loop do
+      game_loop
+      break unless play_again?
+      reset_round
+    end
+    display_farewell_message
   end
 end
 
 twenty_one = Game.new
-
 twenty_one.play
