@@ -1,46 +1,3 @@
-# Twenty-one is a game where from a shuffled deck, 2 cards are dealt
-# face up to the player, and 2 cards are dealt to the dealer, one face
-# up, and one face down.
-# Then the player has options to hit or stay.  If the player or dealer
-# surpasses the score of 21 they bust.
-# The dealer must continue to hit until they reach a minium score of 17.
-# Once they reach 17 or above the must stay.
-# The scores are compared and a winner is declared.
-# the winner is awarded a point, the first player to a score of 5 wins
-
-# Nouns:
-#   game
-#   player
-#   cards
-#   deck
-#   dealer
-#   score
-#   participant
-# Verbs:
-#   deal
-#   shuffle
-#   hit
-#   stay
-#   bust
-
-# player
-#   -cards
-# Dealer
-#   -hit?
-#   -stay?
-#   -deal
-# Deck
-#   -deal
-# Card
-#   -rank
-#   -suit
-# Participant
-#   -hit
-#   -stay
-#   -busted?
-# Game
-#   play
-
 # Participant class
 class Participant
   attr_accessor :cards, :name, :hand, :wins
@@ -73,14 +30,6 @@ class Participant
     end
   end
 
-  def hitting?
-    hitting == true
-  end
-
-  def staying?
-    !hitting?
-  end
-
   def hit(shoe)
     hand << shoe.deal_card
   end
@@ -96,6 +45,14 @@ class Player < Participant
 
   def end_turn?
     staying? || busted?
+  end
+
+  def hitting?
+    hitting == true
+  end
+
+  def staying?
+    !hitting?
   end
 
   def hitting=(response)
@@ -170,6 +127,10 @@ class Shoe < Deck
       shoe << Deck.new.cards
     end.flatten
   end
+
+  def low_cards?
+    cards.count < 20
+  end
 end
 
 # DisplayableCards module
@@ -215,14 +176,13 @@ module DisplayableCards
 
   def display_greeting
     system 'clear'
-    puts 'Welcome to Twenty-one.'
+    puts 'WELCOME TO TWENTY-ONE'
     puts "\nAttempt to win against the dealer by getting a count"
     puts 'as close to 21 as possible, without going over.'
     puts "\nNumbered cards are worth their stated value."
     puts 'Face cards are worth 10, and aces are worth 1 or 11.'
     puts "\nFirst participant to #{Game::WINS_NEEDED} wins is the champ."
-    print "\nPress enter to continue:"
-    gets.chomp
+    press_enter_prompt
   end
 
   def display_cards(hand)
@@ -292,6 +252,7 @@ class Game
 
   WINS_NEEDED = 3
   NUM_DECKS = 3
+  DEALER_STAY = 17
 
   include DisplayableCards
 
@@ -334,7 +295,7 @@ class Game
       display_hands dealer.hand
       sleep 1.25
 
-      dealer.total >= 17 || player.busted? ? return : dealer.hit(shoe)
+      dealer.total >= DEALER_STAY || player.busted? ? return : dealer.hit(shoe)
     end
   end
 
@@ -378,10 +339,6 @@ class Game
     @shoe = Shoe.new NUM_DECKS
   end
 
-  def low_cards?
-    shoe.cards.count < 20
-  end
-
   def reset_round
     player.wins = 0
     dealer.wins = 0
@@ -397,7 +354,7 @@ class Game
       adjust_score
       display_result
 
-      new_shoe if low_cards?
+      new_shoe if shoe.low_cards?
 
       break if wins_needed_reached?
     end
