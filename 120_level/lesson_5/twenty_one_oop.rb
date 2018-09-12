@@ -57,7 +57,7 @@ class Player < Participant
   end
 
   def hitting=(response)
-    @hitting = %w(h hit).include?(response) ? true : false
+    @hitting = %w[h hit].include?(response) ? true : false
   end
 end
 
@@ -101,7 +101,7 @@ class Deck
   end
 
   def new_deck
-    ranks = %w(2 3 4 5 6 7 8 9 10 J Q K A)
+    ranks = %w[2 3 4 5 6 7 8 9 10 J Q K A]
     suits = ["\u2662", "\u2661", "\u2664", "\u2667"]
     deck_makeup = ranks.product suits
 
@@ -226,6 +226,11 @@ module DisplayableCards
     prompt "\nThank you for playing 21! Goodbye"
   end
 
+  def display_bust
+    prompt "You Busted\n\n" if player.busted?
+    prompt "Dealer Busted\n\n" if dealer.busted?
+  end
+
   def display_hands(dealer_hand)
     system 'clear'
     prompt 'DEALERS CARDS: '
@@ -234,6 +239,7 @@ module DisplayableCards
     prompt 'YOUR CARDS:'
     prompt display_cards player.hand
     prompt "Your count: #{player.total}\n\n"
+    display_bust
   end
 
   def prompt(message)
@@ -241,13 +247,7 @@ module DisplayableCards
   end
 
   def win_lose_tie_message
-    if tie?
-      'It\'s a tie!'
-    elsif player_won?
-      'You won!'
-    else
-      'The dealer won!'
-    end
+    ("It's a tie!" if tie?) || ("You won!" if player_won?) || "The Dealer Won"
   end
 end
 
@@ -278,7 +278,7 @@ class Game
       print 'Do you want to hit or stay? :'
       response = gets.chomp.downcase
 
-      if %w(hit stay h s).include?(response)
+      if %w[hit stay h s].include?(response)
         player.hitting = response
         break
       end
@@ -337,7 +337,7 @@ class Game
       prompt "\nWould you like to play again 'yes' or 'no'?"
       response = gets.chomp.downcase
 
-      return response == 'yes' if %w(yes no).include? response
+      return response == 'yes' if %w[yes no].include? response
     end
   end
 
