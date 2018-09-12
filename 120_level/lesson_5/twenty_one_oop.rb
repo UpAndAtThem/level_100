@@ -1,6 +1,7 @@
 # Participant class
 class Participant
   attr_accessor :cards, :name, :hand, :wins
+
   def initialize
     @hitting = false
     @wins = 0
@@ -176,12 +177,12 @@ module DisplayableCards
 
   def display_greeting
     system 'clear'
-    puts 'WELCOME TO TWENTY-ONE'
-    puts "\nAttempt to win against the dealer by getting a count"
-    puts 'as close to 21 as possible, without going over.'
-    puts "\nNumbered cards are worth their stated value."
-    puts 'Face cards are worth 10, and aces are worth 1 or 11.'
-    puts "\nFirst participant to #{Game::WINS_NEEDED} wins is the champ."
+    prompt 'WELCOME TO TWENTY-ONE'
+    prompt "\nAttempt to win against the dealer by getting a count"
+    prompt 'as close to 21 as possible, without going over.'
+    prompt "\nNumbered cards are worth their stated value."
+    prompt 'Face cards are worth 10, and aces are worth 1 or 11.'
+    prompt "\nFirst participant to #{Game::WINS_NEEDED} wins is the champ."
     press_enter_prompt
   end
 
@@ -211,28 +212,32 @@ module DisplayableCards
   end
 
   def display_result
-    puts win_lose_tie_message
+    prompt win_lose_tie_message
 
     if wins_needed_reached?
-      puts "\nCongratulations to our overall winner, #{winner_name}!"
+      prompt "\nCongratulations to our overall winner, #{winner_name}!"
     end
 
-    puts "\nPlayer wins: #{player.wins} \nDealer wins: #{dealer.wins}"
+    prompt "\nPlayer wins: #{player.wins} \nDealer wins: #{dealer.wins}"
     press_enter_prompt unless wins_needed_reached?
   end
 
   def display_farewell_message
-    puts "\nThank you for playing 21! Goodbye"
+    prompt "\nThank you for playing 21! Goodbye"
   end
 
   def display_hands(dealer_hand)
     system 'clear'
-    puts 'DEALERS CARDS: '
-    puts display_cards dealer_hand
-    puts "Dealer count: #{dealer.total dealer_hand}\n\n"
-    puts 'YOUR CARDS:'
-    puts display_cards player.hand
-    puts "Your count: #{player.total}\n\n"
+    prompt 'DEALERS CARDS: '
+    prompt display_cards dealer_hand
+    prompt "Dealer count: #{dealer.total dealer_hand}\n\n"
+    prompt 'YOUR CARDS:'
+    prompt display_cards player.hand
+    prompt "Your count: #{player.total}\n\n"
+  end
+
+  def prompt(message)
+    puts message
   end
 
   def win_lose_tie_message
@@ -248,12 +253,13 @@ end
 
 # Game class
 class Game
-  attr_accessor :shoe, :player, :dealer
-
   WINS_NEEDED = 3
   NUM_DECKS = 3
   DEALER_STAY = 17
 
+  private
+
+  attr_accessor :shoe, :player, :dealer
   include DisplayableCards
 
   def initialize
@@ -328,7 +334,7 @@ class Game
 
   def play_again?
     loop do
-      puts "\nWould you like to play again 'yes' or 'no'?"
+      prompt "\nWould you like to play again 'yes' or 'no'?"
       response = gets.chomp.downcase
 
       return response == 'yes' if %w(yes no).include? response
@@ -359,6 +365,8 @@ class Game
       break if wins_needed_reached?
     end
   end
+
+  public
 
   def play
     display_greeting
