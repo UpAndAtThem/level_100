@@ -24,8 +24,8 @@ class Board
                   [[1, 5, 9], [3, 5, 7]].freeze # diagnals
 
   def initialize
-    @squares = (1..9).each_with_object({}) do |pos, result|
-      result[pos] = Square.new
+    @squares = (1..9).each_with_object({}) do |position, result|
+      result[position] = Square.new
     end
   end
 
@@ -83,15 +83,19 @@ class Board
     free_positions.empty?
   end
 
+  def get_line_markings(line)
+    squares.values_at(*line).map(&:marking)
+  end
+
   def two_markers_and_blank?(line, marker)
-    line_markings = squares.values_at(*line).map(&:marking)
+    line_markings = get_line_markings line
 
     line_markings.count(marker) == 2 &&
       line_markings.count(Square::BLANK) == 1
   end
 
   def three_in_a_row?(line)
-    line_markings = squares.values_at(*line).map(&:marking)
+    line_markings = get_line_markings line
 
     line_markings.uniq.first != Square::BLANK &&
       line_markings.uniq.count == 1
@@ -266,6 +270,8 @@ end
 
 # Moving module
 module Moving
+  private
+
   def human_moves
     choice_prompt
     choice = nil
@@ -339,7 +345,8 @@ class TTTGame
 
   def set_winner
     return unless board.won_round?
-    self.winner = human.marker == current_player.marker ? human : computer
+
+    self.winner = (human.marker == current_player.marker ? human : computer)
     winner.increment_score
   end
 
