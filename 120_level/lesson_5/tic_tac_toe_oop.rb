@@ -138,12 +138,16 @@ class Human < Player
     end
   end
 
+  def valid_choice?(choice)
+    choice.length == 1 && choice != 'O'
+  end
+
   def set_marker
     loop do
       print "Choose a single character as your marker: "
       choice = gets.chomp.strip
 
-      if choice.length == 1
+      if valid_choice? choice
         @marker = choice
         break
       end
