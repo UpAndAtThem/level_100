@@ -273,16 +273,14 @@ module Moving
   private
 
   def human_moves
-    choice_prompt
     choice = nil
 
     loop do
+      choice_prompt
       choice = gets.chomp.to_i
 
       break if board.free_positions.include? choice
-      choice_prompt
     end
-
     board[choice] = human.marker
   end
 
@@ -321,6 +319,8 @@ end
 
 # TTTGame class
 class TTTGame
+  private
+
   COMPUTER_MARKER = 'O'.freeze
 
   include TTTDisplays, AI, Moving
@@ -336,8 +336,6 @@ class TTTGame
     @computer = Computer.new(COMPUTER_MARKER)
     @board = Board.new
   end
-
-  private
 
   def clear
     system('clear') || system('cls')
