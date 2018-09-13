@@ -1,6 +1,60 @@
-require 'pry'
 require 'yaml'
+# DisplayableMessage module
+module DisplayableMessage
+  def display_welcome_message
+    puts messages['greeting']
+  end
 
+  def display_rules
+    messages['rules'].each { |_, rule| puts rule }
+
+    puts format(messages['first_to'], wins_needed: RPSGame::BEST_TO)
+    puts messages['understand']
+
+    print messages['press_enter']
+    gets.chomp
+
+    clear_screen
+  end
+
+  def display_goodbye_message
+    puts messages['farewell']
+  end
+
+  def display_round_result
+    if tie?
+      display_tie
+      return
+    end
+
+    display_winner
+  end
+
+  def display_score
+    puts "\n#{human.name} has #{human.score}."
+    puts "#{computer.name} has #{computer.score}"
+  end
+
+  def message_to_player
+    if winner.class == Human
+      puts messages['player_win_comment'][win_by]
+    else
+      puts messages['computer_win_comment'][win_by]
+    end
+  end
+
+  def congrats_message
+    puts format(messages['winner_congrats'],
+                the_winner: winner.name, best_to: RPSGame::BEST_TO)
+  end
+
+  def display_game_result
+    congrats_message
+    message_to_player
+  end
+end
+
+# DisplayableSprites module
 module DisplayableSprites
   def pow
     ["╔═╗╔═╗╦ ╦┬",
@@ -36,8 +90,21 @@ module DisplayableSprites
      '   ╩ ╩   ╚═╝   ╩ ╩   ╩   ╝╚╝']
   end
 
-  def clear_screen
-    system('clear') || system('cls')
+  def display_winning_sprite
+    num_blank_spaces = winner.move.sprite[-1].count " "
+
+    winner.move.sprite[1..-1].each { |line| puts line }
+    puts(' ' * num_blank_spaces + "WINS!\n\n\n")
+  end
+
+  def display_fighting_method
+    puts messages[winner.move.value][loser.move.value]
+  end
+
+  def display_winner
+    display_winning_sprite
+    display_fighting_method
+    display_score
   end
 
   def display_left
@@ -90,6 +157,7 @@ module DisplayableSprites
   end
 end
 
+# Player class
 class Player
   attr_accessor :move, :name, :score
   attr_reader :sprite, :MESSAGES
@@ -153,6 +221,7 @@ class Human < Player
   end
 end
 
+# Computer class
 class Computer < Player
   attr_accessor :name, :opponent_history
 
@@ -211,6 +280,7 @@ class Computer < Player
   end
 end
 
+# Move class
 class Move
   attr_reader :value, :type
 
@@ -262,6 +332,7 @@ class Move
   end
 end
 
+# Rock class
 class Rock < Move
   def sprite
     ["                     ROCK",
@@ -278,6 +349,7 @@ class Rock < Move
   end
 end
 
+# Paper class
 class Paper < Move
   # rubocop:disable Metrics/MethodLength
   def sprite
@@ -330,6 +402,7 @@ class Lizard < Move
   end
 end
 
+# Spock class
 class Spock < Move
   def sprite
     ["             SPOCK",
@@ -350,9 +423,10 @@ class Spock < Move
   end
 end
 
+# RPSGame class
 class RPSGame
   attr_accessor :human, :computer
-  include DisplayableSprites
+  include DisplayableSprites, DisplayableMessage
 
   MESSAGES = YAML.load_file('rpsls_oop_messages.yml')
 
@@ -362,6 +436,14 @@ class RPSGame
     display_rules
     @human = Human.new
     @computer = Computer.new
+  end
+
+  def messages
+    MESSAGES
+  end
+
+  def clear_screen
+    system('clear') || system('cls')
   end
 
   def winner
@@ -384,48 +466,6 @@ class RPSGame
     human.move.value == computer.move.value
   end
 
-  def display_welcome_message
-    puts MESSAGES['greeting']
-  end
-
-  def display_rules
-    MESSAGES['rules'].each { |_, rule| puts rule }
-
-    puts format(MESSAGES['first_to'], wins_needed: BEST_TO)
-    puts MESSAGES['understand']
-
-    print MESSAGES['press_enter']
-    gets.chomp
-
-    clear_screen
-  end
-
-  def display_goodbye_message
-    puts MESSAGES['farewell']
-  end
-
-  def display_winning_sprite
-    num_blank_spaces = winner.move.sprite[-1].count " "
-
-    winner.move.sprite[1..-1].each { |line| puts line }
-    puts(' ' * num_blank_spaces + "WINS!\n\n\n")
-  end
-
-  def display_winner
-    display_winning_sprite
-    puts MESSAGES[winner.move.value][loser.move.value]
-    display_score
-  end
-
-  def display_round_result
-    if tie?
-      display_tie
-      return
-    end
-
-    display_winner
-  end
-
   def adjust_score
     if human.move > computer.move
       human.score += 1
@@ -437,11 +477,6 @@ class RPSGame
   def clear_scores
     human.score = 0
     computer.score = 0
-  end
-
-  def display_score
-    puts "\n#{human.name} has #{human.score}."
-    puts "#{computer.name} has #{computer.score}"
   end
 
   def play_again?
@@ -456,11 +491,6 @@ class RPSGame
     end
   end
 
-  def congrats_message
-    puts format(MESSAGES['winner_congrats'],
-                the_winner: winner.name, best_to: BEST_TO)
-  end
-
   def reset
     sleep 2.5
     clear_screen
@@ -471,7 +501,7 @@ class RPSGame
     computer.choose
   end
 
-  def add_players_history
+  def add_player_history
     computer.add_to_history(human.move)
   end
 
@@ -483,29 +513,17 @@ class RPSGame
     (computer.score - human.score).abs
   end
 
-  def message_to_player
-    if winner.class == Human
-      puts MESSAGES['player_win_comment'][win_by]
-    else
-      puts MESSAGES['computer_win_comment'][win_by]
-    end
-  end
-
-  def display_game_result
-    congrats_message
-    message_to_player
-  end
-
   def play
     loop do
       players_choose
-      add_players_history
+      add_player_history
 
       display_opponents
       pow_animation
-      adjust_score
-      display_round_result
 
+      adjust_score
+
+      display_round_result
       reset
 
       if winner?
