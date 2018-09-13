@@ -1,6 +1,7 @@
 require 'pry'
-module DisplayableSprites
+require 'yaml'
 
+module DisplayableSprites
   def pow
     ["╔═╗╔═╗╦ ╦┬",
      "╠═╝║ ║║║║│",
@@ -13,7 +14,7 @@ module DisplayableSprites
      "        (     ).              .:(`  )`.         ",
      "       _(       '`.          :(   .    )        ",
      "   .=(`(      .   )     .--  `.  (    ) )       ",
-     "  ((    (..__.:'-'   .+(   )   ` _`  ) )        ",       
+     "  ((    (..__.:'-'   .+(   )   ` _`  ) )        ",
      "  `(       ) )       (   .  )     (   )  ._     ",
      "    ` __.:'   )     (   (   ))     `-'.-(`  )   ",
      " ( )       --'       `- __.'         :(      )) ",
@@ -23,41 +24,46 @@ module DisplayableSprites
 
   def tie
     ["\n\n\n\n",
-     ' ╦ ╔╦╗ ╔═╗    ╔═╗    ╔╦╗  ╦  ╔═╗' ,
-     ' ║  ║  ╚═╗    ╠═╣     ║   ║  ║╣ ' ,
-     ' ╩  ╩  ╚═╝    ╩ ╩     ╩   ╩  ╚═╝' ,
-     '                          '       ,
+     ' ╦ ╔╦╗ ╔═╗    ╔═╗    ╔╦╗  ╦  ╔═╗',
+     ' ║  ║  ╚═╗    ╠═╣     ║   ║  ║╣ ',
+     ' ╩  ╩  ╚═╝    ╩ ╩     ╩   ╩  ╚═╝',
+     '                          ',
      '╔═╗   ╦ ╦   ╔═╗   ╔═╗   ╔═╗   ╔═╗ ',
      '║     ╠═╣   ║ ║   ║ ║   ╚═╗   ║╣  ',
      '╚═╝   ╩ ╩   ╚═╝   ╚═╝   ╚═╝   ╚═╝ ',
-     '   ╔═╗   ╔═╗   ╔═╗   ╦   ╔╗╔',     
-     '   ╠═╣   ║ ╦   ╠═╣   ║   ║║║' ,    
+     '   ╔═╗   ╔═╗   ╔═╗   ╦   ╔╗╔',
+     '   ╠═╣   ║ ╦   ╠═╣   ║   ║║║',
      '   ╩ ╩   ╚═╝   ╩ ╩   ╩   ╝╚╝']
   end
 
   def clear_screen
     system('clear') || system('cls')
   end
-  
+
   def display_left
-    @human.move.sprite[1..-1].each { |row| puts row}
+    @human.move.sprite[1..-1].each { |row| puts row }
   end
-  
-  def display_center
+
+  def display_center_vs
     width_of_sprite = @human.move.sprite.max_by(&:length).length
 
-    puts(' ' * (width_of_sprite + 5) + 'vs')
+    vs = (' ' * (width_of_sprite + 5)) + 'vs'
+    puts vs
   end
 
   def display_tie
     tie.each { |row| puts((' ' * 20) + row) }
   end
-  
+
+  def width_of_opponent
+    @human.move.sprite.max_by(&:length).length
+  end
+
   def display_right
-    width_of_opponent = @human.move.sprite.max_by(&:length).length
-    
+    width = width_of_opponent
+
     @computer.move.sprite[0..-2].each do |row|
-      puts(' ' * (width_of_opponent + 12) + row)
+      puts(' ' * (width + 12) + row)
     end
   end
 
@@ -78,7 +84,7 @@ module DisplayableSprites
   def display_opponents
     clear_screen
     display_left
-    display_center
+    display_center_vs
     display_right
     sleep 1.5
   end
@@ -86,19 +92,16 @@ end
 
 class Player
   attr_accessor :move, :name, :score
-  attr_reader :opponents_moves, :moves, :sprite, :MESSAGES
-  
-  require 'yaml'
+  attr_reader :sprite, :MESSAGES
+
   MESSAGES = YAML.load_file('rpsls_oop_messages.yml')
 
   def initialize
     set_name
     @score = 0
-    @opponents_moves = []
-    @moves = []
   end
 
-  def set_type(move_type)
+  def create_move(move_type)
     case move_type
     when 'rock' then Rock.new('rock')
     when 'paper' then Paper.new('paper')
@@ -107,93 +110,127 @@ class Player
     when 'spock' then Spock.new('spock')
     end
   end
-
-  def add_to_history(opponent_move)
-    @opponents_moves << opponent_move
-    @moves << move
-  end
 end
 
 class Human < Player
-  def prompt_name
+  def prompt_move
     puts MESSAGES['one_through']
     puts MESSAGES['choose_move']
   end
 
+  def valid_choice?(choice)
+    Move::VALUES.keys.include? choice
+  end
+
   def choose
-    choice = nil
     loop do
-      prompt_name
+      prompt_move
       choice = gets.chomp.to_i
 
-      break if Move::VALUES.keys.include? choice
+      if valid_choice? choice
+        self.move = create_move(Move::VALUES[choice])
+        return nil
+      end
       puts MESSAGES['invalid_move']
     end
-    self.move = set_type(Move::VALUES[choice])
+  end
+
+  def valid_name?(name)
+    !name.empty?
   end
 
   def set_name
-    name = ""
     loop do
       puts MESSAGES['prompt_name']
       name = gets.chomp.strip
 
-      break unless name.empty?
+      if valid_name?(name)
+        self.name = name
+        return nil
+      end
       puts MESSAGES['invalid_name']
     end
-    self.name = name
-    system('clear') || system('cls')
   end
 end
 
 class Computer < Player
-  attr_accessor :name
+  attr_accessor :name, :opponent_history
+
+  def initialize
+    super
+    @opponent_history = []
+  end
 
   def set_name
     self.name = ['R2D2', 'Hal', 'Chappie', 'Dolores'].sample
   end
 
-  def opponents_achilles(move_type)
-    Move::LOSING_HAND[move_type]
+  def wins_against(move_type)
+    Move::WINS_AGAINST[move_type]
+  end
+
+  def random_type
+    Move::VALUES.values.sample
+  end
+
+  def random_selection
+    create_move(random_type)
   end
 
   def smart_move
-    return Move::VALUES.values.sample if self.opponents_moves.empty?
+    return random_selection if opponent_history.empty?
 
-    most_occuring = find_most_occuring.value
+    most_chosen_type = find_most_chosen.value
 
-    (Move::VALUES.values + opponents_achilles(most_occuring)).sample
+    move = (Move.types + wins_against(most_chosen_type)).sample
+
+    create_move move
   end
 
-  def find_most_occuring
-    occurances_hash = @opponents_moves.each_with_object(Hash.new(0)) do |move, result|
+  def most_frequent_type(occurances)
+    occurances.sort_by { |_, occurance| occurance }.last[0]
+  end
+
+  def find_most_chosen
+    hash = Hash.new(0)
+    occurances = opponent_history.each_with_object(hash) do |move, result|
       result[move.value] += 1
     end
 
-    most_frequent = occurances_hash.sort_by { |move, occurance| occurance}[-1][0]
+    most_frequent = most_frequent_type occurances
+
     Move.new(most_frequent)
   end
 
   def choose
-    self.move = set_type(smart_move)
+    self.move = smart_move
+  end
+
+  def add_to_history(opponent_move)
+    @opponent_history << opponent_move
   end
 end
 
 class Move
   attr_reader :value, :type
 
-  WINNING_HAND = { 'rock' => %w(lizard scissors), 'paper' => %w(rock spock),
-                   'scissors' => %w(lizard paper), 'lizard' => %w(spock paper),
-                   'spock' => %w(rock scissors) }.freeze
+  LOSES_AGAINST = { 'rock' => %w[lizard scissors], 'paper' => %w[rock spock],
+                    'scissors' => %w[lizard paper], 'lizard' => %w[spock paper],
+                    'spock' => %w[rock scissors] }.freeze
 
-  LOSING_HAND = { 'rock' => %w(spock paper), 'paper' => %w(scissors lizard),
-                   'scissors' => %w(rock spock), 'lizard' => %w(rock scissors),
-                   'spock' => %w(lizard paper) }.freeze
+  WINS_AGAINST = { 'rock' => %w[spock paper], 'paper' => %w[scissors lizard],
+                   'scissors' => %w[rock spock], 'lizard' => %w[rock scissors],
+                   'spock' => %w[lizard paper] }.freeze
 
-  VALUES = {1 => 'rock', 2 => 'paper', 3 => 'scissors', 4 => 'lizard', 5 => 'spock'}.freeze
+  VALUES = { 1 => 'rock', 2 => 'paper', 3 => 'scissors',
+             4 => 'lizard', 5 => 'spock' }.freeze
 
   def initialize(value)
     @value = value
+  end
+
+  def self.types
+    Move::VALUES.values
   end
 
   def rock?
@@ -217,11 +254,11 @@ class Move
   end
 
   def >(other_move)
-    WINNING_HAND[value].include?(other_move.value)
+    LOSES_AGAINST[value].include?(other_move.value)
   end
 
   def <(other_move)
-    LOSING_HAND[value].include?(other_move.value)
+    WINS_AGAINST[value].include?(other_move.value)
   end
 end
 
@@ -230,9 +267,9 @@ class Rock < Move
     ["                     ROCK",
      '                          _',
      '                / -` -`\ -_ /.  /^./\__    ',
-     '    _        .--"\\ _ \\__/.      \\ /    \\',  
+     '    _        .--"\\ _ \\__/.      \\ /    \\',
      '   / \\_    _/ ^      \\/  __  :"   /\\/\\  /\\ ',
-     '  ;-_    \\  /    ."   _/  /  \\   ^ /    \\/', 
+     '  ;-_    \\  /    ."   _/  /  \\   ^ /    \\/',
      ' /\\/\\  /\\/ :" __  ^/  ^/    `--./."  ^  `-.',
      '/    \\/  \\  _/  \\-" __/." ^ _   \\_   ."\'',
      '  .-   `. \\/     \\ / -.   _/ \\ -. `_/   \\ /',
@@ -242,6 +279,7 @@ class Rock < Move
 end
 
 class Paper < Move
+  # rubocop:disable Metrics/MethodLength
   def sprite
     ["       PAPER",
      "             _._________",
@@ -259,10 +297,11 @@ class Paper < Move
      "  '.______ ,-  |      .- `",
      "               \\..- ^`   ",
      "        PAPER"]
-   end 
- end
+  end
+  # rubocop:enable Metrics/MethodLength
+end
 
-
+# Scissors class
 class Scissors < Move
   def sprite
     ['                SCISSORS',
@@ -276,17 +315,18 @@ class Scissors < Move
   end
 end
 
+# Lizard class
 class Lizard < Move
-  def sprite 
-    [ "               LIZARD", 
-      "                     )/_",
-      "              _.--..---\"-,----c_",
-      "         \\L..'           .___O__)====&",
-      ",-.     _.+  _  \\..--( /",
-      " `\\.-''__.-' \\ (     \\_ ",     
-      "   `'''       `\\__   /\\",
-      "               ')",
-      "               LIZARD"]
+  def sprite
+    ["               LIZARD",
+     "                     )/_",
+     "              _.--..---\"-,----c_",
+     "         \\L..'           .___O__)====&",
+     ",-.     _.+  _  \\..--( /",
+     " `\\.-''__.-' \\ (     \\_ ",
+     "   `'''       `\\__   /\\",
+     "               ')",
+     "               LIZARD"]
   end
 end
 
@@ -298,11 +338,11 @@ class Spock < Move
      '             .:::.',
      '             .:::::.',
      '        ***.:::::::.***',
-     '    *******.:::::::::.*******',       
-     '  ********.:::::::::::.********',    
-     ' ********.:::::::::::::.********',   
-     ' *******.::::::\'***`::::.*******',    
-     ' ******.::::\'*********`::.******',    
+     '    *******.:::::::::.*******',
+     '  ********.:::::::::::.********',
+     ' ********.:::::::::::::.********',
+     ' *******.::::::\'***`::::.*******',
+     ' ******.::::\'*********`::.******',
      ' ****.:::\'*************`:.****',
      '   *.::\'*****************`.*',
      '    .:\'  ***************    .',
@@ -313,14 +353,12 @@ end
 class RPSGame
   attr_accessor :human, :computer
   include DisplayableSprites
-  
-  require 'yaml'
+
   MESSAGES = YAML.load_file('rpsls_oop_messages.yml')
 
   BEST_TO = 5
 
   def initialize
-    system 'clear'
     display_rules
     @human = Human.new
     @computer = Computer.new
@@ -331,8 +369,6 @@ class RPSGame
       human
     elsif computer.move > human.move
       computer
-    else
-      nil
     end
   end
 
@@ -341,13 +377,11 @@ class RPSGame
       human
     elsif computer.move < human.move
       computer
-    else
-      nil
     end
   end
 
   def tie?
-    @human.move.value == @computer.move.value
+    human.move.value == computer.move.value
   end
 
   def display_welcome_message
@@ -355,11 +389,14 @@ class RPSGame
   end
 
   def display_rules
-    MESSAGES['rules'].each { |_, rule| puts rule}
+    MESSAGES['rules'].each { |_, rule| puts rule }
+
     puts format(MESSAGES['first_to'], wins_needed: BEST_TO)
     puts MESSAGES['understand']
+
     print MESSAGES['press_enter']
-    gets
+    gets.chomp
+
     clear_screen
   end
 
@@ -368,14 +405,10 @@ class RPSGame
   end
 
   def display_winning_sprite
-    num_spaces = winner.move.sprite[-1].length - winner.move.value.length
+    num_blank_spaces = winner.move.sprite[-1].count " "
 
-    winner.move.sprite[1..-1].each { |line| puts line}
-    puts(' ' * num_spaces + "WINS!\n\n\n")
-  end
-
-  def winner_width
-    winner.move.sprite.max_by(&:length).length
+    winner.move.sprite[1..-1].each { |line| puts line }
+    puts(' ' * num_blank_spaces + "WINS!\n\n\n")
   end
 
   def display_winner
@@ -384,7 +417,7 @@ class RPSGame
     display_score
   end
 
-  def display_results
+  def display_round_result
     if tie?
       display_tie
       return
@@ -393,19 +426,11 @@ class RPSGame
     display_winner
   end
 
-  def display_moves
-    display_left(@human.move.sprite)
-    display_center("vs")
-    display_right(@computer.move.sprite)
-  end
-
   def adjust_score
     if human.move > computer.move
       human.score += 1
     elsif human.move < computer.move
       computer.score += 1
-    else
-      return
     end
   end
 
@@ -415,29 +440,25 @@ class RPSGame
   end
 
   def display_score
-   if winner.class == Human
-     puts "#{human.name} now has #{human.score}. #{computer.name} has #{computer.score}"
-   else
-     puts "#{human.name} has #{human.score}. #{computer.name} now has #{computer.score}"
-   end
+    puts "\n#{human.name} has #{human.score}."
+    puts "#{computer.name} has #{computer.score}"
   end
 
   def play_again?
-    choice = nil
-
     loop do
       puts MESSAGES['another_game']
       choice = gets.chomp
-      break if ['y', 'n'].include? choice
+
+      if ['y', 'n'].include? choice
+        return choice == 'y'
+      end
       puts MESSAGES['y_or_n']
     end
-
-    return true if choice == 'y'
-    false
   end
 
   def congrats_message
-    puts format(MESSAGES['winner_congrats'], the_winner: winner.name, best_to: BEST_TO)
+    puts format(MESSAGES['winner_congrats'],
+                the_winner: winner.name, best_to: BEST_TO)
   end
 
   def reset
@@ -451,7 +472,6 @@ class RPSGame
   end
 
   def add_players_history
-    human.add_to_history(computer.move)
     computer.add_to_history(human.move)
   end
 
@@ -471,6 +491,11 @@ class RPSGame
     end
   end
 
+  def display_game_result
+    congrats_message
+    message_to_player
+  end
+
   def play
     loop do
       players_choose
@@ -479,18 +504,16 @@ class RPSGame
       display_opponents
       pow_animation
       adjust_score
-      display_results
-        
+      display_round_result
+
       reset
 
       if winner?
-        congrats_message
-        message_to_player
+        display_game_result
         clear_scores
         break unless play_again?
       end
     end
-
     display_goodbye_message
   end
 end
