@@ -14,7 +14,7 @@
 #   -choose
 
 # --------------------------------------------------
-require 'pry'
+
 # Board class
 class Board
   attr_reader :squares
@@ -145,10 +145,10 @@ class Human < Player
   def set_marker
     loop do
       print "Choose a single character as your marker: "
-      choice = gets.chomp.strip
+      marker = gets.chomp.strip
 
-      if valid_choice? choice
-        @marker = choice
+      if valid_choice? marker
+        @marker = marker
         break
       end
     end
