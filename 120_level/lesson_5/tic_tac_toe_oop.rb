@@ -14,34 +14,34 @@
 #   -choose
 
 # --------------------------------------------------
-
+require 'pry'
 # Board class
 class Board
-  attr_reader :board
+  attr_reader :squares
 
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                   [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
                   [[1, 5, 9], [3, 5, 7]].freeze # diagnals
 
   def initialize
-    @board = (1..9).each_with_object({}) do |pos, result|
+    @squares = (1..9).each_with_object({}) do |pos, result|
       result[pos] = Square.new
     end
   end
 
-  # rubocop:disable Metrics/AbcSize, MethodLength
+  # rubocop:disable Metrics/AbcSize
   def display
     puts ''
     puts '     |     |'
-    puts "  #{board[1]}  |  #{board[2]}  |  #{board[3]} "
+    puts "  #{squares[1]}  |  #{squares[2]}  |  #{squares[3]} "
     puts '     |     |'
     puts '-----+-----+-----'
     puts '     |     |'
-    puts "  #{board[4]}  |  #{board[5]}  |  #{board[6]}"
+    puts "  #{squares[4]}  |  #{squares[5]}  |  #{squares[6]}"
     puts '     |     |'
     puts '-----+-----+-----'
     puts '     |     |'
-    puts "  #{board[7]}  |  #{board[8]}  |  #{board[9]}"
+    puts "  #{squares[7]}  |  #{squares[8]}  |  #{squares[9]}"
     puts '     |     |'
     puts ''
   end
@@ -52,15 +52,15 @@ class Board
   end
 
   def [](index)
-    board[index]
+    squares[index]
   end
 
   def []=(index, value)
-    board[index].marking = value
+    squares[index].marking = value
   end
 
   def free_positions
-    board.select { |_, square| square.marking == Square::INITIAL_MARKER }.keys
+    squares.select { |_, square| square.marking == Square::BLANK }.keys
   end
 
   def joinor(arr, delimiter = ',', conjunction = 'or')
@@ -84,15 +84,16 @@ class Board
   end
 
   def two_markers_and_blank?(line, marker)
-    line_markings = board.values_at(*line).map(&:marking)
+    line_markings = squares.values_at(*line).map(&:marking)
+
     line_markings.count(marker) == 2 &&
-      line_markings.count(Square::INITIAL_MARKER) == 1
+      line_markings.count(Square::BLANK) == 1
   end
 
   def three_in_a_row?(line)
-    line_markings = board.values_at(*line).map(&:marking)
+    line_markings = squares.values_at(*line).map(&:marking)
 
-    line_markings.uniq.first != Square::INITIAL_MARKER &&
+    line_markings.uniq.first != Square::BLANK &&
       line_markings.uniq.count == 1
   end
 
@@ -105,14 +106,7 @@ end
 
 # Player class
 class Player
-  private
-
-  attr_writer :score
-
-  public
-
-  attr_accessor :name, :marker
-  attr_reader :score
+  attr_accessor :name, :marker, :score
 
   def initialize(marker)
     self.score = 0
@@ -130,15 +124,29 @@ end
 
 # Human class
 class Human < Player
-  def initialize(marker)
-    super
+  attr_accessor :marker
+
+  def initialize
+    super nil
   end
 
   def set_name
     loop do
-      puts 'What is your first name'
+      print "\nWhat is your first name?: "
       self.name = gets.chomp.capitalize.strip
       break unless name.empty?
+    end
+  end
+
+  def set_marker
+    loop do
+      print "Choose a single character as your marker: "
+      choice = gets.chomp.strip
+
+      if choice.length == 1
+        @marker = choice
+        break
+      end
     end
   end
 end
@@ -150,7 +158,7 @@ class Computer < Player
   end
 
   def set_name
-    self.name = ['Wall-e', 'Eve', 'R2D2', 'Hal', 
+    self.name = ['Wall-e', 'Eve', 'R2D2', 'Hal',
                  'Miss Machina', 'The Voice from Knight Rider'].sample
   end
 end
@@ -159,10 +167,10 @@ end
 class Square
   attr_accessor :marking
 
-  INITIAL_MARKER = ' '.freeze
+  BLANK = ' '.freeze
 
   def initialize
-    self.marking = INITIAL_MARKER
+    self.marking = BLANK
   end
 
   def to_s
@@ -176,7 +184,7 @@ module AI
 
   def defensive_move?
     board.winning_lines.any? do |line|
-      board.two_markers_and_blank?(line, TTTGame::PLAYER_MARKER)
+      board.two_markers_and_blank?(line, human.marker)
     end
   end
 
@@ -188,8 +196,8 @@ module AI
 
   def make_move(marker)
     board.winning_lines.each do |line|
-      player_markings = player_marker_position(line, marker)
-      blank_spaces = player_marker_position(line, Square::INITIAL_MARKER)
+      player_markings = marker_line_positions(line, marker)
+      blank_spaces = marker_line_positions(line, Square::BLANK)
 
       if player_markings.count == 2 && blank_spaces.count == 1
         board[blank_spaces.first] = TTTGame::COMPUTER_MARKER
@@ -199,10 +207,10 @@ module AI
   end
 
   def middle_available?
-    board[5].marking == Square::INITIAL_MARKER
+    board[5].marking == Square::BLANK
   end
 
-  def middle
+  def middle_move
     board[5] = computer.marker
   end
 
@@ -216,11 +224,10 @@ end
 module TTTDisplays
   private
 
-  def display_greeting(best_to)
+  def display_greeting
     clear
     puts 'Welcome to Tic Tac Toe.'
-    print "The first player to #{best_to} wins! \nPress enter to continue:"
-    gets.chomp
+    puts "The first player to #{best_to} wins!"
   end
 
   def display_board
@@ -266,7 +273,7 @@ module Moving
       choice_prompt
     end
 
-    board[choice] = TTTGame::PLAYER_MARKER
+    board[choice] = human.marker
   end
 
   def computer_moves
@@ -275,16 +282,16 @@ module Moving
     if offensive_move?
       make_move TTTGame::COMPUTER_MARKER
     elsif defensive_move?
-      make_move TTTGame::PLAYER_MARKER
+      make_move human.marker
     elsif middle_available?
-      middle
+      middle_move
     else
       random
     end
   end
 
   def current_player_moves
-    if current_player.marker == TTTGame::PLAYER_MARKER
+    if current_player.marker == human.marker
       human_moves
     else
       computer_moves
@@ -297,7 +304,7 @@ module Moving
       display_board
 
       break if board.won_round? || board.full?
-      rotate_current_player
+      rotate_players
     end
   end
 end
@@ -305,7 +312,6 @@ end
 # TTTGame class
 class TTTGame
   COMPUTER_MARKER = 'O'.freeze
-  PLAYER_MARKER = 'X'.freeze
 
   include TTTDisplays, AI, Moving
 
@@ -316,7 +322,7 @@ class TTTGame
 
   def initialize(best_to)
     @best_to = best_to
-    @human = Human.new(PLAYER_MARKER)
+    @human = Human.new
     @computer = Computer.new(COMPUTER_MARKER)
     @board = Board.new
   end
@@ -344,17 +350,18 @@ class TTTGame
 
     loop do
       puts "\nWho do you want to go first?"
-      print "Enter '1' for #{human.name}.  Enter '2' for #{computer.name}: "
+      print "Enter '1' for #{human.name}.\nEnter '2' for #{computer.name}.\n\n:"
 
       choice = gets.chomp.to_i
 
       break if [1, 2].member? choice
     end
-    self.current_player = choice == 1 ? human : computer
+
+    self.current_player = (choice == 1 ? human : computer)
     self.first_player = @current_player
   end
 
-  def player_marker_position(line, marker)
+  def marker_line_positions(line, marker)
     line.select do |position|
       board[position].marking == marker
     end
@@ -364,8 +371,13 @@ class TTTGame
     puts "Choose a square: #{board.choices}"
   end
 
-  def rotate_current_player
-    self.current_player = current_player.marker == 'X' ? computer : human
+  def rotate_players
+    self.current_player =
+      if current_player == human
+        computer
+      else
+        human
+      end
   end
 
   def set_names
@@ -388,8 +400,9 @@ class TTTGame
   public
 
   def play
-    display_greeting(best_to)
+    display_greeting
     set_names
+    human.set_marker
     choose_first
     game_loop
     display_goodbye_message
