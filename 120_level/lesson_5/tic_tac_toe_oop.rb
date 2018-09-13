@@ -190,17 +190,13 @@ end
 module AI
   private
 
-  def defensive_move?
+  def offensive_move?(marker)
     board.winning_lines.any? do |line|
-      board.two_markers_and_blank?(line, human.marker)
+      board.two_markers_and_blank? line, marker
     end
   end
 
-  def offensive_move?
-    board.winning_lines.any? do |line|
-      board.two_markers_and_blank? line, computer.marker
-    end
-  end
+  alias defensive_move? offensive_move?
 
   def make_move(marker)
     board.winning_lines.each do |line|
@@ -287,9 +283,9 @@ module Moving
   def computer_moves
     sleep 1.25
 
-    if offensive_move?
+    if offensive_move? computer.marker
       make_move TTTGame::COMPUTER_MARKER
-    elsif defensive_move?
+    elsif defensive_move? human.marker
       make_move human.marker
     elsif middle_available?
       middle_move
