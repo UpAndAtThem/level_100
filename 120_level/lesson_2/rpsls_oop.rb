@@ -108,11 +108,11 @@ module DisplayableSprites
   end
 
   def display_left
-    @human.move.sprite[1..-1].each { |row| puts row }
+    human.move.sprite[1..-1].each { |row| puts row }
   end
 
   def display_center_vs
-    width_of_sprite = @human.move.sprite.max_by(&:length).length
+    width_of_sprite = human.move.sprite.max_by(&:length).length
 
     vs = (' ' * (width_of_sprite + 5)) + 'vs'
     puts vs
@@ -123,13 +123,13 @@ module DisplayableSprites
   end
 
   def width_of_opponent
-    @human.move.sprite.max_by(&:length).length
+    human.move.sprite.max_by(&:length).length
   end
 
   def display_right
     width = width_of_opponent
 
-    @computer.move.sprite[0..-2].each do |row|
+    computer.move.sprite[0..-2].each do |row|
       puts(' ' * (width + 12) + row)
     end
   end
@@ -276,7 +276,7 @@ class Computer < Player
   end
 
   def add_to_history(opponent_move)
-    @opponent_history << opponent_move
+    opponent_history << opponent_move
   end
 end
 
@@ -304,23 +304,23 @@ class Move
   end
 
   def rock?
-    @value == 'rock'
+    value == 'rock'
   end
 
   def scissors?
-    @value == 'scissors'
+    value == 'scissors'
   end
 
   def paper?
-    @value == 'paper'
+    value == 'paper'
   end
 
   def lizard?
-    @value == 'lizard'
+    value == 'lizard'
   end
 
   def spock?
-    @value == 'spock'
+    value == 'spock'
   end
 
   def >(other_move)
