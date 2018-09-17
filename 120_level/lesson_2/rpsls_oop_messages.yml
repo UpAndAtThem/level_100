@@ -2,17 +2,17 @@
 one_through : "Choose 1-5"
 first_to : "First to %{wins_needed} points wins!"
 choose_move : 1. Rock | 2. Paper | 3. Scissors | 4. Lizzard | 5. Spock
-invalid_move : "Sorry, invalid choice.\n\n"
-prompt_name : "please enter your name: "
+invalid_move : "Sorry, that's an invalid choice.\n\n"
+prompt_name : "Please enter your name: "
 invalid_name : "Sorry, you must enter at least 1 character."
 greeting : "Welcome to Rock, Paper, Scissors!"
 first_to : "First to %{wins_needed} wins!\n\n"
 understand : "YOU GET IT! LETS PLAY!\n\n"
 press_enter : 'Press enter to continue:'
 farewell : "Thanks for playing Rock, Paper, Scissors! Goodbye."
-another_game : Would you like to play another game? (y/n)
+another_game : "\nWould you like to play another game? (y/n)"
 y_or_n : "Enter 'y' or 'n'"
-winner_congrats : "%{the_winner} was first to score %{best_to} points, %{the_winner} wins!"
+winner_congrats : "%{the_winner} was first to score %{best_to} points, %{the_winner} wins!\n\n"
 
 rules:
   greeting: "Welcome to R.P.S.L.S, below are the rules\n\n"
@@ -43,7 +43,7 @@ spock:
   scissors: SPOCK smashes SCISSORS
 
 player_win_comment:
-  1 : You almost lost to a few hundred lines of code
+  1 : "Don't celebrate too much.\nYou almost lost to a few hundred lines of code"
   2 : That was a close one!
   3 : You made quick work of them
   4 : Well that was embarassing to watch, You really rocked their circuit board!
