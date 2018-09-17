@@ -265,7 +265,7 @@ class Computer < Player
     occurances = opponent_history.each_with_object(hash) do |move, result|
       result[move.value] += 1
     end
-    
+
     most_frequent_type occurances
   end
 
@@ -356,6 +356,7 @@ class Paper < Move
   def initialize
     super "paper"
   end
+
   # rubocop:disable Metrics/MethodLength
   def sprite
     ["       PAPER",
