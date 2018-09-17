@@ -1,5 +1,4 @@
 require 'yaml'
-require 'pry'
 
 # DisplayableMessage module
 module DisplayableMessage
