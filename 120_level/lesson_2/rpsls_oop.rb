@@ -171,11 +171,11 @@ class Player
 
   def create_move(move_type)
     case move_type
-    when 'rock' then Rock.new('rock')
-    when 'paper' then Paper.new('paper')
-    when 'scissors' then Scissors.new('scissors')
-    when 'lizard' then Lizard.new('lizard')
-    when 'spock' then Spock.new('spock')
+    when 'rock' then Rock.new
+    when 'paper' then Paper.new
+    when 'scissors' then Scissors.new
+    when 'lizard' then Lizard.new
+    when 'spock' then Spock.new
     end
   end
 end
@@ -249,7 +249,7 @@ class Computer < Player
   def smart_move
     return random_selection if opponent_history.empty?
 
-    most_chosen_type = find_most_chosen.value
+    most_chosen_type = find_most_chosen
 
     move = (Move.types + wins_against(most_chosen_type)).sample
 
@@ -265,10 +265,8 @@ class Computer < Player
     occurances = opponent_history.each_with_object(hash) do |move, result|
       result[move.value] += 1
     end
-
-    most_frequent = most_frequent_type occurances
-
-    Move.new(most_frequent)
+    
+    most_frequent_type occurances
   end
 
   def choose
@@ -334,6 +332,10 @@ end
 
 # Rock class
 class Rock < Move
+  def initialize
+    super "rock"
+  end
+
   def sprite
     ["                     ROCK",
      '                          _',
@@ -351,6 +353,9 @@ end
 
 # Paper class
 class Paper < Move
+  def initialize
+    super "paper"
+  end
   # rubocop:disable Metrics/MethodLength
   def sprite
     ["       PAPER",
@@ -375,6 +380,10 @@ end
 
 # Scissors class
 class Scissors < Move
+  def initialize
+    super "scissors"
+  end
+
   def sprite
     ['                SCISSORS',
      ' ,--.',
@@ -389,6 +398,10 @@ end
 
 # Lizard class
 class Lizard < Move
+  def initialize
+    super "lizard"
+  end
+
   def sprite
     ["               LIZARD",
      "                     )/_",
@@ -404,6 +417,10 @@ end
 
 # Spock class
 class Spock < Move
+  def initialize
+    super "spock"
+  end
+
   def sprite
     ["             SPOCK",
      '               .',
@@ -466,6 +483,10 @@ class RPSGame
     human.move.value == computer.move.value
   end
 
+  def winner?
+    human.score == BEST_TO || computer.score == BEST_TO
+  end
+
   def adjust_score
     if human.move > computer.move
       human.score += 1
@@ -503,10 +524,6 @@ class RPSGame
 
   def add_player_history
     computer.add_to_history(human.move)
-  end
-
-  def winner?
-    human.score == BEST_TO || computer.score == BEST_TO
   end
 
   def win_by
