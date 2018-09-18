@@ -54,6 +54,7 @@ module DisplayableMessage
   end
 
   def display_game_result
+    clear_screen
     congrats_message
     message_to_player
   end
@@ -191,7 +192,7 @@ class RPSGame
 
   MESSAGES = YAML.load_file('rpsls_oop_messages.yml')
   OPTIONS_WIDTH = MESSAGES['choose_move'].length
-  BEST_TO = 5
+  BEST_TO = 1
 
   def initialize
     display_rules
