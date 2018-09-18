@@ -192,7 +192,7 @@ class RPSGame
 
   MESSAGES = YAML.load_file('rpsls_oop_messages.yml')
   OPTIONS_WIDTH = MESSAGES['choose_move'].length
-  BEST_TO = 1
+  BEST_TO = 5
 
   def initialize
     display_rules
