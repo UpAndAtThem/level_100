@@ -37,7 +37,7 @@ module DisplayableMessage
     computer_stats = "#{computer.name} has #{computer.score}"
 
     puts ""
-    puts "#{human_stats}    #{computer_stats}".center(width_of_winner)
+    puts "#{human_stats}  -  #{computer_stats}".center(width_of_winner)
   end
 
   def message_to_player
@@ -101,7 +101,7 @@ module DisplayableSprites
     num_w_space_before_type = winner.move.sprite[-1].count(" ")
 
     num_w_space_to_center_under_type =
-      ((winner.move.value.length / 2) - (wins_letter_length / 2))
+      (winner.move.value.length / 2) - (wins_letter_length / 2)
 
     num_w_space_before_type +
       num_w_space_to_center_under_type
@@ -128,11 +128,11 @@ module DisplayableSprites
     display_score
   end
 
-  def display_sprite_type_bottom
+  def display_name_bottom
     human.move.sprite[1..-1].each { |row| puts row }
   end
 
-  def display_sprite_type_top
+  def display_name_top
     human_sprite_width = human.width_of_sprite
     vs_space_width = 12
 
@@ -142,7 +142,11 @@ module DisplayableSprites
   end
 
   def display_sprite_left
-    display_sprite_type_bottom
+    display_name_bottom
+  end
+
+  def display_sprite_right
+    display_name_top
   end
 
   def display_center_vs
@@ -150,10 +154,6 @@ module DisplayableSprites
 
     vs = (' ' * (width + 5)) + 'vs'
     puts vs
-  end
-
-  def display_sprite_right
-    display_sprite_type_top
   end
 
   def display_tie
@@ -261,7 +261,6 @@ class RPSGame
 
   def reset
     sleep 2.5
-    clear_screen
   end
 
   def players_choose
@@ -495,14 +494,14 @@ class Rock < Move
   def sprite
     ["                   ROCK",
      '                          _',
-     '                  -` -`\ -_ /.  /^./\__    ',
-     '    _        .--"\\ _ \\__/.      \\ /    \\',
-     '   / \\_    _/ ^      \\/  __  :"   /\\/\\  /\\ ',
-     '  ;-_    \\  /    ."   _/  /  \\   ^ /    \\/',
-     ' /\\/\\  /\\/ :" __  ^/  ^/    `--./."  ^  `-.',
-     '/    \\/  \\  _/  \\-" __/." ^ _   \\_   ."\'',
-     '  .-   `. \\/     \\ / -.   _/ \\ -. `_/   \\ /',
-     '`-.__ ^   / .-".--"    . /    `--./ .-"  `',
+     '                -` -`\ -_-_ /. --/^./\__    ',
+     '            .--"\\ _ \\__/.      \\ /     \\}',
+     '   -\\_    _/ ^      \\/  __  :"   ^\\^\\  ^\\ ',
+     '  ;``-^_    \\  /    ."   _/  /  \\   ^ /  \\^',
+     ' /\\/\\^ /\\/ :" __  ^/  ^/    `--./."  ^  `-.)',
+     '/   ^\\/   \\ _{  \\-" __/." ^ _   \\_   ."\'  }',
+     '  .-   `. \\/     {\\ / -.   _/ \\ -. `_/   \\ /',
+     '`-.__ ^--=/ .-".--"    . /    `--./ .-"  `',
      '                   ROCK']
   end
 end
