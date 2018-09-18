@@ -112,38 +112,41 @@ module DisplayableSprites
     wins = "WINS!\n\n\n"
     num_to_center = num_spaces_to_center_of_sprite
 
-    winner.move.sprite[1..-1].each { |line| puts line }
+    display_name_bottom winner
     puts((' ' * num_to_center) + wins)
   end
 
   def display_fighting_method
     winning_style = messages[winner.move.value][loser.move.value]
-    sprite_width = winner.width_of_sprite
 
-    puts winning_style.center(sprite_width)
+    puts winning_style.center(winner.sprite_width)
+  end
+
+  def display_winner_name
+    puts "#{winner.name} wins the round!".center(winner.sprite_width)
   end
 
   def display_winner
     display_winning_sprite
     display_fighting_method
+    display_winner_name
     display_score
   end
 
-  def display_name_bottom
-    human.move.sprite[1..-1].each { |row| puts row }
+  def display_name_bottom(player)
+    player.move.sprite[1..-1].each { |row| puts row }
   end
 
   def display_name_top
-    human_sprite_width = human.width_of_sprite
     vs_space_width = 12
 
     computer.move.sprite[0..-2].each do |row|
-      puts((' ' * (human_sprite_width + vs_space_width)) + row)
+      puts((' ' * (human.sprite_width + vs_space_width)) + row)
     end
   end
 
   def display_sprite_left
-    display_name_bottom
+    display_name_bottom human
   end
 
   def display_sprite_right
@@ -151,7 +154,7 @@ module DisplayableSprites
   end
 
   def display_center_vs
-    width = human.width_of_sprite
+    width = human.sprite_width
 
     vs = (' ' * (width + 5)) + 'vs'
     puts vs
@@ -233,7 +236,7 @@ class RPSGame
   end
 
   def width_of_winner
-    winner.width_of_sprite
+    winner.sprite_width
   end
 
   def adjust_score
@@ -261,7 +264,7 @@ class RPSGame
   end
 
   def reset
-    sleep 2.5
+    sleep 3.5
   end
 
   def players_choose
@@ -375,7 +378,7 @@ class Player
     end
   end
 
-  def width_of_sprite
+  def sprite_width
     move.sprite.max_by(&:length).length
   end
 end
@@ -383,11 +386,12 @@ end
 class Human < Player
   OPTIONS_WIDTH = RPSGame::OPTIONS_WIDTH
   VALUES = Move::VALUES
+  CENTER_UNDER_OPTIONS = (OPTIONS_WIDTH / 2) - 1
 
   def prompt_move
     puts MESSAGES['one_through'].center(OPTIONS_WIDTH)
     puts MESSAGES['choose_move'].center(OPTIONS_WIDTH)
-    print "\n#{' ' * ((OPTIONS_WIDTH / 2) - 1)}"
+    print "\n#{' ' * CENTER_UNDER_OPTIONS}"
   end
 
   def valid_choice?(choice)
@@ -439,7 +443,8 @@ class Computer < Player
   end
 
   def set_name
-    self.name = ['R2D2', 'Hal', 'Chappie', 'Dolores'].sample
+    self.name = ['R2D2', 'Furiosa', 'Hal', 'Ripley',
+                 'Chappie', 'Dolores', 'Jaycee'].sample
   end
 
   def wins_against(move_type)
@@ -454,12 +459,16 @@ class Computer < Player
     create_move(random_type)
   end
 
+  def random_weighted_selection(most_chosen_type)
+    (Move.types + wins_against(most_chosen_type)).sample
+  end
+
   def smart_move
     return random_selection if opponent_history.empty?
 
     most_chosen_type = find_most_chosen
 
-    move = (Move.types + wins_against(most_chosen_type)).sample
+    move = random_weighted_selection(most_chosen_type)
 
     create_move move
   end
