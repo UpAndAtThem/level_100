@@ -254,12 +254,12 @@ class RPSGame
 
   def play_again?
     loop do
-      puts MESSAGES['another_game']
+      puts messages['another_game']
       choice = gets.chomp
 
       return choice == 'y' if ['y', 'n'].include? choice
 
-      puts MESSAGES['y_or_n']
+      puts messages['y_or_n']
     end
   end
 
@@ -361,11 +361,13 @@ class Player
   attr_accessor :move, :name, :score
   attr_reader :sprite
 
-  MESSAGES = RPSGame::MESSAGES
-
   def initialize
     set_name
     @score = 0
+  end
+
+  def messages
+    RPSGame::MESSAGES
   end
 
   def create_move(move_type)
@@ -389,8 +391,8 @@ class Human < Player
   CENTER_UNDER_OPTIONS = (OPTIONS_WIDTH / 2) - 1
 
   def prompt_move
-    puts MESSAGES['one_through'].center(OPTIONS_WIDTH)
-    puts MESSAGES['choose_move'].center(OPTIONS_WIDTH)
+    puts messages['one_through'].center(OPTIONS_WIDTH)
+    puts messages['choose_move'].center(OPTIONS_WIDTH)
     print "\n#{' ' * CENTER_UNDER_OPTIONS}"
   end
 
@@ -407,7 +409,7 @@ class Human < Player
         self.move = create_move(VALUES[choice])
         return nil
       end
-      puts MESSAGES['invalid_move'].center(OPTIONS_WIDTH)
+      puts messages['invalid_move'].center(OPTIONS_WIDTH)
     end
   end
 
@@ -416,7 +418,7 @@ class Human < Player
   end
 
   def prompt_name
-    print MESSAGES['prompt_name'].rjust(40)
+    print messages['prompt_name'].rjust(40)
   end
 
   def set_name
@@ -428,7 +430,7 @@ class Human < Player
         self.name = name
         return nil
       end
-      puts MESSAGES['invalid_name'].center(OPTIONS_WIDTH)
+      puts messages['invalid_name'].center(OPTIONS_WIDTH)
     end
   end
 end
