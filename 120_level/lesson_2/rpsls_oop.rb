@@ -359,9 +359,9 @@ end
 # Player class
 class Player
   attr_accessor :move, :name, :score
-  attr_reader :sprite, :MESSAGES
+  attr_reader :sprite
 
-  MESSAGES = YAML.load_file('rpsls_oop_messages.yml')
+  MESSAGES = RPSGame::MESSAGES
 
   def initialize
     set_name
