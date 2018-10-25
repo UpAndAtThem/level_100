@@ -49,6 +49,10 @@ class TodoList
     todos.first
   end
 
+  def done?
+    todos.all?(&:done)
+  end
+
   def last
     todos.last
   end
@@ -82,7 +86,6 @@ class TodoList
   end
 end
 
-# given
 todo1 = Todo.new('Buy milk')
 todo2 = Todo.new('Clean room')
 todo3 = Todo.new('Go to gym')
