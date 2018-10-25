@@ -84,6 +84,17 @@ class TodoList
   def to_s
     todos.map { |todo| todo.to_s + "\n" }.join''
   end
+
+  def each
+    count = 0
+    while count < todos.size
+      yield(todos[count])
+
+      count += 1
+    end
+
+    self
+  end
 end
 
 todo1 = Todo.new('Buy milk')
@@ -96,3 +107,4 @@ list.add todo2
 list.add todo3
 
 puts list
+ 
