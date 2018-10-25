@@ -1,6 +1,7 @@
+# class Todo
 class Todo
-  DONE_MARK = 'X'
-  NOT_DONE_MARK = ' '
+  DONE_MARK = 'X'.freeze
+  NOT_DONE_MARK = ' '.freeze
 
   attr_accessor :done, :task
 
@@ -26,7 +27,6 @@ class Todo
     "[#{done? ? DONE_MARK : NOT_DONE_MARK}] #{task}"
   end
 end
-
 
 # class TodoList
 class TodoList
@@ -78,14 +78,14 @@ class TodoList
   end
 
   def to_s
-    todos.map { |todo| todo.to_s + "\n"}.join""
+    todos.map { |todo| todo.to_s + "\n" }.join''
   end
 end
 
 # given
-todo1 = Todo.new("Buy milk")
-todo2 = Todo.new("Clean room")
-todo3 = Todo.new("Go to gym")# end
+todo1 = Todo.new('Buy milk')
+todo2 = Todo.new('Clean room')
+todo3 = Todo.new('Go to gym')
 list = TodoList.new("Today's Todos")
 
 list.add todo1
