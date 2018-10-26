@@ -15,11 +15,11 @@ class Todo
     done
   end
 
-  def mark_done!
+  def done!
     self.done = true
   end
 
-  def mark_undone!
+  def undone!
     self.done = false
   end
 
@@ -62,11 +62,11 @@ class TodoList
   end
 
   def mark_done_at(row)
-    todos[row - 1].mark_done!
+    todos[row - 1].done!
   end
 
   def mark_undone_at(row)
-    todos[row - 1].mark_undone!
+    todos[row - 1].undone!
   end
 
   def shift
@@ -86,14 +86,17 @@ class TodoList
   end
 
   def each
-    count = 0
-    while count < todos.size
-      yield(todos[count])
-
-      count += 1
-    end
-
+    todos.each { |to_do| yield to_do}
     self
+  end
+
+  def select
+    selected_todos = todos.select { |to_do| yield to_do}
+    return_list = TodoList.new(name)
+
+    selected_todos.each { |to_do| return_list.add to_do}
+
+    return_list
   end
 end
 
@@ -102,9 +105,5 @@ todo2 = Todo.new('Clean room')
 todo3 = Todo.new('Go to gym')
 list = TodoList.new("Today's Todos")
 
-list.add todo1
-list.add todo2
-list.add todo3
 
-puts list
  
