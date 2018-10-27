@@ -1,3 +1,5 @@
+require 'pry'
+
 # class Todo
 class Todo
   DONE_MARK = 'X'.freeze
@@ -49,16 +51,29 @@ class TodoList
     todos.first
   end
 
-  def done?
-    todos.all?(&:done)
+  def all_done?
+    todos.all?(&:done?)
   end
 
-  def last
-    todos.last
+  def all_not_done?
+    todos.all? { |to_do| !to_do.done?}
   end
 
-  def item_at(row)
-    todos[row - 1]
+  def mark_done(task_query)
+    todos.each do |to_do|
+      if to_do.task == task_query
+        to_do.done!
+        return nil
+      end
+    end
+  end
+
+  def mark_all_done
+    todos.each { |to_do| to_do.done! }
+  end
+
+  def mark_all_undone
+    todos.each { |to_do| to_do.undone! }
   end
 
   def mark_done_at(row)
@@ -67,6 +82,14 @@ class TodoList
 
   def mark_undone_at(row)
     todos[row - 1].undone!
+  end
+
+  def last
+    todos.last
+  end
+
+  def item_at(row)
+    todos[row - 1]
   end
 
   def shift
@@ -90,6 +113,12 @@ class TodoList
     self
   end
 
+  def replace_at(row, new_task)
+    raise TypeError unless row.class == Integer && new_task.class == String
+
+    todos[row - 1] = Todo.new(new_task)
+  end
+
   def select
     selected_todos = todos.select { |to_do| yield to_do}
     return_list = TodoList.new(name)
@@ -98,6 +127,10 @@ class TodoList
 
     return_list
   end
+
+  def find_by_title(title_query)
+    self.each { |to_do| return to_do if to_do.task == title_query}
+  end
 end
 
 todo1 = Todo.new('Buy milk')
@@ -105,5 +138,10 @@ todo2 = Todo.new('Clean room')
 todo3 = Todo.new('Go to gym')
 list = TodoList.new("Today's Todos")
 
+list.add todo1
+list.add todo2
+list.add todo3
+
+puts list
 
  
