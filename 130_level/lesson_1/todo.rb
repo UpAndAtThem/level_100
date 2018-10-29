@@ -43,6 +43,8 @@ class TodoList
     todos << todo if todo.class == Todo
   end
 
+  alias << add
+
   def size
     todos.size
   end
@@ -56,7 +58,7 @@ class TodoList
   end
 
   def all_not_done?
-    todos.all? { |to_do| !to_do.done?}
+    todos.all? { |to_do| !to_do.done? }
   end
 
   def mark_done(task_query)
@@ -69,11 +71,11 @@ class TodoList
   end
 
   def mark_all_done
-    todos.each { |to_do| to_do.done! }
+    todos.each(&:done!)
   end
 
   def mark_all_undone
-    todos.each { |to_do| to_do.undone! }
+    todos.each(&:undone!)
   end
 
   def mark_done_at(row)
@@ -109,7 +111,7 @@ class TodoList
   end
 
   def each
-    todos.each { |to_do| yield to_do}
+    todos.each { |to_do| yield to_do }
     self
   end
 
@@ -120,28 +122,28 @@ class TodoList
   end
 
   def select
-    selected_todos = todos.select { |to_do| yield to_do}
+    selected_todos = todos.select { |to_do| yield to_do }
     return_list = TodoList.new(name)
 
-    selected_todos.each { |to_do| return_list.add to_do}
+    selected_todos.each { |to_do| return_list.add to_do }
 
     return_list
   end
 
   def find_by_title(title_query)
-    self.each { |to_do| return to_do if to_do.task == title_query}
+    each { |to_do| return to_do if to_do.task == title_query }
   end
 end
 
 todo1 = Todo.new('Buy milk')
 todo2 = Todo.new('Clean room')
 todo3 = Todo.new('Go to gym')
-list = TodoList.new("Today's Todos")
+list = TodoList.new('Today\'s Todos')
 
-list.add todo1
+list << todo1
 list.add todo2
 list.add todo3
 
-puts list
+list.replace_at 2, 'Make List#replace_at method'
 
- 
+puts list
