@@ -1,9 +1,13 @@
+require 'simplecov'
+SimpleCov.start
+
 require 'minitest/autorun'
 require "minitest/reporters"
+
 Minitest::Reporters.use!
 require 'pry'
 
-require_relative "../lesson_1/todo.rb"
+require_relative "todo"
 
 class TodoListTest < MiniTest::Test
 
@@ -19,7 +23,12 @@ class TodoListTest < MiniTest::Test
     @list.add(@todo3)
   end
 
-  # Your tests go here. Remember they must start with "test_"
+  def test_done!
+    assert(@todo1.done? == false)
+    @todo1.done!
+    assert(@todo1.done? == true)
+  end
+
   def test_to_a
     assert_equal(@todos, @list.to_a)
   end
@@ -138,7 +147,7 @@ class TodoListTest < MiniTest::Test
 
   def test_select
     select_return_value = @list.select { |_| true }
-    
+
     assert_equal(select_return_value.to_a, @list.to_a)
     refute_equal(select_return_value.object_id, @list.object_id)
   end
