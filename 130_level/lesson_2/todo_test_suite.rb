@@ -88,6 +88,58 @@ class TodoListTest < MiniTest::Test
   end
 
   def test_to_s
+    output = <<-OUTPUT.chomp.gsub /^\s+/, ""
+    [ ] Buy milk
+    [ ] Clean room
+    [ ] Go to gym
 
+    OUTPUT
+
+    assert_equal(output, @list.to_s)
+  end
+
+  def test_to_s_2
+    output = <<-OUTPUT.chomp.gsub /^\s+/, ""
+    [ ] Buy milk
+    [X] Clean room
+    [ ] Go to gym
+
+    OUTPUT
+
+    @list.mark_done_at 2
+
+    assert_equal(output, @list.to_s)
+  end
+
+  def test_to_s_3
+    output = <<~OUTPUT
+    [X] Buy milk
+    [X] Clean room
+    [X] Go to gym
+    OUTPUT
+
+    @list.mark_all_done
+
+    assert_equal(output, @list.to_s)
+  end
+
+  def test_each
+    arr = []
+    @list.each { |to_do| arr << to_do }
+
+    assert_equal(arr, @list.todos)
+  end
+
+  def test_each_return
+    each_return_value = @list.each { |_| }
+
+    assert_equal(@list, each_return_value)
+  end
+
+  def test_select
+    select_return_value = @list.select { |_| true }
+    
+    assert_equal(select_return_value.to_a, @list.to_a)
+    refute_equal(select_return_value.object_id, @list.object_id)
   end
 end
