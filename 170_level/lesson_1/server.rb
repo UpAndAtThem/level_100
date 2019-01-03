@@ -18,5 +18,4 @@ loop do
   client.puts "path : #{path}"
 
   client.close
-  break
 end
