@@ -27,13 +27,11 @@ loop do
                           .map { |k,v| [k, v.to_i]}
                           .to_h
 
-  path = path_and_params.match(/(\/\w+){0,}(?=\?*)/).to_s
+  path = path_and_params.match(/(\/\w*){0,}(?=\?*)/).to_s
 
   rolls = params['rolls']
   sides = params['sides']
   dice = Dice.new(sides)
-
-  sum_of_rolls = rolls.times.reduce(0){ |memo, _| memo += dice.roll }
 
   client.puts "HTTP/1.1 200 OK\r\n\r\n"
   client.puts "method : #{http_method}"
@@ -44,6 +42,13 @@ loop do
   client.puts ""
   client.puts "number_of_rolls : #{rolls}"
   client.puts "sides_on_dice : #{sides}"
+
+  sum_of_rolls = rolls.times.reduce(0) do |memo, roll_index| 
+    roll = dice.roll
+    client.puts "roll #{roll_index + 1}: #{roll}"
+    memo += roll
+  end
+
   client.puts "sum_of_rolls : #{sum_of_rolls}"
 
   client.close
