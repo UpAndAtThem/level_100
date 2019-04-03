@@ -45,7 +45,9 @@ loop do
 
   sum_of_rolls = rolls.times.reduce(0) do |memo, roll_index| 
     roll = dice.roll
-    client.puts "roll #{roll_index + 1}: #{roll}"
+    roll_num = roll_index + 1
+    formatted_roll_num = roll_num < 10 ? "#{"0" + roll_num.to_s }" : roll_num.to_s
+    client.puts "roll #{formatted_roll_num}: #{roll}"
     memo += roll
   end
 
